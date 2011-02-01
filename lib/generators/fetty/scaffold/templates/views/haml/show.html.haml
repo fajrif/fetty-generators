@@ -1,0 +1,23 @@
+- title "<%= singular_name.titleize %>"
+
+<%- for attribute in model_attributes -%>
+%p
+	%strong <%= attribute.human_name.titleize %>:
+	= @<%= instance_name %>.<%= attribute.name %>
+<%- end -%>
+
+%p
+<%- if action? :edit -%>
+	- if can? :update, @<%= singular_name %>
+		= link_to "Edit", <%= item_path :action => :edit, :instance_variable => true %>
+		|
+<%- end -%>
+<%- if action? :destroy -%>
+	- if can? :destroy, @<%= singular_name %>
+		= link_to "Destroy", <%= item_path :instance_variable => true %>, :confirm => 'Are you sure?', :method => :delete
+		|
+<%- end -%>
+<%- if action? :index -%>
+	- if can? :index, <%= singular_name.titleize %>
+		= link_to "View All", <%= items_path %>
+<%- end -%>
