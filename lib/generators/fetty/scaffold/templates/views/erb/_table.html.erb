@@ -19,19 +19,13 @@
       <td><%%= <%= instance_name %>.<%= attribute.name %> %></td>
     <%- end -%>
     <%- if action? :show -%>
-    <%% if can? :read, <%= instance_name %> %>
-      <td><%%= link_to "Show", <%= item_path %> %></td>
-    <%% end %>
+    <td><%= generate_action_links(:read, instance_name, "Show", item_path) %></td>
     <%- end -%>
     <%- if action? :edit -%>
-	<%% if can? :update, <%= instance_name %> %>
-      <td><%%= link_to "Edit", <%= item_path :action => :edit %> %></td>
-    <%% end %>
+    <td><%= generate_action_links(:update, instance_name, "Edit", item_path(:action => :edit)) %></td>
     <%- end -%>
     <%- if action? :destroy -%>
-	<%% if can? :destroy, <%= instance_name %> %>
-      <td><%%= link_to "Destroy", <%= item_path %>, :confirm => 'Are you sure?', :method => :delete %></td>
-    <%% end %>
+    <td><%= generate_action_links(:destroy, instance_name, "Destroy", item_path) %></td>
     <%- end -%>
     </tr>
   <%% end %>
