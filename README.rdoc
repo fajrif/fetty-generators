@@ -1,12 +1,16 @@
 = Fetty Generators
 
-If you are a fans of railscast.com by Ryan Bates, and you always use nifty_scaffold for your Rails app,
-try to use this scaffold generators, it inherited from nifty-generators, but fetty have a little extra featutes like :
+If you are a fan of railscast.com by Ryan Bates, you could found so many useful plugins / gems that ryan covers to us how to use it, 
+and if you familiar with nifty_scaffold by ryanb, or always working with it alongside Devise + CanCan for authetication and authorization,
+you may try to use this generators to build your basic Rails application quickly up-and-running. 
+This generators are inherited from nifty-generators, but change a little-bit in the result of scaffolding.
+
+fetty (as i choose the name as a brother of nifty) have a little extra features like :
         - using simple_form as a default generated form.
         - add some extra AJAX features to search and sorting using meta_search, and pagination in your index page.
         - using Devise for authentication and CanCan(ryanb) for authorizations [optional].
-        - giving checking abilities like ( can? :read ) in your views.
-        - closable flash message.
+        - giving the default checking abilities like ( can? :read ) in your views for authorizations.
+        - I also add some closable flash message.
 
 it also provides for ERB and HAML template. Ups sorry this generators only works for Rails 3
 
@@ -47,6 +51,6 @@ To view the README for each generator, run it with the +help+ option.
 
 == Found a bug?
 
-If you are having a problem with Nifty Generators, first look at the FAQs above. If you still cannot resolve it, please submit an issue here.
+This is stil under development mode for add many features, If you are having a problem with Fetty Generators, please submit an issue here.
 
 http://github.com/fajrif/fetty-generators/issues
