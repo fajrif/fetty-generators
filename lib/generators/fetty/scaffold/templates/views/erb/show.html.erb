@@ -9,18 +9,12 @@
 
 <p>
 <%- if action? :edit -%>
-<%% if can? :update, @<%= singular_name %> %>
-  <%%= link_to "Edit", <%= item_path :action => :edit, :instance_variable => true %> %> |
-<%% end %>
+<%= generate_action_links(:update, singular_name, "Edit", item_path(:action => :edit, :instance_variable => true)) %> |	
 <%- end -%>
 <%- if action? :destroy -%>
-<%% if can? :destroy, @<%= singular_name %> %>
-  <%%= link_to "Destroy", <%= item_path :instance_variable => true %>, :confirm => 'Are you sure?', :method => :delete %> |
-<%% end %>
+<%= generate_action_links(:destroy, singular_name, "Destroy", item_path(:instance_variable => true)) %> |	
 <%- end -%>
 <%- if action? :index -%>
-<%% if can? :index, <%= singular_name.titleize %> %>
-  <%%= link_to "View All", <%= items_path %> %>
-<%% end %>
+<%= generate_action_links(:index, singular_name.titleize, "View All", items_path) %>	
 <%- end -%>
 </p>

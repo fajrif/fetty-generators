@@ -123,9 +123,14 @@ private
 
 	  def generate_action_links(action, object, link_text, link_path)
 	  	out = ""
-	  	out << "<% if can? #{action}, #{object} %>\n" if options.with_cancan_check
-  		out << "<%= link_to '#{link_text}', #{link_path} %>\n"
-  		out << "<% end %>" if options.with_cancan_check
+	  	out << "<% if can? :#{action}, #{object} %>\n" if options.with_cancan_check?
+	  	unless action == :destroy
+  			out << "<%= link_to '#{link_text}', #{link_path} %>\n"
+  		else
+  			out << "<%= link_to '#{link_text}', #{link_path}, :confirm => 'Are you sure?', :method => :delete %>\n"
+  		end
+  		out << "<% end %>" if options.with_cancan_check?
+  		out.html_safe
 	  end
 
       def form_partial?

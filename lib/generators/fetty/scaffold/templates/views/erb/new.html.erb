@@ -3,7 +3,5 @@
 <%= render_form %>
 
 <%- if action? :index -%>
-<%% if can? :index, <%= singular_name.titleize %> %>
-<p><%%= link_to "Back to List", <%= items_path %> %></p>
-<%% end %>
+<p><%= generate_action_links(:index, singular_name.titleize, "Back to List", items_path) %></p>
 <%- end -%>

@@ -1,25 +1,22 @@
 Description:
-  The nifty_layout generator creates a basic layout, stylesheet and
-  helper which will give some structure to a starting Rails app.
-
-  The generator takes one argument which will be the name of the
-	layout and stylesheet files. If no argument is passed then it defaults
-	to "application".
-
-  The helper module includes some methods which can be called in any
-  template or partial to set variables to be used in the layout, such as
-  page title and javascript/stylesheet includes.
+  The fetty:setup generator creates a bunch of task to update your gemfile
+  with necessary gem need for you to build your rails app.
+  the basic installation required you to have :
+	- meta_search
+	- simple_form
+	- will_paginate
+	- jquery-rails
+  and the optional gems for Authentication & Autorization using :
+	- Devise
+	- CanCan
 
 Examples:
-    rails generate nifty:layout
+    rails generate fetty:setup
 
-        Layout:     app/views/layouts/application.html.erb
-        Stylesheet: public/stylesheets/application.css
-        Helper:     app/helpers/layout_helper.rb
+   this default command will add gems to your Gemfile and install
+   some necessary files. both required and optional gems.
+   if you like to install minimum for layout and scaffolding using
+   fetty-generators, or you already have diffrent gems for authentication
+   or authorization you could skip the optional setup :
 
-
-    rails generate nifty:layout admin
-
-        Layout:     app/views/layouts/admin.html.erb
-        Stylesheet: public/stylesheets/admin.css
-        Helper:     app/helpers/layout_helper.rb
+    rails generate fetty:setup --skip-optional
