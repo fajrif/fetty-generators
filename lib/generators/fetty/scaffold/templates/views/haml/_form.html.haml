@@ -1,0 +1,8 @@
+= simple_form_for(<%= item_path :instance_variable => true %>) do |f|
+	= f.error_messages
+	.inputs
+<%- for attribute in model_attributes -%>
+		= f.<%= attribute.reference? ? :association : :input %> :<%= attribute.name %>
+<%- end -%>
+	.actions
+		= f.submit

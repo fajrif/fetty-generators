@@ -1,0 +1,40 @@
+<table class="pretty">
+  <tr>
+  <%- for attribute in model_attributes -%>
+    <th><%%= sort_link @search, :<%= attribute.name %> %></th>
+  <%- end -%>
+  	<%- if action? :show -%>
+      <th></th>
+    <%- end -%>
+    <%- if action? :edit -%>
+      <th></th>
+    <%- end -%>
+    <%- if action? :destroy -%>
+      <th></th>
+    <%- end -%>
+  </tr>
+  <%% for <%= instance_name %> in @<%= instances_name %> %>
+    <tr>
+    <%- for attribute in model_attributes -%>
+      <td><%%= <%= instance_name %>.<%= attribute.name %> %></td>
+    <%- end -%>
+    <%- if action? :show -%>
+    <%% if can? :read, <%= instance_name %> %>
+      <td><%%= link_to "Show", <%= item_path %> %></td>
+    <%% end %>
+    <%- end -%>
+    <%- if action? :edit -%>
+	<%% if can? :update, <%= instance_name %> %>
+      <td><%%= link_to "Edit", <%= item_path :action => :edit %> %></td>
+    <%% end %>
+    <%- end -%>
+    <%- if action? :destroy -%>
+	<%% if can? :destroy, <%= instance_name %> %>
+      <td><%%= link_to "Destroy", <%= item_path %>, :confirm => 'Are you sure?', :method => :delete %></td>
+    <%% end %>
+    <%- end -%>
+    </tr>
+  <%% end %>
+</table>
+
+<p><%%= will_paginate @<%= plural_name %> %></p>
