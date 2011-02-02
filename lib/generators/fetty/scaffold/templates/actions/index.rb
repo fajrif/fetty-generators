@@ -1,5 +1,5 @@
   def index
-	@search = <%= instance_name.titleize %>.search(params[:search])
+	@search = <%= class_name %>.search(params[:search])
     @<%= instances_name %> = @search.paginate(:page => params[:page], :per_page => 10)
     
     respond_to do |format|

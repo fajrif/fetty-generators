@@ -4,6 +4,6 @@
 
 <%- if action? :index -%>
 <p>
-<%= generate_action_links(:index, singular_name.titleize, "Back to List", items_path) %>
+<%= generate_action_links(:index, class_name, "Back to List", items_path) %>
 </p>
 <%- end -%>
