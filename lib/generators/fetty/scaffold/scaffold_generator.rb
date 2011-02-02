@@ -76,6 +76,13 @@ module Fetty
         end
       end
 
+	  def create_migration
+        unless @skip_model || options.skip_migration?
+          migration_template 'migration.rb', "db/migrate/create_#{model_path.pluralize.gsub('/', '_')}.rb"
+          delete_paperclip_field_from_model_attributes
+        end
+      end
+      
       def create_model
         unless @skip_model
           template 'model.rb', "app/models/#{model_path}.rb"
@@ -86,13 +93,6 @@ module Fetty
             template "tests/#{test_framework}/model.rb", "test/unit/#{model_path}_test.rb"
             template 'fixtures.yml', "test/fixtures/#{model_path.pluralize}.yml"
           end
-        end
-      end
-
-      def create_migration
-        unless @skip_model || options.skip_migration?
-          migration_template 'migration.rb', "db/migrate/create_#{model_path.pluralize.gsub('/', '_')}.rb"
-          delete_paperclip_field_from_model_attributes
         end
       end
 
@@ -136,7 +136,7 @@ private
 	  	unless @paperclip_name.empty?
           	@paperclip_name.each do |name| 
           		@model_attributes.delete_if do |a| 
-          			a.name == "#{name}_file_type" || a.name == "#{name}_updated_at" || a.name == "#{name}_file_size" 
+          			a.name == "#{name}_content_type" || a.name == "#{name}_updated_at" || a.name == "#{name}_file_size" 
           		end
           		@model_attributes.map do |a|
 					if a.name == "#{name}_file_name"
@@ -149,13 +149,13 @@ private
 
 	  def generate_action_links(action, object, link_text, link_path)
 	  	out = ""
-	  	out << "<% if can? :#{action}, #{object} %>\n" if options.with_cancan_check?
+	  	out << "\t<% if can? :#{action}, #{object} %>\n" if options.with_cancan_check?
 	  	unless action == :destroy
-  			out << "<%= link_to '#{link_text}', #{link_path} %>\n"
+  			out << "\t\t<%= link_to '#{link_text}', #{link_path} %>\n"
   		else
-  			out << "<%= link_to '#{link_text}', #{link_path}, :confirm => 'Are you sure?', :method => :delete %>\n"
+  			out << "\t\t<%= link_to '#{link_text}', #{link_path}, :confirm => 'Are you sure?', :method => :delete %>\n"
   		end
-  		out << "<% end %>" if options.with_cancan_check?
+  		out << "\t<% end %>" if options.with_cancan_check?
   		out.html_safe
 	  end
 

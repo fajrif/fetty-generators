@@ -2,41 +2,47 @@
   <tr>
   <%- for attribute in model_attributes -%>
   	<%- unless @paperclip_name.include?(attribute.name) -%>
-  		<th><%%= sort_link @search, :<%= attribute.name %> %></th>
+  	<th><%%= sort_link @search, :<%= attribute.name %> %></th>
   	<%- else -%>
-  		<th><%= attribute.name %></th>
+  	<th><%= attribute.name %></th>
   	<%- end -%>
   <%- end -%>
-  	<%- if action? :show -%>
-      <th></th>
-    <%- end -%>
-    <%- if action? :edit -%>
-      <th></th>
-    <%- end -%>
-    <%- if action? :destroy -%>
-      <th></th>
-    <%- end -%>
+  <%- if action? :show -%>
+	<th></th>
+  <%- end -%>
+  <%- if action? :edit -%>
+	<th></th>
+  <%- end -%>
+  <%- if action? :destroy -%>
+	<th></th>
+  <%- end -%>
   </tr>
-  <%% for <%= instance_name %> in @<%= instances_name %> %>
-    <tr>
-    <%- for attribute in model_attributes -%>
-    	<%- unless @paperclip_name.include?(attribute.name) -%>
-	  		<td><%%= <%= instance_name %>.<%= attribute.name %> %></td>
-	  	<%- else -%>
-	  		<td><%%= <%= instance_name %>.<%= attribute.name %>.url %></td>
-	  	<%- end -%>
-    <%- end -%>
-    <%- if action? :show -%>
-    <td><%= generate_action_links(:read, instance_name, "Show", item_path) %></td>
-    <%- end -%>
-    <%- if action? :edit -%>
-    <td><%= generate_action_links(:update, instance_name, "Edit", item_path(:action => :edit)) %></td>
-    <%- end -%>
-    <%- if action? :destroy -%>
-    <td><%= generate_action_links(:destroy, instance_name, "Destroy", item_path) %></td>
-    <%- end -%>
-    </tr>
-  <%% end %>
+<%% for <%= instance_name %> in @<%= instances_name %> %>
+	<tr>
+<%- for attribute in model_attributes -%>
+<%- unless @paperclip_name.include?(attribute.name) -%>
+		<td><%%= <%= instance_name %>.<%= attribute.name %> %></td>
+<%- else -%>
+		<td><%%= image_tag <%= instance_name %>.<%= attribute.name %>.url %></td>
+<%- end -%>
+<%- end -%>
+<%- if action? :show -%>
+		<td>
+<%= generate_action_links(:read, instance_name, "Show", item_path) %>
+		</td>
+<%- end -%>
+<%- if action? :edit -%>
+		<td>
+<%= generate_action_links(:update, instance_name, "Edit", item_path(:action => :edit)) %>
+		</td>
+<%- end -%>
+<%- if action? :destroy -%>
+		<td>
+<%= generate_action_links(:destroy, instance_name, "Destroy", item_path) %>
+		</td>
+<%- end -%>
+	</tr>
+<%% end %>
 </table>
 
 <p><%%= will_paginate @<%= plural_name %> %></p>
