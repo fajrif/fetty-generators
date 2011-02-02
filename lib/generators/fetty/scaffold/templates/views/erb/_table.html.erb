@@ -1,7 +1,11 @@
 <table class="pretty">
   <tr>
   <%- for attribute in model_attributes -%>
-    <th><%%= sort_link @search, :<%= attribute.name %> %></th>
+  	<%- unless @paperclip_name.include?(attribute.name) -%>
+  		<th><%%= sort_link @search, :<%= attribute.name %> %></th>
+  	<%- else -%>
+  		<th><%= attribute.name %></th>
+  	<%- end -%>
   <%- end -%>
   	<%- if action? :show -%>
       <th></th>
@@ -16,7 +20,11 @@
   <%% for <%= instance_name %> in @<%= instances_name %> %>
     <tr>
     <%- for attribute in model_attributes -%>
-      <td><%%= <%= instance_name %>.<%= attribute.name %> %></td>
+    	<%- unless @paperclip_name.include?(attribute.name) -%>
+	  		<td><%%= <%= instance_name %>.<%= attribute.name %> %></td>
+	  	<%- else -%>
+	  		<td><%%= <%= instance_name %>.<%= attribute.name %>.url %></td>
+	  	<%- end -%>
     <%- end -%>
     <%- if action? :show -%>
     <td><%= generate_action_links(:read, instance_name, "Show", item_path) %></td>

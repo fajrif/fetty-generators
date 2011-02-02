@@ -34,12 +34,22 @@ module Fetty
         @skip_model = options.skip_model?
         @namespace_model = options.namespace_model?
         @invert_actions = options.invert?
-
+		
+        @paperclip_name = []
+        
         args_for_c_m.each do |arg|
           if arg == '!'
             @invert_actions = true
           elsif arg.include?(':')
-            @model_attributes << Rails::Generators::GeneratedAttribute.new(*arg.split(':'))
+          	if arg.include?(':paperclip')
+          		@paperclip_name << arg.split(':').first
+    			@model_attributes << Rails::Generators::GeneratedAttribute.new("#{arg.split(':').first}_file_name", "string")
+    			@model_attributes << Rails::Generators::GeneratedAttribute.new("#{arg.split(':').first}_content_type", "string")
+    			@model_attributes << Rails::Generators::GeneratedAttribute.new("#{arg.split(':').first}_file_size", "integer")
+    			@model_attributes << Rails::Generators::GeneratedAttribute.new("#{arg.split(':').first}_updated_at", "datetime")
+      		else
+      			@model_attributes << Rails::Generators::GeneratedAttribute.new(*arg.split(':'))
+      		end
           else
             @controller_actions << arg
             @controller_actions << 'create' if arg == 'new'
@@ -82,6 +92,7 @@ module Fetty
       def create_migration
         unless @skip_model || options.skip_migration?
           migration_template 'migration.rb', "db/migrate/create_#{model_path.pluralize.gsub('/', '_')}.rb"
+          delete_paperclip_field_from_model_attributes
         end
       end
 
@@ -120,6 +131,21 @@ module Fetty
       end
 
 private
+
+	  def delete_paperclip_field_from_model_attributes
+	  	unless @paperclip_name.empty?
+          	@paperclip_name.each do |name| 
+          		@model_attributes.delete_if do |a| 
+          			a.name == "#{name}_file_type" || a.name == "#{name}_updated_at" || a.name == "#{name}_file_size" 
+          		end
+          		@model_attributes.map do |a|
+					if a.name == "#{name}_file_name"
+						a.name = name
+					end
+				end
+      		end
+      	end
+      end
 
 	  def generate_action_links(action, object, link_text, link_path)
 	  	out = ""
