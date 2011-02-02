@@ -9,10 +9,10 @@
 
 <p>
 <%- if action? :edit -%>
-<%= generate_action_links(:update, singular_name, "Edit", item_path(:action => :edit, :instance_variable => true)) %> |	
+<%= generate_action_links(:update, item_path(:instance_variable => true), "Edit", item_path(:action => :edit, :instance_variable => true)) %> |	
 <%- end -%>
 <%- if action? :destroy -%>
-<%= generate_action_links(:destroy, singular_name, "Destroy", item_path(:instance_variable => true)) %> |	
+<%= generate_action_links(:destroy, item_path(:instance_variable => true), "Destroy", item_path(:instance_variable => true)) %> |	
 <%- end -%>
 <%- if action? :index -%>
 <%= generate_action_links(:index, singular_name.titleize, "View All", items_path) %>	
