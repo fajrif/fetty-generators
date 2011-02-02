@@ -24,6 +24,7 @@ module Fetty
       	unless options.skip_optional?
       		install_devise
       		install_cancan
+      		install_paperclip
   		end
       end
 
@@ -54,6 +55,13 @@ private
 			inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base" do
 			  "\n   rescue_from CanCan::AccessDenied do |exception| flash[:alert] = exception.message; redirect_to root_url end;"
 			end
+  		end
+      end
+      
+      def install_paperclip
+  		opt = ask("Would you like to install Paperclip for handling your attachment? [yes]")
+      	if opt == "yes" || opt.blank?
+      		add_gem("paperclip")
   		end
       end
        

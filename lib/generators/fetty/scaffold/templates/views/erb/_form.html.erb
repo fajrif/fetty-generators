@@ -1,4 +1,4 @@
-<%%= simple_form_for(<%= item_path :instance_variable => true %>) do |f| %>
+<%%= simple_form_for <%= item_path :instance_variable => true %><%= ", :html => { :multipart => true }" unless @paperclip_name.empty? -%> do |f| %>
   <%%= f.error_messages %>
 
 	<div class="inputs">
