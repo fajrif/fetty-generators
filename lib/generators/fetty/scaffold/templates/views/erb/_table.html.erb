@@ -28,21 +28,21 @@
 <%- end -%>
 <%- if action? :show -%>
 		<td>
-<%= generate_action_links(:read, instance_name, "Show", item_path) %>
+<%= generate_action_links(:read, instance_name, "Show", instance_name) %>
 		</td>
 <%- end -%>
 <%- if action? :edit -%>
 		<td>
-<%= generate_action_links(:update, instance_name, "Edit", item_path(:action => :edit)) %>
+<%= generate_action_links(:update, instance_name, "Edit", "edit_#{singular_table_name}_path(#{instance_name})") %>
 		</td>
 <%- end -%>
 <%- if action? :destroy -%>
 		<td>
-<%= generate_action_links(:destroy, instance_name, "Destroy", item_path) %>
+<%= generate_action_links(:destroy, instance_name, "Destroy", instance_name) %>
 		</td>
 <%- end -%>
 	</tr>
 <%% end %>
 </table>
 
-<p><%%= will_paginate @<%= plural_name %> %></p>
+<p><%%= will_paginate @<%= instances_name %> %></p>

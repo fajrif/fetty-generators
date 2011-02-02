@@ -4,9 +4,9 @@
 
 <p>
 <%- if action? :show -%>
-<%= generate_action_links(:read, item_path(:instance_variable => true), "Show", item_path(:instance_variable => true)) %> |
+<%= generate_action_links(:read, "@#{instance_name}", "Show", "@#{instance_name}") %> |
 <%- end -%>
 <%- if action? :index -%>
-<%= generate_action_links(:index, singular_name.titleize, "View All", items_path) %>
+<%= generate_action_links(:index, class_name, "View All", items_path) %>
 <%- end -%>
 </p>

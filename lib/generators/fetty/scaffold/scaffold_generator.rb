@@ -132,32 +132,32 @@ module Fetty
 
 private
 
-	  def delete_paperclip_field_from_model_attributes
-	  	unless @paperclip_name.empty?
-          	@paperclip_name.each do |name| 
-          		@model_attributes.delete_if do |a| 
-          			a.name == "#{name}_content_type" || a.name == "#{name}_updated_at" || a.name == "#{name}_file_size" 
-          		end
-          		@model_attributes.map do |a|
-					if a.name == "#{name}_file_name"
-						a.name = name
-					end
-				end
-      		end
-      	end
+      def delete_paperclip_field_from_model_attributes
+         unless @paperclip_name.empty?
+            @paperclip_name.each do |name| 
+               @model_attributes.delete_if do |a| 
+                  a.name == "#{name}_content_type" || a.name == "#{name}_updated_at" || a.name == "#{name}_file_size" 
+               end
+               @model_attributes.map do |a|
+                  if a.name == "#{name}_file_name"
+                     a.name = name
+                  end
+               end
+            end
+         end
       end
 
-	  def generate_action_links(action, object, link_text, link_path)
-	  	out = ""
-	  	out << "\t<% if can? :#{action}, #{object} %>\n" if options.with_cancan_check?
-	  	unless action == :destroy
-  			out << "\t\t<%= link_to '#{link_text}', #{link_path} %>\n"
-  		else
-  			out << "\t\t<%= link_to '#{link_text}', #{link_path}, :confirm => 'Are you sure?', :method => :delete %>\n"
-  		end
-  		out << "\t<% end %>" if options.with_cancan_check?
-  		out.html_safe
-	  end
+      def generate_action_links(action, object, link_text, link_path)
+         out = ""
+         out << "\t<% if can? :#{action}, #{object} %>\n" if options.with_cancan_check?
+         unless action == :destroy
+             out << "\t\t<%= link_to '#{link_text}', #{link_path} %>\n"
+         else
+             out << "\t\t<%= link_to '#{link_text}', #{link_path}, :confirm => 'Are you sure?', :method => :delete %>\n"
+         end
+         out << "\t<% end %>" if options.with_cancan_check?
+         out.html_safe
+      end
 
       def form_partial?
         actions? :new, :edit
@@ -175,6 +175,10 @@ private
         names.all? { |name| action? name }
       end
 
+      def singular_table_name
+        scaffold_name.pluralize.singularize
+      end
+
       def singular_name
         scaffold_name.underscore
       end
@@ -182,7 +186,7 @@ private
       def plural_name
         scaffold_name.underscore.pluralize
       end
-
+      
       def table_name
         if scaffold_name.include?('::') && @namespace_model
           plural_name.gsub('/', '_')
@@ -237,10 +241,10 @@ private
 	  
       def render_table
          if options.haml?
-	        "= render 'table'"
-	      else
-	        "<%= render 'table' %>"
-	      end
+           "= render 'table'"
+         else
+           "<%= render 'table' %>"
+         end
       end
       
       def item_resource
