@@ -36,6 +36,7 @@ module Fetty
         @invert_actions = options.invert?
 		
         @paperclip_name = []
+        @tinymce_name = []
         
         args_for_c_m.each do |arg|
           if arg == '!'
@@ -47,6 +48,9 @@ module Fetty
     			@model_attributes << Rails::Generators::GeneratedAttribute.new("#{arg.split(':').first}_content_type", "string")
     			@model_attributes << Rails::Generators::GeneratedAttribute.new("#{arg.split(':').first}_file_size", "integer")
     			@model_attributes << Rails::Generators::GeneratedAttribute.new("#{arg.split(':').first}_updated_at", "datetime")
+    		elsif arg.include?(':tinymce')
+          		@tinymce_name << arg.split(':').first
+    			@model_attributes << Rails::Generators::GeneratedAttribute.new(arg.split(':').first, "text")
       		else
       			@model_attributes << Rails::Generators::GeneratedAttribute.new(*arg.split(':'))
       		end
@@ -131,7 +135,7 @@ module Fetty
       end
 
 private
-
+      
       def delete_paperclip_field_from_model_attributes
          unless @paperclip_name.empty?
             @paperclip_name.each do |name| 

@@ -1,9 +1,18 @@
+<%- unless @tinymce_name.empty? -%>
+<%% content_for(:head) do %>
+	<%%= include_tiny_mce_if_needed %>
+<%% end %>
+<%- end -%>
 <%%= simple_form_for @<%= instance_name %><%= ", :html => { :multipart => true }" unless @paperclip_name.empty? -%> do |f| %>
   <%%= f.error_messages %>
 
 	<div class="inputs">
 	<%- for attribute in model_attributes -%>
+	  <%- unless @tinymce_name.include?(attribute.name) -%>
 	  <%%= f.<%= attribute.reference? ? :association : :input %> :<%= attribute.name %> %>
+	  <%- else -%>
+	  <%%= f.<%= attribute.reference? ? :association : :input %> :<%= attribute.name %>, :input_html => { :class => 'mceEditor' } %>
+	  <%- end -%>
 	<%- end -%>
 	</div>
 	
