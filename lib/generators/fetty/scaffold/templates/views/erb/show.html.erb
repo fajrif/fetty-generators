@@ -3,11 +3,11 @@
 <%- for attribute in model_attributes -%>
 <p>
 	<strong><%= attribute.human_name.titleize %>:</strong>
-	<%- unless @paperclip_name.include?(attribute.name) -%>
+<%- unless @paperclip_name.include?(attribute.name) -%>
 	<%%= @<%= instance_name %>.<%= attribute.name %> %>
-	<%- else -%>
-	<%%= @<%= instance_name %>.<%= attribute.name %>.url %>
-	<%- end -%>
+<%- else -%>
+	<%%= image_tag @<%= instance_name %>.<%= attribute.name %>.url %>
+<%- end -%>
 </p>
 <%- end -%>
 

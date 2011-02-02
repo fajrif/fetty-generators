@@ -7,5 +7,7 @@
 <div id="index_table"><%= render_table %></div>
 
 <%- if action? :new -%>
-<p><%= generate_action_links(:create, singular_name.titleize, "New #{singular_name.titleize}", "new_#{singular_name}_path") %></p>
+<p>
+<%= generate_action_links(:create, singular_name.titleize, "New #{singular_name.titleize}", "new_#{singular_name}_path") %>
+</p>
 <%- end -%>
