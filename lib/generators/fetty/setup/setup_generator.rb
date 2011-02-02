@@ -3,13 +3,14 @@ require 'generators/fetty'
 module Fetty
   module Generators
     class SetupGenerator < Base
-      
-      class_option :skip_required, :desc => 'Skip required plugin installation [meta_search, will_paginate, simple_form, jquery-rails]', :type => :boolean 
-      class_option :skip_optional, :desc => 'Skip installation of authentication plugin (devise) & authorizations plugin (cancan)', :type => :boolean 
+     
+      class_option :required, :desc => 'Only install required gems [meta_search, will_paginate, simple_form, jquery-rails]', :type => :boolean, :default => true 
+      class_option :optional, :desc => 'Only install optional gems such as [devise, cancan, paperclip, tiny_mce]', :type => :boolean, :default => true 
       
       def add_install_gems
+      	 	
       	#required
-      	unless options.skip_optional?
+      	if options.required?
 	      	add_gem("meta_search")
 			add_gem("will_paginate")
 			
@@ -21,10 +22,11 @@ module Fetty
       	end
       	
       	# optional
-      	unless options.skip_optional?
+      	if options.optional?
       		install_devise
       		install_cancan
       		install_paperclip
+      		install_tiny_mce
   		end
       end
 
@@ -62,6 +64,13 @@ private
   		opt = ask("Would you like to install Paperclip for handling your attachment? [yes]")
       	if opt == "yes" || opt.blank?
       		add_gem("paperclip")
+  		end
+      end
+      
+      def install_tiny_mce
+  		opt = ask("Would you like to install Tiny-MCE Editor? [yes]")
+      	if opt == "yes" || opt.blank?
+      		add_gem("tiny_mce")
   		end
       end
        

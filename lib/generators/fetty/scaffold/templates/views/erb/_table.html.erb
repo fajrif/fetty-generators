@@ -20,10 +20,12 @@
 <%% for <%= instance_name %> in @<%= instances_name %> %>
 	<tr>
 <%- for attribute in model_attributes -%>
-<%- unless @paperclip_name.include?(attribute.name) -%>
-		<td><%%= <%= instance_name %>.<%= attribute.name %> %></td>
-<%- else -%>
+<%- if @paperclip_name.include?(attribute.name) -%>
 		<td><%%= image_tag <%= instance_name %>.<%= attribute.name %>.url %></td>
+<%- elsif @tinymce_name.include?(attribute.name) -%>
+		<td><%%= raw <%= instance_name %>.<%= attribute.name %> %></td>
+<%- else -%>
+		<td><%%= <%= instance_name %>.<%= attribute.name %> %></td>
 <%- end -%>
 <%- end -%>
 <%- if action? :show -%>

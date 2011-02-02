@@ -3,10 +3,12 @@
 <%- for attribute in model_attributes -%>
 <p>
 	<strong><%= attribute.human_name.titleize %>:</strong>
-<%- unless @paperclip_name.include?(attribute.name) -%>
-	<%%= @<%= instance_name %>.<%= attribute.name %> %>
-<%- else -%>
+<%- if @paperclip_name.include?(attribute.name) -%>
 	<%%= image_tag @<%= instance_name %>.<%= attribute.name %>.url %>
+<%- elsif @tinymce_name.include?(attribute.name) -%>
+	<%%= raw @<%= instance_name %>.<%= attribute.name %> %>
+<%- else -%>
+	<%%= @<%= instance_name %>.<%= attribute.name %> %>
 <%- end -%>
 </p>
 <%- end -%>
