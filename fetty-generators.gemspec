@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "fetty-generators"
-  s.version     = "1.7.0"
+  s.version     = "1.6.9"
   s.author      = "Fajri Fachriansyah"
   s.email       = "fajrif@hotmail.com"
   s.homepage    = "http://github.com/fajrif/fetty-generators"
