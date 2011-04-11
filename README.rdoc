@@ -8,7 +8,7 @@ This generators are inherited from nifty-generators, but change a little-bit in 
 fetty (as i choose the name as a brother of nifty) have a little extra features like :
 - using simple_form as a default generated form.
 - add some extra AJAX features to search and sorting using meta_search, and pagination in your index page.
-- using Devise for authentication and CanCan(ryanb) for authorizations [optional].
+- using Devise(josevalim) for authentication and CanCan(ryanb) for authorizations [optional].
 - giving the default checking abilities like ( can? :read ) in your views for authorizations.
 - closable flash message.
 - alow you pass custom field:type such as paperclip / tinymce in scaffolding.
@@ -21,7 +21,7 @@ it also provides for ERB and HAML template. Ups sorry this generators only works
 
 require gems to be install first.
 
-  gem install meta_search simple_form will_paginate jquery-rails devise cancan paperclip tinymce
+  gem install meta_where meta_search simple_form kaminari jquery-rails devise cancan paperclip tinymce
 
 And add the gem to your Gemfile.
 
