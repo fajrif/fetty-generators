@@ -30,4 +30,4 @@
 				%td= link_to 'Destroy', <%= item_path %>, :confirm => 'Are you sure?', :method => :delete
 	<%- end -%>
 
-%p= will_paginate @<%= plural_name %>
+%p= paginate @<%= plural_name %>

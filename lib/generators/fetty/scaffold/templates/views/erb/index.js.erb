@@ -1,2 +1,1 @@
 $("#index_table").html("<%%= escape_javascript(render("table")) %>");
-document.title = "<%= escape_javascript("#{params[:search].to_s.titleize} Products by #{(params[:sort] || 'name').titleize} - Page #{params[:page] || 1}") %>";
