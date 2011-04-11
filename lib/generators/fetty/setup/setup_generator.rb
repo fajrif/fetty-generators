@@ -4,7 +4,7 @@ module Fetty
   module Generators
     class SetupGenerator < Base
      
-      class_option :required, :desc => 'Only install required gems [meta_where, meta_search, kaminari, simple_form, jquery-rails]', :type => :boolean, :default => true 
+      class_option :required, :desc => 'Only install required gems [meta_where, meta_search, will_paginate, simple_form, jquery-rails]', :type => :boolean, :default => true 
       class_option :optional, :desc => 'Only install optional gems such as [devise, cancan, paperclip, tiny_mce]', :type => :boolean, :default => true 
       
       def add_install_gems
@@ -13,7 +13,7 @@ module Fetty
       	if options.required?
       		add_gem("meta_where")
 	      	add_gem("meta_search")
-			add_gem("kaminari")
+			add_gem("will_paginate")
 			
 			add_gem("simple_form")
 			generate("simple_form:install")
