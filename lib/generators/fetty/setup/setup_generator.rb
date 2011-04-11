@@ -11,8 +11,9 @@ module Fetty
       	 	
       	#required
       	if options.required?
+      		add_gem("meta_where")
 	      	add_gem("meta_search")
-			add_gem("will_paginate")
+			add_gem("kaminari")
 			
 			add_gem("simple_form")
 			generate("simple_form:install")
