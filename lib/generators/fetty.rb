@@ -8,7 +8,7 @@ module Fetty
       end
 
       def self.banner
-        "rails generate nifty:#{generator_name} #{self.arguments.map{ |a| a.usage }.join(' ')} [options]"
+        "rails generate fetty:#{generator_name} #{self.arguments.map{ |a| a.usage }.join(' ')} [options]"
       end
 
    protected

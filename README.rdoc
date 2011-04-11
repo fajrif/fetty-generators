@@ -6,12 +6,12 @@ you may try to use this generators to build your basic Rails application quickly
 This generators are inherited from nifty-generators, but change a little-bit in the result of scaffolding.
 
 fetty (as i choose the name as a brother of nifty) have a little extra features like :
-        - using simple_form as a default generated form.
-        - add some extra AJAX features to search and sorting using meta_search, and pagination in your index page.
-        - using Devise for authentication and CanCan(ryanb) for authorizations [optional].
-        - giving the default checking abilities like ( can? :read ) in your views for authorizations.
-        - closable flash message.
-	- alow you pass custom field:type such as paperclip / tinymce in scaffolding.
+- using simple_form as a default generated form.
+- add some extra AJAX features to search and sorting using meta_search, and pagination in your index page.
+- using Devise for authentication and CanCan(ryanb) for authorizations [optional].
+- giving the default checking abilities like ( can? :read ) in your views for authorizations.
+- closable flash message.
+- alow you pass custom field:type such as paperclip / tinymce in scaffolding.
 
 it also provides for ERB and HAML template. Ups sorry this generators only works for Rails 3
 
