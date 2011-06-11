@@ -1,0 +1,13 @@
+<%% title "<%= plural_name.titleize %>" %>
+
+<%%= form_for @search, :url => <%= items_path %>, :html => {:id => "index_search", :method => :get} do |f| %>
+	<%%= f.text_field :<%= model_attributes[0].name %>_contains, :title => "Search by <%= model_attributes[0].name %>" %>
+<%% end %>
+
+<div id="index_table"><%%= render 'table' %></div>
+
+<%- if action? :new -%>
+<p>
+<%= generate_action_links(:create, class_name, "New #{singular_table_name.titleize}", "new_#{singular_table_name}_path") %>
+</p>
+<%- end -%>

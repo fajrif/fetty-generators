@@ -1,0 +1,16 @@
+Description:
+  The fetty:setup generator will add the necessary gems 
+  to your Gemfile and install some necessary files.
+  
+  this will installed :
+	- Devise
+	- CanCan
+	- simple_form
+	- kaminari
+	- jquery-rails
+	- carrierwave
+	- ckeditor
+	
+Examples:
+    rails g fetty:setup
+

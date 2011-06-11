@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%%= content_for?(:title) ? yield(:title) : "Untitled" %></title>
+    <%%= stylesheet_link_tag "<%= file_name %>" %>
+    <%%= javascript_include_tag :defaults %>
+    <%%= csrf_meta_tag %>
+    <%%= yield(:head) %>
+  </head>
+  <body>
+    <div id="container">
+      <%% flash.each do |name, msg| %>
+	    <%%= content_tag(:div, :id => "flash_#{name}", :class => "flash closable") do %>
+	    	<%%=h msg %>
+	    	<%%= content_tag(:span, "[close]", :title => "close", :class => "closelink") %>
+	    <%% end %>
+	  <%% end %>
+      
+      <%%= content_tag :h1, yield(:title) if show_title? %>
+      <%%= yield %>
+    </div>
+  </body>
+</html>
