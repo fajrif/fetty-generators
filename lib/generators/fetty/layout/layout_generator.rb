@@ -1,4 +1,4 @@
-require 'fetty'
+require 'generators/fetty'
 
 module Fetty
   module Generators
