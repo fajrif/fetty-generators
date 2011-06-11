@@ -13,29 +13,27 @@ module Fetty
       end
 
 protected
-   	
+
       def add_gem(name, options = {})
         begin
           gemfile_content = File.read(destination_path("Gemfile"))
           File.open(destination_path("Gemfile"), 'a') { |f| f.write("\n") } unless gemfile_content =~ /\n\Z/
           gem name, options unless gemfile_content.include? name
+          
+          `bundle check`
+          
+        rescue Bundler::GemNotFound => e
+          print_notes("Installing #{name}")
+          unless options.blank?
+            `gem install #{name} -v=#{options}`
+          else
+            `gem install #{name}`
+          end  
         rescue Exception => e
           raise e
         end
       end
       
-      def install_gem(name, options = {})
-        begin
-          print_notes("Installing #{name}")
-          unless options.blank?
-            run "gem install #{name} -v=#{options}"
-          else
-            run "gem install #{name}"
-          end
-        rescue Exception => e
-          raise e
-        end
-      end
       
       # required to put generator path
       def root_path(path)
@@ -64,7 +62,7 @@ protected
       def extract(filepath,destinationpath,foldername)
         begin
           print_notes("Extracting #{filepath}")
-          system("tar -C '#{destination_path(destinationpath)}' -xzvf '#{root_path(filepath)}' #{foldername}/")
+          system("tar -C '#{destination_path(destinationpath)}' -xzf '#{root_path(filepath)}' #{foldername}/")
         rescue Exception => e
           puts e.message
         end

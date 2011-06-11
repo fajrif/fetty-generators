@@ -19,16 +19,15 @@ module Fetty
         begin
           options.each do |gems|
             if gems[1]
-              opt = ask("=> Would you like install #{gems[0]} gem? [yes]")
+              opt = ask("=> Would you like setup #{gems[0]} gem? [yes]")
               if opt == "yes" || opt.blank?
                 send("setup_#{gems[0]}")
               end
             end
           end
-          puts "**Please run 'bundle install'"
         rescue Exception => e
           puts e.message
-        end     
+        end
       end
 
 private
@@ -39,10 +38,7 @@ private
           add_gem("mongoid")
           generate("mongoid:config")
         rescue Exception => e
-          puts e.message
-          install_gem("bson_ext")
-          install_gem("mongoid")
-          generate("mongoid:config")
+          raise e
         end
       end
       
@@ -50,31 +46,31 @@ private
         begin
           add_gem("devise")
       		generate("devise:install")
+      		
+      		model_name = ask("Would you like the user model to be called? [user]")
+    		  model_name = "user" if model_name.blank?
+  	  		generate("devise", model_name)
+
+          print_notes("modify app/controllers/application_controller.rb")
+  	  		inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base" do
+  			    "\n   before_filter :authenticate_user!"
+  			  end
+  			  
         rescue Exception => e
-          puts e.message
-          install_gem("devise")
-      		generate("devise:install")
+          raise e
         end
-        model_name = ask("Would you like the user model to be called? [user]")
-  		  model_name = "user" if model_name.blank?
-	  		generate("devise", model_name)
-        
-        puts "** modify app/controllers/application_controller.rb"
-	  		inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base" do
-			    "\n   before_filter :authenticate_user!"
-			  end
       end
       
       def setup_cancan
         begin
           add_gem("cancan")
           copy_file 'ability.rb', 'app/models/ability.rb'
-  		    puts "** modify app/controllers/application_controller.rb"
+  		    print_notes("modify app/controllers/application_controller.rb")
   		    inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base" do
     			  "\n   rescue_from CanCan::AccessDenied do |exception| flash[:alert] = exception.message; redirect_to root_url end;"
     		  end
         rescue Exception => e
-          puts e.message
+          raise e
         end
       end
        
@@ -83,9 +79,7 @@ private
           add_gem("jquery-rails")
     			generate("jquery:install")
         rescue Exception => e
-          puts e.message
-          install_gem("jquery-rails")
-    			generate("jquery:install")
+          raise e
         end
       end
       
@@ -94,9 +88,7 @@ private
           add_gem("simple_form")
     			generate("simple_form:install")
         rescue Exception => e
-          puts e.message
-          install_gem("simple_form")
-    			generate("simple_form:install")
+          raise e
         end
       end
       
@@ -107,7 +99,7 @@ private
           add_gem("carrierwave")
           copy_file 'file_uploader.rb', 'app/uploaders/file_uploader.rb'
         rescue Exception => e
-          puts e.message
+          raise e
         end
       end
       
@@ -115,7 +107,7 @@ private
         begin
           add_gem("kaminari")
         rescue Exception => e
-          puts e.message
+          raise e
         end
       end
       
@@ -129,11 +121,11 @@ private
             template "ckeditor.rb", "config/initializers/ckeditor.rb"
             extract("setup/templates/ckeditor.tar.gz","public/javascripts","ckeditor")
           else
-            setup_gem("ckeditor",ver)
+            add_gem("ckeditor",ver)
             generate("ckeditor:base --version=#{ver}")
           end
         rescue Exception => e
-          puts e.message
+          raise e
         end
       end
       
@@ -141,7 +133,7 @@ private
         begin
         	add_gem("meta_search")
         rescue Exception => e
-          puts e.message
+          raise e
         end
       end
       
@@ -149,7 +141,7 @@ private
         begin
           add_gem("faker")
         rescue Exception => e
-          puts e.message
+          raise e
         end
       end
       
