@@ -16,6 +16,7 @@
 	    <%% end %>
 	  <%% end %>
       
+	  <%- if options.auth_links? -%>
       <div id="loginbox">
 	  <%% if user_signed_in? %>
 	    Signed in as <%%= current_user.email %> Not You?
@@ -24,7 +25,8 @@
 	    <%%= link_to "Sign up", new_user_registration_path %> or <%%= link_to "sign in", new_user_session_path %>
 	  <%% end %>
 	  </div>
-      
+      <%- end -%>
+
       <%%= content_tag :h1, yield(:title) if show_title? %>
       <%%= yield %>
     </div>

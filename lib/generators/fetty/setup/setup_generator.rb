@@ -14,7 +14,8 @@ module Fetty
       class_option :ckeditor, :desc => 'Install ckeditor for WYSIWYG editor', :type => :boolean, :default => true
       class_option :meta_search, :desc => 'Install meta_search for ActiveRecord searching', :type => :boolean, :default => true
       class_option :faker, :desc => 'Install faker to help you populate data', :type => :boolean, :default => true
-       
+      
+             
       def install_gems_dependencies
         begin
           options.each do |gems|
@@ -27,6 +28,7 @@ module Fetty
           end
         rescue Exception => e
           puts e.message
+          puts "Please run `bundle install`, then re-run the generators."
         end
       end
 

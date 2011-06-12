@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'rubygems/command.rb'
+require 'rubygems/dependency_installer.rb'
 require 'rails/generators/base'
 
 module Fetty
@@ -13,27 +16,30 @@ module Fetty
       end
 
 protected
-
+             
       def add_gem(name, options = {})
+        gemfile = File.expand_path(destination_path("Gemfile"), __FILE__) 
         begin
-          gemfile_content = File.read(destination_path("Gemfile"))
-          File.open(destination_path("Gemfile"), 'a') { |f| f.write("\n") } unless gemfile_content =~ /\n\Z/
-          gem name, options unless gemfile_content.include? name
+          gemfile_content = File.read(gemfile) 
+          File.open(gemfile, 'a') { |f| f.write("\n") } unless gemfile_content =~ /\n\Z/
+          gem name, options unless gemfile_content.include? name 
+
+          test = `bundle check` 
+          unless test.include?("satisfied") 
+            print_notes("Installing #{name} gem")
+            Gem::Command.build_args = ARGV
+            inst = Gem::DependencyInstaller.new
+            begin
+              inst.install name, options
+            rescue 
+              print_notes("Exit Installation")
+            end
+          end
           
-          `bundle check`
-          
-        rescue Bundler::GemNotFound => e
-          print_notes("Installing #{name}")
-          unless options.blank?
-            `gem install #{name} -v=#{options}`
-          else
-            `gem install #{name}`
-          end  
         rescue Exception => e
-          raise e
-        end
+          raise e  
+        end if File.exist?(gemfile) 
       end
-      
       
       # required to put generator path
       def root_path(path)

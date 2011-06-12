@@ -1,16 +1,25 @@
 Description:
-  The fetty:setup generator will add the necessary gems 
-  to your Gemfile and install some necessary files.
+  The fetty:setup generator will add / install the necessary gems 
+  to your Gemfile and configure the gems.
   
   this will installed :
-	- Devise
-	- CanCan
+	- cancan
 	- simple_form
 	- kaminari
 	- jquery-rails
 	- carrierwave
 	- ckeditor
+	- meta_search
+
+  optional gem :
+	- mongoid
+	- devise
+	- thinking_sphinx
 	
 Examples:
     rails g fetty:setup
-
+		* will install the default gems
+	rails g fetty:setup --mongoid --devise
+		* will include to instal mongoid and devise
+	rails g fetty:setup --skip-meta-search --thinking-sphinx
+		* will skip meta_search installation and install thinking_sphinx
