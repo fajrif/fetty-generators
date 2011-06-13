@@ -1,9 +1,0 @@
-<%% title "New <%= singular_name.titleize %>" %>
-
-<%= render_form %>
-
-<%- if action? :index -%>
-<p>
-<%= generate_action_links(:index, class_name, "Back to List", items_path) %>
-</p>
-<%- end -%>
