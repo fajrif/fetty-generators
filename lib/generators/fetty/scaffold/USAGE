@@ -1,1 +1,3 @@
-Description: blah, blah, blah
+Description:
+	The fetty:scaffold generator creates a basic scaffolding
+	using many useful gems.

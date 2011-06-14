@@ -4,8 +4,7 @@ module Fetty
   module Generators
     class LayoutGenerator < Base
       
-      argument :layout_name, :desc => 'The layout name you wish to set.', :type => :string, :default => 'application'
-      
+      class_option :layout_name, :desc => 'The layout name you wish to set.', :type => :string, :default => 'application'
       class_option :auth_links, :desc => 'Include Authentication links in your application layout.', :type => :boolean, :default => true
       class_option :mailbox_links, :desc => 'Include Mailboxes links in your application layout.', :type => :boolean, :default => true
        
@@ -25,7 +24,7 @@ module Fetty
 private
 
       def file_name
-        layout_name.underscore
+        options.layout_name.underscore
       end
       
     end

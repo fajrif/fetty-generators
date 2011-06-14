@@ -2,7 +2,7 @@ require 'generators/fetty'
 
 module Fetty
   module Generators
-    class SetupGenerator < Base #:nodoc: This generators will setup necessary gems to your app.
+    class SetupGenerator < Base #:nodoc: 
       
       class_option :mongoid, :desc => 'Install mongoid for replacing your ORM', :type => :boolean, :default => false
       class_option :devise, :desc => 'Install devise for authentication', :type => :boolean, :default => false 
@@ -15,15 +15,15 @@ module Fetty
       class_option :meta_search, :desc => 'Install meta_search for ActiveRecord searching', :type => :boolean, :default => true
       class_option :faker, :desc => 'Install faker to help you populate data', :type => :boolean, :default => true
       
-             
+      class_option :only, :desc => 'Install gems only these mentioned.', :type => :array, :default => []
+      
       def install_gems_dependencies
-        begin
-          options.each do |gems|
-            if gems[1]
-              opt = ask("=> Would you like setup #{gems[0]} gem? [yes]")
-              if opt == "yes" || opt.blank?
-                send("setup_#{gems[0]}")
-              end
+        begin          
+          @selected_gems = options.only.empty? ? options.reject { |k,v| k == "only" || v == false }.keys : options.only
+          @selected_gems.each do |gems|
+            opt = ask("=> Would you like setup #{gems} gem? [yes]")
+            if opt == "yes" || opt.blank?
+              send("setup_#{gems}")
             end
           end
         rescue Exception => e
@@ -47,17 +47,17 @@ private
       def setup_devise
         begin
           add_gem("devise")
-      		generate("devise:install")
-      		
-      		model_name = ask("Would you like the user model to be called? [user]")
-    		  model_name = "user" if model_name.blank?
-  	  		generate("devise", model_name)
+          generate("devise:install")
+          
+          model_name = ask("Would you like the user model to be called? [user]")
+          model_name = "user" if model_name.blank?
+          generate("devise", model_name)
 
           print_notes("modify app/controllers/application_controller.rb")
-  	  		inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base" do
-  			    "\n   before_filter :authenticate_user!"
-  			  end
-  			  
+          inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base" do
+            "\n   before_filter :authenticate_user!"
+          end
+          
         rescue Exception => e
           raise e
         end
@@ -67,10 +67,10 @@ private
         begin
           add_gem("cancan")
           copy_file 'ability.rb', 'app/models/ability.rb'
-  		    print_notes("modify app/controllers/application_controller.rb")
-  		    inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base" do
-    			  "\n   rescue_from CanCan::AccessDenied do |exception| flash[:alert] = exception.message; redirect_to root_url end;"
-    		  end
+          print_notes("modify app/controllers/application_controller.rb")
+          inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base" do
+            "\n   rescue_from CanCan::AccessDenied do |exception| flash[:alert] = exception.message; redirect_to root_url end;"
+          end
         rescue Exception => e
           raise e
         end
@@ -79,7 +79,7 @@ private
       def setup_jquery_rails
         begin
           add_gem("jquery-rails")
-    			generate("jquery:install")
+          generate("jquery:install")
         rescue Exception => e
           raise e
         end
@@ -88,7 +88,7 @@ private
       def setup_simple_form
         begin
           add_gem("simple_form")
-    			generate("simple_form:install")
+          generate("simple_form:install")
         rescue Exception => e
           raise e
         end
@@ -99,7 +99,7 @@ private
           print_notes("carrierwave will use mini_magick by default (you can cofigure later)")
           add_gem("mini_magick")
           add_gem("carrierwave")
-          copy_file 'file_uploader.rb', 'app/uploaders/file_uploader.rb'
+          copy_file 'uploader.rb', 'app/uploaders/uploader.rb'
         rescue Exception => e
           raise e
         end
@@ -121,7 +121,7 @@ private
           if ver == "3.5.4" || ver.blank?
             add_gem("ckeditor","3.5.4")
             template "ckeditor.rb", "config/initializers/ckeditor.rb"
-            extract("setup/templates/ckeditor.tar.gz","public/javascripts","ckeditor")
+            extract("templates/ckeditor.tar.gz","public/javascripts","ckeditor")
           else
             add_gem("ckeditor",ver)
             generate("ckeditor:base --version=#{ver}")
@@ -133,7 +133,7 @@ private
       
       def setup_meta_search
         begin
-        	add_gem("meta_search")
+          add_gem("meta_search")
         rescue Exception => e
           raise e
         end

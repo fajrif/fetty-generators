@@ -16,7 +16,7 @@ module Fetty
       end
 
 protected
-             
+
       def add_gem(name, options = {})
         gemfile = File.expand_path(destination_path("Gemfile"), __FILE__) 
         begin
@@ -35,25 +35,24 @@ protected
               print_notes("Exit Installation")
             end
           end
-          
+  
         rescue Exception => e
           raise e  
         end if File.exist?(gemfile) 
       end
-      
-      # required to put generator path
+
       def root_path(path)
-        File.expand_path(File.join(File.dirname(__FILE__), 'fetty', path))
+        File.expand_path(File.join(File.dirname(__FILE__), 'fetty', generator_name, path))
       end
-      
+
       def destination_path(path)
         File.join(destination_root, path)
       end  
-      
+
       def file_exists?(path)
         File.exist? destination_path(path)
       end
-      
+
       def destroy(path)
         begin
           if file_exists?(path)
@@ -64,7 +63,7 @@ protected
           puts e.message
         end
       end
-      
+
       def extract(filepath,destinationpath,foldername)
         begin
           print_notes("Extracting #{filepath}")
@@ -73,11 +72,11 @@ protected
           puts e.message
         end
       end
-      
+
       def print_notes(notes)
         puts "*** NOTES : #{notes} ***" 
       end
-	
+
       def print_usage
         self.class.help(Thor::Base.shell.new)
         exit

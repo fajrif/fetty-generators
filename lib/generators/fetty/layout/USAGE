@@ -1,26 +1,3 @@
 Description:
 	The fetty:layout generator creates a basic layout, stylesheet and
-	helper which will give some structure to a starting Rails app.
-
-	The generator takes one argument which will be the name of the
-	application layout and stylesheet files. If no argument is passed then it defaults
-	to "application.html.erb".
-
-	The helper module includes some methods which can be called in any
-	template or partial to set variables to be used in the layout, such as
-	"title".
-	
-	Optional "links" will includes in generating your layout, such as 
-	"authentications links" or "mailboxes links"
-	
-Examples:
-    rails g fetty:layout
-
-	rails g fetty:layout --auth-links --mailbox-links
-
-	FILE GENERATED:
-        Layout:     app/views/layouts/application.html.erb
-		Helper:     app/helpers/layout_helper.rb
-					app/helpers/error_messages_helper.rb
-		Javascipts:	public/javascripts/application.js
-        Stylesheet: public/stylesheets/application.css
+	helper which will give some structure to starting your Rails app.

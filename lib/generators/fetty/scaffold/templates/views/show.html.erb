@@ -1,0 +1,26 @@
+<%% title "<%= singular_name.titleize %>" %>
+
+<%- for attribute in model_attributes -%>
+<p>
+	<strong><%= attribute.human_name.titleize %>:</strong>
+<%- if @carrierwave_name.include?(attribute.name) -%>
+	<%%= image_tag @<%= instance_name %>.<%= attribute.name %>_url if @<%= instance_name %>.<%= attribute.name %>? %>
+<%- elsif @ckeditor_name.include?(attribute.name) -%>
+	<%%= raw @<%= instance_name %>.<%= attribute.name %> %>
+<%- else -%>
+	<%%= @<%= instance_name %>.<%= attribute.name %> %>
+<%- end -%>
+</p>
+<%- end -%>
+
+<p>
+<%- if action? :edit -%>
+<%= generate_action_links(:update, "@#{instance_name}", "Edit", "edit_#{singular_table_name}_path(@#{instance_name})") %> |	
+<%- end -%>
+<%- if action? :destroy -%>
+<%= generate_action_links(:destroy, "@#{instance_name}", "Destroy", "@#{instance_name}") %> |	
+<%- end -%>
+<%- if action? :index -%>
+<%= generate_action_links(:index, class_name, "View All", items_path) %>	
+<%- end -%>
+</p>
