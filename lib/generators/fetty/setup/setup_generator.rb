@@ -121,7 +121,7 @@ private
           if ver == "3.5.4" || ver.blank?
             add_gem("ckeditor","3.5.4")
             template "ckeditor.rb", "config/initializers/ckeditor.rb"
-            extract("templates/ckeditor.tar.gz","public/javascripts","ckeditor")
+            extract("setup/templates/ckeditor.tar.gz","public/javascripts","ckeditor")
           else
             add_gem("ckeditor",ver)
             generate("ckeditor:base --version=#{ver}")

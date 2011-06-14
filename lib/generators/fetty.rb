@@ -42,7 +42,7 @@ protected
       end
 
       def root_path(path)
-        File.expand_path(File.join(File.dirname(__FILE__), 'fetty', generator_name, path))
+        File.expand_path(File.join(File.dirname(__FILE__), 'fetty', path))
       end
 
       def destination_path(path)

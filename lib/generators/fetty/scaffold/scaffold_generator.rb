@@ -34,17 +34,17 @@ module Fetty
                 end
             end
                 
-            # if options.controller?
-            #    setting_controller_attributes
-            #    generate_controller
-            #    generate_helper
-            #    generate_views
-            #    setting_route
-            # end
-            #     
-            # if options.test?
-            #   generate_test
-            # end                  
+            if options.controller?
+               setting_controller_attributes
+               generate_controller
+               generate_helper
+               generate_views
+               setting_routes
+            end
+                
+            if options.test?
+              generate_test
+            end                  
           rescue Exception => e
            puts e.message
           end
@@ -88,7 +88,7 @@ private
       def generate_views
         begin
           controller_actions.each do |action|
-            unless action == 'update' && action == 'destroy'
+            unless action == 'create' || action == 'update' || action == 'destroy'
               template "views/#{action}.html.erb", "app/views/#{plural_name}/#{action}.html.erb"
               if action == 'index'
                 template "views/index.js.erb", "app/views/#{plural_name}/index.js.erb"

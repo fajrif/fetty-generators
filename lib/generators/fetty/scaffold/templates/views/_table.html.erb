@@ -1,11 +1,7 @@
 <table class="pretty">
   <tr>
   <%- for attribute in model_attributes -%>
-  	<%- unless @carrierwave_name.include?(attribute.name) -%>
   	<th><%%= sort_link @search, :<%= attribute.name %> %></th>
-  	<%- else -%>
-  	<th><%= attribute.name %></th>
-  	<%- end -%>
   <%- end -%>
   <%- if action? :show -%>
 	<th></th>
@@ -20,9 +16,11 @@
 <%% for <%= instance_name %> in @<%= instances_name %> %>
 	<tr>
 <%- for attribute in model_attributes -%>
-<%- if @carrierwave_name.include?(attribute.name) -%>
+<%- if special_select(:image).include?(attribute.name) -%>
 		<td><%%= image_tag <%= instance_name %>.<%= attribute.name %>_url if <%= instance_name %>.<%= attribute.name %>? %></td>
-<%- elsif @ckeditor_name.include?(attribute.name) -%>
+<%- elsif special_select(:file).include?(attribute.name) -%>
+		<td><%%= link_to <%= instance_name %>.<%= attribute.name %>, <%= instance_name %>.<%= attribute.name %>_url %></td>
+<%- elsif special_select(:editor).include?(attribute.name) -%>
 		<td><%%= raw <%= instance_name %>.<%= attribute.name %> %></td>
 <%- else -%>
 		<td><%%= <%= instance_name %>.<%= attribute.name %> %></td>

@@ -3,9 +3,11 @@
 <%- for attribute in model_attributes -%>
 <p>
 	<strong><%= attribute.human_name.titleize %>:</strong>
-<%- if @carrierwave_name.include?(attribute.name) -%>
+<%- if special_select(:image).include?(attribute.name) -%>
 	<%%= image_tag @<%= instance_name %>.<%= attribute.name %>_url if @<%= instance_name %>.<%= attribute.name %>? %>
-<%- elsif @ckeditor_name.include?(attribute.name) -%>
+<%- elsif special_select(:file).include?(attribute.name) -%>
+	<%%= link_to @<%= instance_name %>.<%= attribute.name %>, @<%= instance_name %>.<%= attribute.name %>_url %>
+<%- elsif special_select(:editor).include?(attribute.name) -%>
 	<%%= raw @<%= instance_name %>.<%= attribute.name %> %>
 <%- else -%>
 	<%%= @<%= instance_name %>.<%= attribute.name %> %>

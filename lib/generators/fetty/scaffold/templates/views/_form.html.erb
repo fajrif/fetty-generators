@@ -1,14 +1,14 @@
-<%- unless @ckeditor_name.empty? -%>
+<%- if has_type? :editor -%>
 <%% content_for(:head) do %>
 	<%%= javascript_include_tag :ckeditor %>
 <%% end %>
 <%- end -%>
-<%%= simple_form_for @<%= instance_name %><%= ", :html => { :multipart => true }" unless @carrierwave_name.empty? -%> do |f| %>
+<%%= simple_form_for @<%= instance_name %><%= ", :html => { :multipart => true }" if has_type? :image -%> do |f| %>
   <%%= f.error_messages %>
 
 	<div class="inputs">
 	<%- for attribute in model_attributes -%>
-	  <%- if @ckeditor_name.include?(attribute.name) -%>
+	  <%- if special_select(:editor).include?(attribute.name) -%>
 	  <%%= f.ckeditor :<%= attribute.name %>, :label => false, :input_html => { :height => 400, :toolbar=>'Full' } %>	  
 	  <%- else -%>
 	  <%%= f.<%= attribute.reference? ? :association : :input %> :<%= attribute.name %> %>
