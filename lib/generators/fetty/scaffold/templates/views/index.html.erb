@@ -8,6 +8,6 @@
 
 <%- if action? :new -%>
 <p>
-<%= generate_action_links(:create, class_name, "New #{singular_table_name.titleize}", "new_#{singular_table_name}_path") %>
+<%= generate_action_links(:new, :create, class_name, "New #{singular_name.titleize}") %>
 </p>
 <%- end -%>

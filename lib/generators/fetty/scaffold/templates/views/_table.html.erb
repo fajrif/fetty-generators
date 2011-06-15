@@ -17,9 +17,9 @@
 	<tr>
 <%- for attribute in model_attributes -%>
 <%- if special_select(:image).include?(attribute.name) -%>
-		<td><%%= image_tag <%= instance_name %>.<%= attribute.name %>_url if <%= instance_name %>.<%= attribute.name %>? %></td>
+		<td><%%= image_tag <%= instance_name %>.<%= attribute.name %>_url(:small) if <%= instance_name %>.<%= attribute.name %>? %></td>
 <%- elsif special_select(:file).include?(attribute.name) -%>
-		<td><%%= link_to <%= instance_name %>.<%= attribute.name %>, <%= instance_name %>.<%= attribute.name %>_url %></td>
+		<td><%%= link_to File.basename(<%= instance_name %>.<%= attribute.name %>.to_s), <%= instance_name %>.<%= attribute.name %>_url if <%= instance_name %>.<%= attribute.name %>? %></td>
 <%- elsif special_select(:editor).include?(attribute.name) -%>
 		<td><%%= raw <%= instance_name %>.<%= attribute.name %> %></td>
 <%- else -%>
@@ -28,17 +28,17 @@
 <%- end -%>
 <%- if action? :show -%>
 		<td>
-<%= generate_action_links(:read, instance_name, "Show", instance_name) %>
+<%= generate_action_links(:show, :read, instance_name, "Show") %>
 		</td>
 <%- end -%>
 <%- if action? :edit -%>
 		<td>
-<%= generate_action_links(:update, instance_name, "Edit", "edit_#{singular_table_name}_path(#{instance_name})") %>
+<%= generate_action_links(:edit, :update, instance_name, "Edit") %>
 		</td>
 <%- end -%>
 <%- if action? :destroy -%>
 		<td>
-<%= generate_action_links(:destroy, instance_name, "Destroy", instance_name) %>
+<%= generate_action_links(:destoy, :destroy, instance_name, "Destroy") %>
 		</td>
 <%- end -%>
 	</tr>

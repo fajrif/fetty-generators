@@ -4,9 +4,9 @@
 <p>
 	<strong><%= attribute.human_name.titleize %>:</strong>
 <%- if special_select(:image).include?(attribute.name) -%>
-	<%%= image_tag @<%= instance_name %>.<%= attribute.name %>_url if @<%= instance_name %>.<%= attribute.name %>? %>
+	<%%= image_tag @<%= instance_name %>.<%= attribute.name %>_url(:small) if @<%= instance_name %>.<%= attribute.name %>? %>
 <%- elsif special_select(:file).include?(attribute.name) -%>
-	<%%= link_to @<%= instance_name %>.<%= attribute.name %>, @<%= instance_name %>.<%= attribute.name %>_url %>
+	<%%= link_to File.basename(@<%= instance_name %>.<%= attribute.name %>.to_s), @<%= instance_name %>.<%= attribute.name %>_url if @<%= instance_name %>.<%= attribute.name %>? %>
 <%- elsif special_select(:editor).include?(attribute.name) -%>
 	<%%= raw @<%= instance_name %>.<%= attribute.name %> %>
 <%- else -%>
@@ -17,12 +17,12 @@
 
 <p>
 <%- if action? :edit -%>
-<%= generate_action_links(:update, "@#{instance_name}", "Edit", "edit_#{singular_table_name}_path(@#{instance_name})") %> |	
+<%= generate_action_links(:edit, :update, "@#{instance_name}", "Edit") %> |	
 <%- end -%>
 <%- if action? :destroy -%>
-<%= generate_action_links(:destroy, "@#{instance_name}", "Destroy", "@#{instance_name}") %> |	
+<%= generate_action_links(:destroy, :destroy, "@#{instance_name}", "Destroy") %> |	
 <%- end -%>
 <%- if action? :index -%>
-<%= generate_action_links(:index, class_name, "View All", items_path) %>	
+<%= generate_action_links(:index, :index, class_name, "View All") %>	
 <%- end -%>
 </p>

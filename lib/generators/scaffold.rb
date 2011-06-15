@@ -50,7 +50,6 @@ module Fetty
         end
       end
       
-      # need to be checked      
       def setting_routes
         begin
           namespaces = plural_name.split('/')
@@ -63,9 +62,16 @@ module Fetty
         end
       end
               
-      def generate_action_links(action, object, link_text, link_path)
+      def generate_action_links(action, authorize, object, link_text)
          out = ""
-         out << "\t<% if can? :#{action}, #{object} %>\n"
+         out << "\t<% if can? :#{authorize}, #{object} %>\n"
+         
+         if object.start_with?('@')
+            link_path = item_path(:action => action, :instance_variable => true)
+         else
+            link_path = item_path(:action => action)
+         end
+        
          unless action == :destroy
              out << "\t\t<%= link_to '#{link_text}', #{link_path} %>\n"
          else
@@ -108,13 +114,13 @@ module Fetty
       end
       
       def table_name
-        if scaffold_name.include?('::')
+        if scaffold_name.include?('::') && @namespace_model
           plural_name.gsub('/', '_')
         end
       end
       
       def class_name
-        if scaffold_name.include?('::')
+        if @namespace_model
           scaffold_name.camelize
         else
           scaffold_name.split('::').last.camelize
@@ -130,7 +136,7 @@ module Fetty
       end
       
       def instance_name
-        if scaffold_name.include?('::')
+        if @namespace_model
           singular_name.gsub('/','_')
         else
           singular_name.split('/').last
@@ -154,31 +160,33 @@ module Fetty
       end
       
       def item_path(options = {})
-        if action? :show
-          name = options[:instance_variable] ? "@#{instance_name}" : instance_name
-          if %w(new edit).include? options[:action].to_s
-            "#{options[:action].to_s}_#{item_resource}_path(#{name})"
-          else
-            if scaffold_name.include?('::')
-              namespace = singular_name.split('/')[0..-2]
-              "[ :#{namespace.join(', :')}, #{name} ]"
-            else
-              name
-            end
-          end
-        else
+        name = options[:instance_variable] ? "@#{instance_name}" : instance_name
+        suffix = options[:full_url] ? "url" : "path"
+        
+        if options[:action] == :index
           items_path
+        elsif options[:action] == :new
+          "new_#{item_resource}_#{suffix}"
+        elsif options[:action] == :edit
+          "edit_#{item_resource}_#{suffix}(#{name})"
+        else
+          if scaffold_name.include?('::') && !@namespace_model
+            namespace = singular_name.split('/')[0..-2]
+            "[:#{namespace.join(', :')}, #{name}]"
+          else
+            name
+          end
         end
       end
       
       def item_url
         if action? :show
-          item_resource + '_url'
+          item_path(:full_url => true, :instance_variable => true)
         else
           items_url
         end
       end
-      
+            
       def items_url
         if action? :index
           item_resource.pluralize + '_url'
@@ -186,25 +194,32 @@ module Fetty
           "root_url"
         end
       end
-            
-
-      # def controller_methods(dir_name)
-      #   controller_actions.map do |action|
-      #     read_template("#{dir_name}/#{action}.rb")
-      #   end.join("\n").strip
-      # end
-      # 
-      # 
-      # def model_columns_for_attributes
-      #   class_name.constantize.columns.reject do |column|
-      #     column.name.to_s =~ /^(id|created_at|updated_at)$/
-      #   end
-      # end
-      # 
-      # def read_template(relative_path)
-      #   ERB.new(File.read(find_in_source_paths(relative_path)), nil, '-').result(binding)
-      # end
       
+      def item_path_for_spec(suffix = 'path')
+        if action? :show
+          "#{item_resource}_#{suffix}(assigns[:#{instance_name}])"
+        else
+          if suffix == 'path'
+            items_path
+          else
+            items_url
+          end
+        end
+      end
+
+      def item_path_for_test(suffix = 'path')
+        if action? :show
+          "#{item_resource}_#{suffix}(assigns(:#{instance_name}))"
+        else
+          if suffix == 'path'
+            items_path
+          else
+            items_url
+          end
+        end
+      end
+      
+                  
     end
   end
 end

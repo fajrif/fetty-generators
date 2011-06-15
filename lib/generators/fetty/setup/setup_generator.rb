@@ -99,7 +99,8 @@ private
           print_notes("carrierwave will use mini_magick by default (you can cofigure later)")
           add_gem("mini_magick")
           add_gem("carrierwave")
-          copy_file 'uploader.rb', 'app/uploaders/uploader.rb'
+          copy_file 'image_uploader.rb', 'app/uploaders/image_uploader.rb'
+          copy_file 'file_uploader.rb', 'app/uploaders/file_uploader.rb'
         rescue Exception => e
           raise e
         end

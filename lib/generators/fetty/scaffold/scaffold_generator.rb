@@ -52,7 +52,6 @@ module Fetty
 
 private 
 
-      # need to be check the Image uploader value
       def generate_model
         begin
           template 'models/active_record/model.rb', "app/models/#{model_path}.rb"
@@ -106,24 +105,24 @@ private
       end
           
       def generate_test
-      #   begin
-      #     if test_framework == :rspec
-      #       template "tests/#{test_framework}/controller.rb", "spec/controllers/#{plural_name}_controller_spec.rb"
-      #     else
-      #       template "tests/#{test_framework}/controller.rb", "test/functional/#{plural_name}_controller_test.rb"
-      #     end
-      #     
-      #     if test_framework == :rspec
-      #       template "tests/rspec/model.rb", "spec/models/#{model_path}_spec.rb"
-      #       template 'fixtures.yml', "spec/fixtures/#{model_path.pluralize}.yml"
-      #     else
-      #       template "tests/#{test_framework}/model.rb", "test/unit/#{model_path}_test.rb"
-      #       template 'fixtures.yml', "test/fixtures/#{model_path.pluralize}.yml"
-      #     end
-      #     
-      #   rescue Exception => e
-      #     raise e
-      #   end
+        # begin
+        #   if test_framework == :rspec
+        #     template "tests/#{test_framework}/controller.rb", "spec/controllers/#{plural_name}_controller_spec.rb"
+        #   else
+        #     template "tests/#{test_framework}/controller.rb", "test/functional/#{plural_name}_controller_test.rb"
+        #   end
+        #   
+        #   if test_framework == :rspec
+        #     template "tests/rspec/model.rb", "spec/models/#{model_path}_spec.rb"
+        #     template 'fixtures.yml', "spec/fixtures/#{model_path.pluralize}.yml"
+        #   else
+        #     template "tests/#{test_framework}/model.rb", "test/unit/#{model_path}_test.rb"
+        #     template 'fixtures.yml', "test/fixtures/#{model_path.pluralize}.yml"
+        #   end
+        #   
+        # rescue Exception => e
+        #   raise e
+        # end
       end
       
       
