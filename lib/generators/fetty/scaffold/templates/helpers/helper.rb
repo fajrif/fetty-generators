@@ -1,2 +1,2 @@
-module <%= scaffold_name.pluralize %>Helper
+module <%= helper_name %>
 end

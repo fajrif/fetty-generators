@@ -1,4 +1,4 @@
-class <%= scaffold_name.pluralize %>Controller < ApplicationController
+class <%= controller_name %> < ApplicationController
   
 <%- if action? :index -%>
   def index

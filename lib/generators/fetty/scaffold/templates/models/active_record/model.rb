@@ -1,4 +1,4 @@
-class <%= class_name %> < ActiveRecord::Base
+class <%= model_name %> < ActiveRecord::Base
   attr_accessible <%= model_attributes.map { |a| ":#{a.name}" }.join(", ") %>
   <%- if has_type? :image -%>
   mount_uploader <%= special_select(:image).map { |name| ":#{name}" }.join(", ") %>, ImageUploader

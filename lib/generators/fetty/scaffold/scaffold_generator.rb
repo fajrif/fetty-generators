@@ -8,9 +8,9 @@ module Fetty
     class ScaffoldGenerator < Base
       include Rails::Generators::Migration
       include Fetty::Generators::Scaffold
-      
+            
       argument :scaffold_name, :type => :string, :required => true, :banner => 'ModelName'
-      argument :arguments, :type => :array, :default => [], :banner => 'attribute:type'
+      argument :attributes, :type => :array, :default => [], :banner => 'attribute:type'
                         
       class_option :controller, :desc => 'Generate controller, helper, or views.', :type => :boolean, :default => true
       class_option :model, :desc => "Generate a model or migration file.", :type => :boolean, :default => true
@@ -23,9 +23,9 @@ module Fetty
       def generate_scaffold
         
           begin
-            print_usage unless scaffold_name.underscore =~ /^[a-z][a-z0-9_\/]+$/ && !arguments.empty?
-            print_usage unless arguments.drop_while { |arg| arg.include?(':') }.count == 0
-      
+            print_usage unless scaffold_name.underscore =~ /^[a-z][a-z0-9_\/]+$/ && !attributes.empty?
+            print_usage unless attributes.drop_while { |arg| arg.include?(':') }.count == 0
+                  
             setting_model_attributes
             if options[:model]
                generate_model
@@ -54,7 +54,7 @@ private
 
       def generate_model
         begin
-          template 'models/active_record/model.rb', "app/models/#{class_name.downcase}.rb"
+          template 'models/active_record/model.rb', model_name(:path)
         rescue Exception => e
           raise e
         end
@@ -62,7 +62,7 @@ private
       
       def generate_migration
         begin
-          migration_template 'models/active_record/migration.rb', "db/migrate/create_#{plural_name.pluralize.gsub('/', '_')}.rb"
+          migration_template 'models/active_record/migration.rb', migration_name(:path)
         rescue Exception => e
           raise e
         end
@@ -70,7 +70,7 @@ private
       
       def generate_controller
         begin
-          template 'controllers/active_record/controller.rb', "app/controllers/#{plural_name}_controller.rb"
+          template 'controllers/active_record/controller.rb', controller_name(:path)
         rescue Exception => e
           raise e
         end
@@ -78,7 +78,7 @@ private
                 
       def generate_helper
         begin
-          template 'helpers/helper.rb', "app/helpers/#{plural_name}_helper.rb"
+          template 'helpers/helper.rb', helper_name(:path)
         rescue Exception => e
           raise e
         end

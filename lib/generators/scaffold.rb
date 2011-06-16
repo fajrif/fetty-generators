@@ -14,7 +14,7 @@ module Fetty
       
       def setting_model_attributes
         begin
-           arguments.each do |arg|
+           attributes.each do |arg|
               if arg.include?(':')
                 if arg.include?(':file') || arg.include?(':image') || arg.include?(':editor')
                   self.special_types[arg.split(':').first] = arg.split(':').last.to_sym
@@ -128,13 +128,13 @@ module Fetty
       
 
 # playing with names      
-
+        
       def simple_name
         class_name.underscore.humanize.downcase
       end
 
       def class_name
-        scaffold_name.split('::').last.camelize
+        scaffold_name.split('::').last.camelize.singularize
       end
 
       def table_name
@@ -142,7 +142,7 @@ module Fetty
       end
       
       def singular_name
-        scaffold_name.underscore
+        scaffold_name.underscore.singularize
       end
                   
       def plural_name
@@ -158,11 +158,48 @@ module Fetty
       end
       
       def resource_name
-        scaffold_name.underscore.gsub('/','_')
+        scaffold_name.underscore.gsub('/','_').singularize
       end
       
       def resources_name
         resource_name.pluralize
+      end
+      
+      def model_name(opt = :name)
+        case opt
+        when :name
+          class_name
+        when :path
+          "app/models/#{class_name.downcase}.rb"
+        end
+      end
+      
+      # only when used when using ActiveRecord
+      def migration_name(opt = :name)
+        case opt
+        when :name
+          plural_name.camelize.delete('::').insert(0,'Create')
+        when :path
+          "db/migrate/create_#{plural_name.gsub('/', '_')}.rb"
+        end
+      end
+      
+      def controller_name(opt = :name)
+        case opt
+        when :name
+          plural_name.camelize.insert(-1,'Controller')
+        when :path
+          "app/controllers/#{plural_name}_controller.rb"
+        end
+      end
+      
+      def helper_name(opt = :name)
+        case opt
+        when :name
+          plural_name.camelize.insert(-1,'Helper')
+        when :path
+          "app/helpers/#{plural_name}_helper.rb"
+        end
       end
       
     end
