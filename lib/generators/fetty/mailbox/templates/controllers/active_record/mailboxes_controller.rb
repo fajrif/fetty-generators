@@ -2,7 +2,7 @@ class MailboxesController < ApplicationController
   
   def index
   	@mailbox = params[:mailbox].blank? ? "inbox" : params[:mailbox]
-  	@messages = <%= user_object_name.singularize.camelize %>.send(@mailbox).paginate(:page => params[:page], :per_page => 10)
+  	@messages = <%= user_object_name.downcase %>.send(@mailbox).page(params[:page]).per(10)
   	if @mailbox == "inbox"
   		@options = ["Read","Unread","Delete"]
   	elsif @mailbox == "outbox"
@@ -14,7 +14,7 @@ class MailboxesController < ApplicationController
 	
 	def show
 		unless params[:mailbox].blank?
-			@message = <%= user_object_name.singularize.camelize %>.send(params[:mailbox]).find(params[:id])
+			@message = <%= user_object_name.downcase %>.send(params[:mailbox]).find(params[:id])
 			message_from = @message.from.<%= user_attribute.downcase %>
 			message_created_at = @message.created_at.strftime('%A, %B %d, %Y at %I:%M %p')
 			unless params[:mailbox] == "outbox"
@@ -32,8 +32,8 @@ class MailboxesController < ApplicationController
 	
 	def create
 		unless params[:user_tokens].blank? or params[:subject].blank? or params[:body].blank?
-			recipients = <%= user_object_name.singularize.camelize %>.find(params[:user_tokens].split(",").collect { |id| id.to_i })
-			if <%= user_object_name %>.send_message?(params[:subject],params[:body],*recipients)
+			recipients = <%= user_class_name.camelize %>.find(params[:user_tokens].split(",").collect { |id| id.to_i })
+			if <%= user_object_name.downcase %>.send_message?(params[:subject],params[:body],*recipients)
 				redirect_to mailboxes_url, :notice => 'Successfully send message.'
 			else
 				flash[:alert] = "Unable to send message."
@@ -47,7 +47,7 @@ class MailboxesController < ApplicationController
 	
 	def update
 		unless params[:messages].nil? 
-			messages = <%= user_object_name %>.send(params[:mailbox]).find(params[:messages])
+			messages = <%= user_object_name.downcase %>.send(params[:mailbox]).find(params[:messages])
 			if params[:option].downcase == "read"
 				read_unread_messages(true,*messages)	
 			elsif params[:option].downcase == "unread"
@@ -65,7 +65,7 @@ class MailboxesController < ApplicationController
 	
 	def token
 		query = "%" + params[:q] + "%"
-		recipients = <%= user_object_name.singularize.camelize %>.select("id,<%= user_attribute.downcase %>").where("<%= user_attribute.downcase %> like ?", query)
+		recipients = <%= user_class_name.camelize %>.select("id,<%= user_attribute.downcase %>").where("<%= user_attribute.downcase %> like ?", query)
 		respond_to do |format|
 			format.json { render :json => recipients.map { |u| { "id" => u.id, "name" => u.<%= user_attribute.downcase %>} } }
 		end
