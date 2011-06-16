@@ -1,10 +1,10 @@
-<%% title "Edit <%= singular_name.titleize %>" %>
+<%% title "Edit <%= simple_name %>" %>
 
 <%%= render 'form' %>
 <%- if actions? :show, :index -%>
 <p>
 <%- if action? :show -%>
-<%= generate_action_links(:show, :read, "@#{instance_name}", "Show") %> |
+<%= generate_action_links(:show, :read, instance_name('@'), "Show") %> |
 <%- end -%>
 <%- if action? :index -%>
 <%= generate_action_links(:index, :index, class_name, "View All") %>

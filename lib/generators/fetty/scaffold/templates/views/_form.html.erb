@@ -3,9 +3,8 @@
 	<%%= javascript_include_tag :ckeditor %>
 <%% end %>
 <%- end -%>
-<%%= simple_form_for @<%= instance_name %><%= ", :html => { :multipart => true }" if has_type? :image -%> do |f| %>
+<%%= simple_form_for <%= record_or_name_or_array %><%= ", :html => { :multipart => true }" if has_type? :image -%> do |f| %>
   <%%= f.error_messages %>
-
 	<div class="inputs">
 	<%- for attribute in model_attributes -%>
 	  <%- if special_select(:editor).include?(attribute.name) -%>
@@ -15,7 +14,6 @@
 	  <%- end -%>
 	<%- end -%>
 	</div>
-	
 	<div class="actions">
     	<%%= f.button :submit %>
   	</div>

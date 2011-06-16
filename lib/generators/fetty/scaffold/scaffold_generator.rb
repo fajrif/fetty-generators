@@ -25,7 +25,7 @@ module Fetty
           begin
             print_usage unless scaffold_name.underscore =~ /^[a-z][a-z0-9_\/]+$/ && !arguments.empty?
             print_usage unless arguments.drop_while { |arg| arg.include?(':') }.count == 0
-                  
+      
             setting_model_attributes
             if options[:model]
                generate_model
@@ -39,7 +39,7 @@ module Fetty
                generate_controller
                generate_helper
                generate_views
-               setting_routes
+               generate_routes
             end
                 
             if options.test?
@@ -54,7 +54,7 @@ private
 
       def generate_model
         begin
-          template 'models/active_record/model.rb', "app/models/#{model_path}.rb"
+          template 'models/active_record/model.rb', "app/models/#{class_name.downcase}.rb"
         rescue Exception => e
           raise e
         end
@@ -62,7 +62,7 @@ private
       
       def generate_migration
         begin
-          migration_template 'models/active_record/migration.rb', "db/migrate/create_#{model_path.pluralize.gsub('/', '_')}.rb"
+          migration_template 'models/active_record/migration.rb', "db/migrate/create_#{plural_name.pluralize.gsub('/', '_')}.rb"
         rescue Exception => e
           raise e
         end

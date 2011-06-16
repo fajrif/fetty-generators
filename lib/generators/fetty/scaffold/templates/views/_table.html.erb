@@ -13,7 +13,7 @@
 	<th></th>
   <%- end -%>
   </tr>
-<%% for <%= instance_name %> in @<%= instances_name %> %>
+<%% for <%= instance_name %> in <%= instances_name('@') %> %>
 	<tr>
 <%- for attribute in model_attributes -%>
 <%- if special_select(:image).include?(attribute.name) -%>
@@ -38,11 +38,11 @@
 <%- end -%>
 <%- if action? :destroy -%>
 		<td>
-<%= generate_action_links(:destoy, :destroy, instance_name, "Destroy") %>
+<%= generate_action_links(:destroy, :destroy, instance_name, "Destroy") %>
 		</td>
 <%- end -%>
 	</tr>
 <%% end %>
 </table>
 
-<p><%%= paginate @<%= instances_name %> %></p>
+<p><%%= paginate <%= instances_name('@') %> %></p>
