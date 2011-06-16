@@ -1,5 +1,6 @@
 require 'generators/fetty'
 require 'generators/scaffold'
+require 'rails/generators/active_record'
 require 'rails/generators/migration'
 require 'rails/generators/generated_attribute'
 
