@@ -1,0 +1,44 @@
+<%= form_tag update_messages_path, :method => :put, :remote => true do %>
+	<table class="pretty" width="100%">
+		 <tbody>
+			<tr>
+				<td colspan="4">
+				<%= select_tag "option", options_for_select(@options) %>
+				<%= submit_tag "Apply to Selected" %>
+				<%= hidden_field_tag :messagebox, @messagebox %>
+				</td>
+			</tr>
+			<tr>
+				<th><input type="checkbox" class="checkall" id="checkbox" name="checkbox"></th>
+	            <%- unless @messagebox == "outbox" -%>
+	            <th>From</th>
+	            <%- else -%>
+	            <th>To</th>
+	            <%- end -%>
+	            <th>Subject</th>
+	            <th>Date</th>
+	        </tr>
+	        <!-- check opened message first and then set alternate style -->
+	        <%- x = 0 -%>
+			<%- for msg in @messages -%>
+			<tr class="<%= ( (@messagebox != "outbox") ? ( msg.read? ? "" : "unread " ) : "" ) + ( ((x += 1) % 2 == 0) ? "alt" : "") -%>">
+				<td><%= check_box_tag "[messages][]", msg.id %></td>
+				<%- unless @messagebox == "outbox" -%>
+	          	<td><%= msg.from.email %></td>
+	            <%- else -%>
+	            <td><%= msg.to.email %></td>
+	            <%- end -%>
+	            <td><%= link_to msg.subject, show_messages_path(@messagebox, msg.id) %></td>
+	            <td title='<%= msg.created_at.strftime("%a, %b %d, %Y at %I:%M %p") %>'><%= msg.created_at.strftime( ((msg.created_at < 1.days.ago) ? "%b %d, %Y" : "%I:%M %p")) %></td>
+	        </tr>
+			<%- end -%>
+			<tr>
+				<td colspan="4"><%= paginate @messages %></td>
+			</tr>
+		</tbody>	
+	</table>
+<%- end -%>	
+	
+<p>
+	<%= link_to "Compose New Message", new_messages_path %>
+</p>

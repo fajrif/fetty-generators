@@ -1,4 +1,4 @@
-module MailboxesHelper
+module MessagesHelper
   module Methods
       # send message instance method
       def send_message?(subject, body, *recipients)

@@ -5,7 +5,7 @@ require 'rails/generators/generated_attribute'
 
 module Fetty
   module Generators
-    class MailboxGenerator < Base
+    class MessagesGenerator < Base
       include Rails::Generators::Migration
       
       argument :user_class_name, :type => :string, :banner => 'user model', :default => "User"
@@ -44,40 +44,39 @@ private
       end
       
       def copy_migrations
-	      migration_template 'models/active_record/create_messages_table.rb', 'db/migrate/create_messages_table.rb'
-	      migration_template 'models/active_record/create_message_copies_table.rb', 'db/migrate/create_message_copies_table.rb'
+	      migration_template 'models/active_record/create_messages.rb', 'db/migrate/create_messages.rb'
+	      migration_template 'models/active_record/create_message_copies.rb', 'db/migrate/create_message_copies.rb'
 	    end
       
       def copy_controller_and_helper
-        template 'controllers/active_record/mailboxes_controller.rb', 'app/controllers/mailboxes_controller.rb'
-        copy_file 'helpers/mailboxes_helper.rb', 'app/helpers/mailboxes_helper.rb'
+        template 'controllers/active_record/messages_controller.rb', 'app/controllers/messages_controller.rb'
+        copy_file 'helpers/messages_helper.rb', 'app/helpers/messages_helper.rb'
       end
 
       def copy_views
-        copy_file "views/_head.html.erb", "app/views/mailboxes/_head.html.erb"
-        copy_file "views/_messages.html.erb", "app/views/mailboxes/_messages.html.erb"
-        copy_file "views/_tabs_panel.html.erb", "app/views/mailboxes/_tabs_panel.html.erb"
-        copy_file "views/index.html.erb", "app/views/mailboxes/index.html.erb"
-        copy_file "views/index.js.erb", "app/views/mailboxes/index.js.erb"
-        copy_file "views/new.html.erb", "app/views/mailboxes/new.html.erb"
-        copy_file "views/show.html.erb", "app/views/mailboxes/show.html.erb"
+        copy_file "views/_head.html.erb", "app/views/messages/_head.html.erb"
+        copy_file "views/_messages.html.erb", "app/views/messages/_messages.html.erb"
+        copy_file "views/_tabs_panel.html.erb", "app/views/messages/_tabs_panel.html.erb"
+        copy_file "views/index.html.erb", "app/views/messages/index.html.erb"
+        copy_file "views/index.js.erb", "app/views/messages/index.js.erb"
+        copy_file "views/new.html.erb", "app/views/messages/new.html.erb"
+        copy_file "views/show.html.erb", "app/views/messages/show.html.erb"
       end
 
       def copy_assets
-        copy_file 'assets/stylesheets/mailboxes.css', 'public/stylesheets/mailboxes.css'
+        copy_file 'assets/stylesheets/messages.css', 'public/stylesheets/messages.css'
         copy_file 'assets/stylesheets/token-input-facebook.css', 'public/stylesheets/token-input-facebook.css'
-        copy_file 'assets/javascripts/mailboxes.js', 'public/javascripts/mailboxes.js'
+        copy_file 'assets/javascripts/messages.js', 'public/javascripts/messages.js'
         copy_file 'assets/javascripts/jquery.tokeninput.js', 'public/javascripts/jquery.tokeninput.js'
       end
 	
       def add_routes
-        route 'get "/mailboxes" => "mailboxes#index", :as => "mailboxes"'
-        route  'get "/mailboxes/:mailbox" => "mailboxes#index", :as => "box_mailboxes"'
-        route  'get "/mailbox/new" => "mailboxes#new", :as => "new_mailboxes"'
-        route  'post "/mailbox/create" => "mailboxes#create", :as => "create_mailboxes"'
-        route  'post "/mailbox/update" => "mailboxes#update", :as => "update_mailboxes"'
-        route  'get "/mailbox/token" => "mailboxes#token", :as => "token_mailboxes"'
-        route  'get "/mailbox/show/:mailbox/:id" => "mailboxes#show", :as => "show_mailboxes"'
+       route 'get "/messages(/:messagebox)" => "messages#index", :as => "messages", :constraints => { :messagebox => /inbox|outbox|trash/ }'
+       route 'get "/messages/:messagebox/show/:id" => "messages#show", :as => "show_messages", :constraints => { :messagebox => /inbox|outbox|trash/ }'
+       route 'put "/messages/update" => "messages#update", :as => "update_messages"'
+       route 'post "/messages/create" => "messages#create", :as => "create_messages"'
+       route 'get "/messages/new" => "messages#new", :as => "new_messages"'
+       route 'get "/messages/token" => "messages#token", :as => "token_messages"'
       end
 
       # FIXME: Should be proxied to ActiveRecord::Generators::Base

@@ -1,4 +1,4 @@
-class CreateMessageCopiesTable < ActiveRecord::Migration
+class CreateMessageCopies < ActiveRecord::Migration
   def self.up
     create_table :message_copies do |t|
 		t.references :sent_messageable, :polymorphic => true

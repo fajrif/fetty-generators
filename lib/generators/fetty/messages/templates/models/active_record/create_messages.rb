@@ -1,4 +1,4 @@
-class CreateMessagesTable < ActiveRecord::Migration
+class CreateMessages < ActiveRecord::Migration
   def self.up
     create_table :messages do |t|
       	t.references :received_messageable, :polymorphic => true
