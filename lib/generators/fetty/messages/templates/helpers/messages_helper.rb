@@ -38,8 +38,8 @@ module MessagesHelper
   		# and trash messages also will be deleted forever from the tables.
   		#* ==== 	:options => :inbox, :outbox, :trash	
   		#* ====	USAGE pass the parameter as boolean value
-  		#* ====	i.e : @user_obj.empty_mailbox(:trash => true)
-  		def empty_mailbox(options = {})
+  		#* ====	i.e : @user_obj.empty_messages(:trash => true)
+  		def empty_messages(options = {})
   			if options.empty?
   				self.sent_messages.delete_all
   				self.received_messages.delete_all

@@ -1,0 +1,5 @@
+Description:
+	The fetty:views generator creates a basic layout, stylesheet and
+	helper which will give some structure to starting your Rails app.
+	
+	Also able to convert your template views from ERB to HAML or vice versa.

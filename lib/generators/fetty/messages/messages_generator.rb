@@ -12,7 +12,7 @@ module Fetty
       argument :user_object_name, :type => :string, :banner => 'user object name', :default => "current_user"
       argument :user_attribute, :type => :string, :banner => 'display attribute name', :default => "email"
       
-      def generate_mailbox
+      def generate_messages
         # required to have User model first
         @model_path = "app/models/#{user_class_name.singularize.downcase}.rb"
         
@@ -34,12 +34,12 @@ private
       
       def copy_models
         copy_file 'models/active_record/message.rb', 'app/models/message.rb'
-        copy_file 'models/active_record/message_copies.rb', 'app/models/message_copy.rb'
+        copy_file 'models/active_record/message_copy.rb', 'app/models/message_copy.rb'
         
         inject_into_file @model_path, :after => "ActiveRecord::Base" do
             "\n\t has_many  :sent_messages, :as => :sent_messageable, :class_name => 'MessageCopy', :dependent => :destroy" +
             "\n\t has_many  :received_messages, :as => :received_messageable, :class_name => 'Message', :dependent => :destroy" +         
-            "\n\t include MailboxesHelper::Methods"
+            "\n\t include MessagesHelper::Methods"
         end
       end
       

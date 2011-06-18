@@ -122,6 +122,10 @@ table.pretty {
   border: solid 1px #AAA;
 }
 
+.pretty tr.alt { background-color: #EBEBEB; }
+
+.pretty tr.unread { font-weight: bold; }
+
 /* simple-form */
 .simple_form label {
   float: left;
