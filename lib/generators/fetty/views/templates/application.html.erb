@@ -19,6 +19,9 @@
 	  <%- if options.auth_links? -%>
       <div id="loginbox">
 	  <%% if user_signed_in? %>
+		<%- if options.inbox_links? -%>
+		<%%= link_to "inbox(#{current_user.inbox(:opened => false).count})", messages_path(:inbox), :id => "inbox-link" %> |
+		<%- end -%>	
 	    Signed in as <%%= current_user.email %> Not You?
 	    <%%= link_to "Sign out", destroy_user_session_path %>
 	  <%% else %>

@@ -26,14 +26,7 @@ protected
           gem name, options unless gemfile_content.include? name 
                 
           if bundle_need_refresh?
-            print_notes("Installing #{name}")
-            ::Bundler.with_clean_env do
-              unless options.empty?
-                system("gem install #{name} -v=#{options}")
-              else
-                system("gem install #{name}")
-              end
-            end
+            install_gem(name,options)
           end        
         rescue Exception => e
           raise e  
@@ -80,7 +73,20 @@ protected
         self.class.help(Thor::Base.shell.new)
         exit
       end
-
+      
+      def install_gem(name,options = {})
+        print_notes("Installing #{name}")
+        ::Bundler.with_clean_env do
+          unless options.empty?
+            system("gem install #{name} -v=#{options}")
+          else
+            system("gem install #{name}")
+          end
+        end
+      rescue Exception => e
+        raise e
+      end
+      
       def refresh_bundle
         print_notes('Refresh bundle')
         ::Bundler.with_clean_env do

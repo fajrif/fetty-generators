@@ -1,5 +1,10 @@
 module MessagesHelper
   module Methods
+
+      def has_unread_messages?
+        inbox.exists?(:opened => false)
+      end
+      
       # send message instance method
       def send_message?(subject, body, *recipients)
       	begin
@@ -23,13 +28,15 @@ module MessagesHelper
       end
 
       # retrieve all receiving messages
-      def inbox
-        self.received_messages.where(:deleted => false)
+      def inbox(options = {})
+        options[:deleted] = false
+        self.received_messages.where(options)
       end
 
       # retrieve all messages that being deleted (still in the trash but not yet destroyed)
-      def trash
-        self.received_messages.where(:deleted => true)
+      def trash(options = {})
+        options[:deleted] = true
+        self.received_messages.where(options)
       end
 
   		# to delete empty all of the messages  
@@ -52,8 +59,6 @@ module MessagesHelper
   			end
   		end
 
-  private 
-  		# this is the private segment	
   		def create_message_copy(subject, body, recipient)
   			msg = MessageCopy.create!(:recipient_id => recipient.id, :subject => subject, :body => body)
   			self.sent_messages << msg	

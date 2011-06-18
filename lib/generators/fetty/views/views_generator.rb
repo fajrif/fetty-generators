@@ -8,7 +8,7 @@ module Fetty
       
       class_option :layout_name, :desc => 'The layout name you wish to set.', :type => :string, :default => 'application'
       class_option :auth_links, :desc => 'Include Authentication links in your application layout.', :type => :boolean, :default => true
-      class_option :inbox_links, :desc => 'Include inbox links in your application layout.', :type => :boolean, :default => true
+      class_option :inbox_links, :desc => 'Include inbox links in your application layout.', :type => :boolean, :default => false
       class_option :search_box, :desc => 'Include search box at the top of the layout.', :type => :boolean, :default => false
       
       def generate_views

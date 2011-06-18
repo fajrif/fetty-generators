@@ -1,10 +1,11 @@
-<%= form_tag update_messages_path, :method => :put, :remote => true do %>
+<%= form_tag update_messages_path, :method => :post, :remote => true do %>
 	<table class="pretty" width="100%">
 		 <tbody>
 			<tr>
 				<td colspan="4">
 				<%= select_tag "option", options_for_select(@options) %>
 				<%= submit_tag "Apply to Selected" %>
+				<%= link_to "Empty #{@messagebox}", empty_messages_path(@messagebox), :confirm => "Are you sure want to delete all?", :method => :post %>
 				<%= hidden_field_tag :messagebox, @messagebox %>
 				</td>
 			</tr>

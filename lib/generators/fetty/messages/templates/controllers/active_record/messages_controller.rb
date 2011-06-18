@@ -62,6 +62,13 @@ class MessagesController < ApplicationController
 		redirect_to messages_url(params[:messagebox])	
 	end  
 	
+	def empty
+	 unless params[:messagebox].nil?
+	    <%= user_object_name.downcase %>.empty_messages(params[:messagebox].to_sym => true)
+	    redirect_to messages_url(params[:messagebox]), :notice => "Successfully delete all messages."
+	 end
+	end
+	
 	def token
 		query = "%" + params[:q] + "%"
 		recipients = <%= user_class_name.camelize %>.select("id,<%= user_attribute.downcase %>").where("<%= user_attribute.downcase %> like ?", query)

@@ -58,7 +58,7 @@ private
         copy_file "views/_messages.html.erb", "app/views/messages/_messages.html.erb"
         copy_file "views/_tabs_panel.html.erb", "app/views/messages/_tabs_panel.html.erb"
         copy_file "views/index.html.erb", "app/views/messages/index.html.erb"
-        copy_file "views/index.js.erb", "app/views/messages/index.js.erb"
+        template "views/index.js.erb", "app/views/messages/index.js.erb"
         copy_file "views/new.html.erb", "app/views/messages/new.html.erb"
         copy_file "views/show.html.erb", "app/views/messages/show.html.erb"
       end
@@ -71,12 +71,13 @@ private
       end
 	
       def add_routes
-       route 'get "/messages(/:messagebox)" => "messages#index", :as => "messages", :constraints => { :messagebox => /inbox|outbox|trash/ }'
-       route 'get "/messages/:messagebox/show/:id" => "messages#show", :as => "show_messages", :constraints => { :messagebox => /inbox|outbox|trash/ }'
-       route 'put "/messages/update" => "messages#update", :as => "update_messages"'
-       route 'post "/messages/create" => "messages#create", :as => "create_messages"'
-       route 'get "/messages/new" => "messages#new", :as => "new_messages"'
-       route 'get "/messages/token" => "messages#token", :as => "token_messages"'
+        route 'get "/messages(/:messagebox)" => "messages#index", :as => "messages", :constraints => { :messagebox => /inbox|outbox|trash/ }'
+        route 'get "/messages/:messagebox/show/:id" => "messages#show", :as => "show_messages", :constraints => { :messagebox => /inbox|outbox|trash/ }'
+        route 'post "/messages/create" => "messages#create", :as => "create_messages"'
+        route 'post "/messages/update" => "messages#update", :as => "update_messages"'
+        route 'post "/messages/empty/:messagebox" => "messages#empty", :as => "empty_messages"'
+        route 'get "/messages/new" => "messages#new", :as => "new_messages"'
+        route 'get "/messages/token" => "messages#token", :as => "token_messages"'
       end
 
       # FIXME: Should be proxied to ActiveRecord::Generators::Base
