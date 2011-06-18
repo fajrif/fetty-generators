@@ -2,6 +2,7 @@ require 'rubygems'
 require 'rubygems/command.rb'
 require 'rubygems/dependency_installer.rb'
 require 'rails/generators/base'
+require 'bundler'
 
 module Fetty
   module Generators
@@ -16,31 +17,29 @@ module Fetty
       end
 
 protected
-
-      def add_gem(name, options = {})
+                  
+      def add_gem(name, options = {})         
         gemfile = File.expand_path(destination_path("Gemfile"), __FILE__) 
         begin
           gemfile_content = File.read(gemfile) 
           File.open(gemfile, 'a') { |f| f.write("\n") } unless gemfile_content =~ /\n\Z/
           gem name, options unless gemfile_content.include? name 
-
-          test = `bundle check` 
-          unless test.include?("satisfied") 
-            print_notes("Installing #{name} gem")
-            Gem::Command.build_args = ARGV
-            inst = Gem::DependencyInstaller.new
-            begin
-              inst.install name, options
-            rescue 
-              print_notes("Exit Installation")
+                
+          if bundle_need_refresh?
+            print_notes("Installing #{name}")
+            ::Bundler.with_clean_env do
+              unless options.empty?
+                system("gem install #{name} -v=#{options}")
+              else
+                system("gem install #{name}")
+              end
             end
-          end
-  
+          end        
         rescue Exception => e
           raise e  
         end if File.exist?(gemfile) 
       end
-
+      
       def root_path(path)
         File.expand_path(File.join(File.dirname(__FILE__), 'fetty', path))
       end
@@ -80,6 +79,24 @@ protected
       def print_usage
         self.class.help(Thor::Base.shell.new)
         exit
+      end
+
+      def refresh_bundle
+        print_notes('Refresh bundle')
+        ::Bundler.with_clean_env do
+         `bundle install`
+        end
+      rescue Exception => e
+        raise e
+      end
+            
+      def bundle_need_refresh?
+        ::Bundler.with_clean_env do
+          `bundle check`
+        end
+        $? == 0 ? false : true
+      rescue Exception => e
+        raise e
       end
       
     end

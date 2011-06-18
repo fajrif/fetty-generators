@@ -31,7 +31,7 @@ module Fetty
         end        
       rescue Exception => e
         puts e.message
-        puts "Please run `bundle install`, then re-run the generators."
+        puts "Please run `bundle install`, then run again `rails g fetty:setup`"
       end
 
 private
