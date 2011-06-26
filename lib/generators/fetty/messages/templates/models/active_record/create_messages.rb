@@ -1,19 +1,24 @@
 class CreateMessages < ActiveRecord::Migration
   def self.up
     create_table :messages do |t|
-      	t.references :received_messageable, :polymorphic => true
-		t.integer :sender_id
-		t.string :subject
-		t.text :body
-		t.boolean :opened, :default => false
-		t.boolean :deleted, :default => false
-		t.timestamps
+      t.integer :user_id
+      t.integer :sender_id
+      t.integer :recipient_id
+      t.integer :subject_id
+      t.string :subject
+      t.text :content
+      t.boolean :opened, :default => false
+      t.boolean :deleted, :default => false
+      t.boolean :copies, :default => false
+      t.string :ancestry
+      t.timestamps
     end
 
-    add_index :messages, [:received_messageable_id, :sender_id], :name => "inbox_idx"
+    add_index :messages, [:user_id, :subject_id, :ancestry], :name => "messages_idx"
   end
 
   def self.down
+    drop_index :messages, "messages_idx"
     drop_table :messages
   end
 end

@@ -1,45 +1,56 @@
 <%= form_tag update_messages_path, :method => :post, :remote => true do %>
-	<table class="pretty" width="100%">
-		 <tbody>
-			<tr>
-				<td colspan="4">
-				<%= select_tag "option", options_for_select(@options) %>
-				<%= submit_tag "Apply to Selected" %>
-				<%= link_to "Empty #{@messagebox}", empty_messages_path(@messagebox), :confirm => "Are you sure want to delete all?", :method => :post %>
-				<%= hidden_field_tag :messagebox, @messagebox %>
-				</td>
-			</tr>
-			<tr>
-				<th><input type="checkbox" class="checkall" id="checkbox" name="checkbox"></th>
-	            <%- unless @messagebox == "outbox" -%>
-	            <th>From</th>
-	            <%- else -%>
-	            <th>To</th>
-	            <%- end -%>
-	            <th>Subject</th>
-	            <th>Date</th>
-	        </tr>
-	        <!-- check opened message first and then set alternate style -->
-	        <%- x = 0 -%>
-			<%- for msg in @messages -%>
-			<tr class="<%= ( (@messagebox != "outbox") ? ( msg.read? ? "" : "unread " ) : "" ) + ( ((x += 1) % 2 == 0) ? "alt" : "") -%>">
-				<td><%= check_box_tag "[messages][]", msg.id %></td>
-				<%- unless @messagebox == "outbox" -%>
-	          	<td><%= msg.from.email %></td>
-	            <%- else -%>
-	            <td><%= msg.to.email %></td>
-	            <%- end -%>
-	            <td><%= link_to msg.subject, show_messages_path(@messagebox, msg.id) %></td>
-	            <td title='<%= msg.created_at.strftime("%a, %b %d, %Y at %I:%M %p") %>'><%= msg.created_at.strftime( ((msg.created_at < 1.days.ago) ? "%b %d, %Y" : "%I:%M %p")) %></td>
-	        </tr>
-			<%- end -%>
-			<tr>
-				<td colspan="4"><%= paginate @messages %></td>
-			</tr>
-		</tbody>	
-	</table>
-<%- end -%>	
-	
+<table class="pretty" width="100%">
+	 <tbody>
+		<tr>
+			<td class="middle">
+				<input type="checkbox" class="checkall" id="checkbox" name="checkbox">
+			</td>
+			<td colspan="3">
+			<%= select_tag "option", options_for_select(@options) %>
+			<%= submit_tag "Apply to Selected" %>
+			<%= link_to "Empty #{@messagebox}", empty_messages_path(@messagebox), :confirm => "Are you sure want to delete all?", :method => :post %>
+			<%= hidden_field_tag :messagebox, @messagebox %>
+			</td>
+		</tr>
+<!-- this will render the messages -->
+<%- 
+		x = 0 
+		@messages.reverse_each do |message|
+			convTree = message.root.subtree
+			
+			flag = convTree.where(:copies => false).empty?
+			display_names = convTree.collect do |c|
+				unless flag
+					c.copies ? "me" : c.from.email
+				else
+					c.to.email
+				end
+			end.uniq.join(", ").concat( convTree.count > 1 ? " (#{convTree.count})" : "")
+			
+			style = ""
+			flag = convTree.where(:copies => false, :opened => false).empty?
+			unless flag
+				style = "unread "
+			end
+			style << "alt" if ((x += 1) % 2 == 0)
+			
+			title = convTree.last.created_at.strftime("%a, %b %d, %Y at %I:%M %p")
+			created_at = convTree.last.created_at.strftime( ((convTree.last.created_at < 1.days.ago) ? "%b %d, %Y" : "%I:%M %p"))
+		-%>
+		<tr class="<%= style -%>">
+			<td><%= check_box_tag "[messages][]", message.id %></td>
+		    <td><%= display_names %></td>
+		    <td><%= link_to message.subject, show_messages_path(@messagebox, message.id) %></td>
+		    <td title='<%= title %>'><%= created_at %></td>
+		</tr>
+		<%- end -%>
+<!-- END MESSAGES -->
+		<tr>
+			<td colspan="4"><%= paginate @messages %></td>
+		</tr>
+	</tbody>
+</table>
+<%- end -%>
 <p>
 	<%= link_to "Compose New Message", new_messages_path %>
 </p>

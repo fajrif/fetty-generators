@@ -37,3 +37,51 @@ html ul.tabs li.active, html ul.tabs li.active a:hover  { /*--Makes sure that th
 	border-bottom: 1px solid #fff; /*--Makes the active tab look like it's connected with its content--*/
 }
 
+.message {
+  margin: 8px 0;
+  padding: 8px 15px;
+  border: solid 1px #999;
+  width: 300px;
+  border-radius: 12px;
+  background-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0, #CCC),
+      color-stop(1, #F5F5F5)
+  );
+  background-image: -moz-linear-gradient(
+      center bottom,
+      #CCC 0%,
+      #F5F5F5 100%
+  );
+}
+
+.message .content a {
+  color: #000;
+  text-decoration: none;
+}
+
+.message .created_at {
+  color: #555;
+  font-size: 12px;
+  float: right;
+}
+
+.message .actions {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.message .actions a {
+  text-decoration: none;
+}
+
+.nested_messages {
+  margin-left: 30px;
+}
+
+/*.nested_messages .nested_messages .nested_messages .nested_messages {
+  margin-left: 0;
+}
+*/

@@ -6,30 +6,30 @@
 	<%= render :partial => "tabs_panel" %>
 	<div id="tabs-messages" style="padding-top:50px;">
 		<%= form_tag create_messages_path, :method => :post do %>
-			<h3><%= @message.subject %></h3>
-			<div>
-				<h5><%= raw @message_description %></h5>	
-				<p><%= @message.body %></p>
-			</div>
-		<% unless params[:messagebox] == "outbox" %>
+			<h3><%= @messages.last.subject %></h3>
+			
+			  <% for msg in @messages %>
+		    	<div class="message">
+				  <div class="created_at"><%= msg.created_at.strftime("%B %d, %Y") %></div>
+				  <div class="content">
+					<strong><%= msg.from.email %></strong><br />
+				    <%= msg.content %>
+				  </div>
+				</div>
+			  <% end %>
+			
 			<p>
-			    <%= label_tag :body, "Reply Message" %><br />
-				<%= text_area_tag :body, nil, :rows => 20, :cols => 55 %>
+			    <%= label_tag :content, "Reply Message" %><br />
+				<%= text_area_tag :content, nil, :rows => 20, :cols => 55 %>
 			</p>
 			<p>
-				<%= submit_tag "Reply", :class => "submit" %>
+				<%= submit_tag "Reply" %>
 			</p>
 			<%= hidden_field_tag :user_tokens, @user_tokens %>
-			<%= hidden_field_tag :subject, @message.subject %>
-		<% end -%>
+			<%= hidden_field_tag :subject, @messages.last.subject %>
+			<%= hidden_field_tag :subject_id, @messages.last.subject_id %>
+			<%= hidden_field_tag :parent_id, @parent_id %>
 		<% end -%>
     </div>   
 </div>
-
-
-
-
-
-
-
 

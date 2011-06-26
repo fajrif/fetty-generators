@@ -8,14 +8,14 @@ module Fetty
     class MessagesGenerator < Base
       include Rails::Generators::Migration
       
-      argument :user_class_name, :type => :string, :banner => 'user model', :default => "User"
-      argument :user_object_name, :type => :string, :banner => 'user object name', :default => "current_user"
-      argument :user_attribute, :type => :string, :banner => 'display attribute name', :default => "email"
+      # argument :user_class_name, :type => :string, :banner => 'user model', :default => "User"
+      # argument :user_object_name, :type => :string, :banner => 'user object name', :default => "current_user"
+      # argument :user_attribute, :type => :string, :banner => 'display attribute name', :default => "email"
       
       def generate_messages
         # required to have User model first
-        @model_path = "app/models/#{user_class_name.singularize.downcase}.rb"
-        
+        # @model_path = "app/models/#{user_class_name.singularize.downcase}.rb"
+        @model_path = "app/models/user.rb"
         if file_exists?(@model_path)
           copy_models
           copy_migrations
@@ -34,22 +34,19 @@ private
       
       def copy_models
         copy_file 'models/active_record/message.rb', 'app/models/message.rb'
-        copy_file 'models/active_record/message_copy.rb', 'app/models/message_copy.rb'
         
         inject_into_file @model_path, :after => "ActiveRecord::Base" do
-            "\n\t has_many  :sent_messages, :as => :sent_messageable, :class_name => 'MessageCopy', :dependent => :destroy" +
-            "\n\t has_many  :received_messages, :as => :received_messageable, :class_name => 'Message', :dependent => :destroy" +         
-            "\n\t include MessagesHelper::Methods"
+            "\n\t has_many :messages" +
+            "\n\t include MessagesHelper::Model::UserInstanceMethods"
         end
       end
       
       def copy_migrations
 	      migration_template 'models/active_record/create_messages.rb', 'db/migrate/create_messages.rb'
-	      migration_template 'models/active_record/create_message_copies.rb', 'db/migrate/create_message_copies.rb'
 	    end
       
       def copy_controller_and_helper
-        template 'controllers/active_record/messages_controller.rb', 'app/controllers/messages_controller.rb'
+        copy_file 'controllers/active_record/messages_controller.rb', 'app/controllers/messages_controller.rb'
         copy_file 'helpers/messages_helper.rb', 'app/helpers/messages_helper.rb'
       end
 
@@ -58,7 +55,7 @@ private
         copy_file "views/_messages.html.erb", "app/views/messages/_messages.html.erb"
         copy_file "views/_tabs_panel.html.erb", "app/views/messages/_tabs_panel.html.erb"
         copy_file "views/index.html.erb", "app/views/messages/index.html.erb"
-        template "views/index.js.erb", "app/views/messages/index.js.erb"
+        copy_file "views/index.js.erb", "app/views/messages/index.js.erb"
         copy_file "views/new.html.erb", "app/views/messages/new.html.erb"
         copy_file "views/show.html.erb", "app/views/messages/show.html.erb"
       end
@@ -78,6 +75,7 @@ private
         route 'post "/messages/empty/:messagebox" => "messages#empty", :as => "empty_messages"'
         route 'get "/messages/new" => "messages#new", :as => "new_messages"'
         route 'get "/messages/token" => "messages#token", :as => "token_messages"'
+                
       end
 
       # FIXME: Should be proxied to ActiveRecord::Generators::Base
