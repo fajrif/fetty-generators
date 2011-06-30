@@ -1,8 +1,7 @@
 module MessagesHelper
 
-  module Model
-      module UserInstanceMethods
-
+  module Messages
+    module UserMethods
         def send_message?(options)
           send_message(options)
           true                        
@@ -66,8 +65,6 @@ module MessagesHelper
             self.trash.delete_all
           end
         end
-
-      end
-
+    end
   end
 end

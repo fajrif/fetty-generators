@@ -17,6 +17,7 @@ module Fetty
         # @model_path = "app/models/#{user_class_name.singularize.downcase}.rb"
         @model_path = "app/models/user.rb"
         if file_exists?(@model_path)
+          add_gem("ancestry")
           copy_models
           copy_migrations
           copy_controller_and_helper
@@ -37,7 +38,7 @@ private
         
         inject_into_file @model_path, :after => "ActiveRecord::Base" do
             "\n\t has_many :messages" +
-            "\n\t include MessagesHelper::Model::UserInstanceMethods"
+            "\n\t include MessagesHelper::Messages::UserMethods"
         end
       end
       

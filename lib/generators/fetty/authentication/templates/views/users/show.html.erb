@@ -1,0 +1,18 @@
+<% title "User Profile" %>
+
+<p>
+  <strong>Username:</strong>
+  <%= @user.username %>
+</p>
+<p>
+  <strong>Email:</strong>
+  <%= @user.email %>
+</p>
+<p>
+  <strong>Password:</strong>
+  <%= @user.password %>
+</p>
+
+<p>
+  <%= link_to "Edit", edit_user_session_path %> 
+</p>
