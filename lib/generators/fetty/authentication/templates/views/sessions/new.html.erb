@@ -10,13 +10,13 @@
     <%= password_field_tag :password %>
   </p>
   <p>
-    <%= label_tag :remember_me %><br />
     <%= check_box_tag :remember_me %>
+	<%= label_tag :remember_me %>
   </p>
   <p><%= submit_tag "Sign in" %></p>
 <% end %>
 
 <p>
 	Don't have an account? <%= link_to "Sign up", new_user_registration_path %><br/>
-	Can't access your account? <%= link_to "Account recovery", new_user_recovery_path %>
+	Can't access your account? <%= link_to "Forgot my password", new_user_forgot_password_path %>
 </p>

@@ -53,23 +53,25 @@ private
       
       def edit_application_controller
         inject_into_file "app/controllers/application_controller.rb", :after => "ActionController::Base" do
-            "\n\t include SessionsHelper::Authentications::SessionMethods" +
+            "\n\t include SessionsAuthentication" +
             "\n\t before_filter :authenticate_user!"
         end
       end
       
       def add_routes
-        route 'get "/sign_up" => "users#new", :as => "new_user_registration"'
-        route 'post "/users/create" => "users#create", :as => "create_user_registration"'
-        route 'get "/users/show" => "users#show", :as => "show_user_session"'
-        route 'get "/users/edit" => "users#edit", :as => "edit_user_session"'
-        route 'post "/users/update" => "users#update", :as => "update_user_session"'
-        route 'get "/sign_in" => "sessions#new", :as => "new_user_session"'
-        route 'post "/sessions/create" => "sessions#create", :as => "create_user_session"'
-        route 'get "/user_recovery" => "sessions#new_recovery", :as => "new_user_recovery"'
-        route 'post "/sessions/recovery" => "sessions#recovery", :as => "create_user_recovery"'
-        route 'get "/sign_out" => "sessions#destroy", :as => "destroy_user_session"'
-        route 'get "/users/activate/:id/:code" => "users#activate", :as => "update_user_activation"'
+         route 'get "/sign_up" => "users#new", :as => "new_user_registration"'
+         route 'post "/users/create" => "users#create", :as => "create_user_registration"'
+         route 'get "/users/show" => "users#show", :as => "show_user_session"'
+         route 'get "/users/edit" => "users#edit", :as => "edit_user_session"'
+         route 'post "/users/update" => "users#update", :as => "update_user_session"'
+         route 'get "/users/activate/:id/:token" => "users#activate", :as => "update_user_activation"'
+         route 'get "/forgot_password" => "users#new_forgot_password", :as => "new_user_forgot_password"'
+         route 'post "/users/forgot_password" => "users#forgot_password", :as => "create_user_forgot_password"'
+         route 'get "/users/new_reset_password/:id/:token" => "users#new_reset_password", :as => "new_user_reset_password"'
+         route 'post "/users/reset_password" => "users#reset_password", :as => "create_user_reset_password"'
+         route 'get "/sign_in" => "sessions#new", :as => "new_user_session"'
+         route 'post "/sessions/create" => "sessions#create", :as => "create_user_session"'
+         route 'get "/sign_out" => "sessions#destroy", :as => "destroy_user_session"'
       end
       
       

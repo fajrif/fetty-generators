@@ -1,10 +1,9 @@
 class UserMailer < ActionMailer::Base
   default :from => "from@example.com"
 
-  def user_recovery(user,random_password)
+  def user_forgot_password(user)
     @user = user
-    @random_password = random_password
-    mail(:to => user.email, :subject => "Account Recovery")
+    mail(:to => user.email, :subject => "Reset Password Instructions")
   end
   
   def user_activation(user)
