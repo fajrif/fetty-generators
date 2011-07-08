@@ -125,12 +125,7 @@ private
         opt = ask("=> Would you like install fetty:authentication ? [yes]")
         if opt == "yes" || opt.blank?
           print_notes("Installing fetty:authentication")
-          if options[:mongoid]
-            `rails g fetty:authentication --mongoid`
-          else
-            `rails g fetty:authentication`
-          end
-
+          generate("fetty:authentication")
         end
       rescue Exception => e
         raise e

@@ -8,13 +8,10 @@ module Fetty
     class AuthenticationGenerator < Base
       include Rails::Generators::Migration
       
-      class_option :mongoid, :desc => 'use mongoid for your ORM', :type => :boolean, :default => false
-      
       def generate_authentication
         
         unless file_exists?("app/models/user.rb")
-          @orm = options[:mongoid] ? 'mongoid' : 'active_record'
-          `rails g fetty:setup --only mongoid` if options[:mongoid] && !gemfile_included?("mongoid")
+          @orm = gemfile_included?("mongoid") ? 'mongoid' : 'active_record'
           add_gem("bcrypt-ruby", :require => "bcrypt")
           generate_users
           generate_sessions
