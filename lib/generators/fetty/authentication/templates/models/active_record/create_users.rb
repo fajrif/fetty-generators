@@ -5,8 +5,8 @@ class CreateUsers < ActiveRecord::Migration
       t.string :email
       t.string :password_hash
       t.string :password_salt
-      t.string :activation_code
-      t.boolean :activated, :default => false
+      t.datetime :activated_at
+      t.string :token
       t.timestamps
     end
   end

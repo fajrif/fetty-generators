@@ -11,40 +11,50 @@ module Fetty
       def self.source_root
         @_fetty_source_root = File.expand_path(File.join(File.dirname(__FILE__), 'fetty', generator_name, 'templates'))
       end
-
+      
       def self.banner
         "rails generate fetty:#{generator_name} #{self.arguments.map{ |a| a.usage }.join(' ')} [options]"
       end
-
+      
 protected
-                  
-      def add_gem(name, options = {})         
-        gemfile = File.expand_path(destination_path("Gemfile"), __FILE__) 
+      
+      def add_gem(name, options = {})
+        gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
         begin
-          gemfile_content = File.read(gemfile) 
+          gemfile_content = File.read(gemfile)
           File.open(gemfile, 'a') { |f| f.write("\n") } unless gemfile_content =~ /\n\Z/
           gem name, options unless gemfile_content.include? name 
-                
+          
           if bundle_need_refresh?
             install_gem(name,options)
-          end        
+          end
         rescue Exception => e
-          raise e  
-        end if File.exist?(gemfile) 
+          raise e
+        end if File.exist?(gemfile)
+      end
+      
+      def gemfile_included?(name)
+        gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
+        if File.exist?(gemfile)
+          gemfile_content = File.read(gemfile)
+          gemfile_content.include?(name) ? true : false
+        end
+      rescue Exception => e
+        raise e
       end
       
       def root_path(path)
         File.expand_path(File.join(File.dirname(__FILE__), 'fetty', path))
       end
-
+      
       def destination_path(path)
         File.join(destination_root, path)
       end  
-
+      
       def file_exists?(path)
         File.exist? destination_path(path)
       end
-
+      
       def destroy(path)
         begin
           if file_exists?(path)
@@ -55,7 +65,7 @@ protected
           puts e.message
         end
       end
-
+      
       def extract(filepath,destinationpath,foldername)
         begin
           print_notes("Extracting #{filepath}")
@@ -64,11 +74,11 @@ protected
           puts e.message
         end
       end
-
+      
       def print_notes(notes)
         puts "*** NOTES : #{notes} ***" 
       end
-
+      
       def print_usage
         self.class.help(Thor::Base.shell.new)
         exit
@@ -95,7 +105,7 @@ protected
       rescue Exception => e
         raise e
       end
-            
+      
       def bundle_need_refresh?
         ::Bundler.with_clean_env do
           `bundle check`

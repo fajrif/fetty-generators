@@ -3,6 +3,8 @@ class User
   include Mongoid::Timestamps
   include UsersAuthentication
   
+  attr_accessible :username, :email, :password, :password_confirmation, :activated_at, :token
+  
   field :username, :type => String
   field :email, :type => String
   field :password_hash, :type => String

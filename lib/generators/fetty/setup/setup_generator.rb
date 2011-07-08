@@ -16,7 +16,6 @@ module Fetty
       
       # optional
       class_option :mongoid, :desc => 'Install mongoid for replacing your ORM', :type => :boolean, :default => false
-      class_option :devise, :desc => 'Install devise for authentication', :type => :boolean, :default => false 
       class_option :thinking_sphinx, :desc => 'Install thinking-sphinx for full text search', :type => :boolean, :default => false
       
       class_option :only, :desc => 'Install gems only these mentioned.', :type => :array, :default => []
@@ -28,34 +27,20 @@ module Fetty
           if opt == "yes" || opt.blank?
             send("setup_#{gems}")
           end
-        end        
+        end
+        install_fetty_authentication
+        install_fetty_messages
       rescue Exception => e
         puts e.message
         puts "Please run `bundle install`, then run again `rails g fetty:setup`"
       end
 
 private
-    
+      
       def setup_mongoid
         add_gem("bson_ext")
         add_gem("mongoid")
         generate("mongoid:config")
-      rescue Exception => e
-        raise e
-      end
-      
-      def setup_devise
-         add_gem("devise")
-         generate("devise:install")
-         
-         model_name = ask("Would you like the user model to be called? [user]")
-         model_name = "user" if model_name.blank?
-         generate("devise", model_name)
-
-         print_notes("modify app/controllers/application_controller.rb")
-         inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base" do
-           "\n   before_filter :authenticate_user!"
-         end 
       rescue Exception => e
         raise e
       end
@@ -135,6 +120,32 @@ private
       rescue Exception => e
         raise e
       end
+      
+      def install_fetty_authentication
+        opt = ask("=> Would you like install fetty:authentication ? [yes]")
+        if opt == "yes" || opt.blank?
+          print_notes("Installing fetty:authentication")
+          if options[:mongoid]
+            `rails g fetty:authentication --mongoid`
+          else
+            `rails g fetty:authentication`
+          end
+
+        end
+      rescue Exception => e
+        raise e
+      end
+      
+      def install_fetty_messages
+        opt = ask("=> Would you like install fetty:messages ? [yes]")
+        if opt == "yes" || opt.blank?
+          print_notes("Installing fetty:messages")
+          generate("fetty:messages")
+        end
+      rescue Exception => e
+        raise e
+      end
+      
       
     end
   end

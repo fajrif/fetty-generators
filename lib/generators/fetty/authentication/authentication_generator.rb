@@ -7,48 +7,55 @@ module Fetty
   module Generators
     class AuthenticationGenerator < Base
       include Rails::Generators::Migration
-            
+      
+      class_option :mongoid, :desc => 'use mongoid for your ORM', :type => :boolean, :default => false
+      
       def generate_authentication
-        # @model_path = "app/models/#{user_class_name.singularize.downcase}.rb"
-        # if file_exists?(@model_path)
-        # else
-        #   puts "You don't have User model, please install some authentication first!"
-        # end
         
-        add_gem("bcrypt-ruby")
-        generate_users
-        generate_sessions
-        generate_mailers
-        edit_application_controller
-        add_routes
+        unless file_exists?("app/models/user.rb")
+          @orm = options[:mongoid] ? 'mongoid' : 'active_record'
+          `rails g fetty:setup --only mongoid` if options[:mongoid] && !gemfile_included?("mongoid")
+          add_gem("bcrypt-ruby", :require => "bcrypt")
+          generate_users
+          generate_sessions
+          generate_mailers
+          edit_application_controller
+          add_routes
+        else
+          puts "You already have User model, please remove first otherwise the authentication will not work!"
+        end
         
       rescue Exception => e
           puts e.message
       end
 
-private 
+private
       
       def generate_users
-        copy_file 'controllers/active_record/users_controller.rb', 'app/controllers/users_controller.rb'
-        copy_file 'helpers/users_helper.rb', 'app/helpers/users_helper.rb'
-        copy_file 'models/active_record/user.rb', 'app/models/user.rb'        
-        migration_template 'models/active_record/create_users.rb', 'db/migrate/create_users.rb'
+        copy_file "controllers/users_controller.rb", "app/controllers/users_controller.rb"
+        copy_file "helpers/users_helper.rb", "app/helpers/users_helper.rb"
+        copy_file "models/#{@orm}/user.rb", "app/models/user.rb"
+        migration_template "models/#{@orm}/create_users.rb", "db/migrate/create_users.rb" if @orm == 'active_record'
+        copy_file "lib/users_authentication.rb", "lib/users_authentication.rb"
         copy_file "views/users/new.html.erb", "app/views/users/new.html.erb"
+        copy_file "views/users/new_forgot_password.html.erb", "app/views/users/new_forgot_password.html.erb"
+        copy_file "views/users/new_reset_password.html.erb", "app/views/users/new_reset_password.html.erb"
         copy_file "views/users/edit.html.erb", "app/views/users/edit.html.erb"
         copy_file "views/users/show.html.erb", "app/views/users/show.html.erb"
       end
       
       def generate_sessions
-        copy_file 'controllers/active_record/sessions_controller.rb', 'app/controllers/sessions_controller.rb'
-        copy_file 'helpers/sessions_helper.rb', 'app/helpers/sessions_helper.rb'
+        copy_file "controllers/sessions_controller.rb", "app/controllers/sessions_controller.rb"
+        copy_file "helpers/sessions_helper.rb", "app/helpers/sessions_helper.rb"
+        copy_file "lib/sessions_authentication.rb", "lib/sessions_authentication.rb"
         copy_file "views/sessions/new.html.erb", "app/views/sessions/new.html.erb"
-        copy_file "views/sessions/new.html.erb", "app/views/sessions/new_recovery.html.erb"
       end
       
       def generate_mailers
-        copy_file 'mailers/user_mailer.rb', 'app/mailers/user_mailer.rb'
+        copy_file "mailers/setup_mail.rb", "app/mailers/setup_mail.rb"
+        copy_file "mailers/user_mailer.rb", "app/mailers/user_mailer.rb"
         copy_file "views/user_mailer/user_activation.text.erb", "app/views/user_mailer/user_activation.text.erb"
-        copy_file "views/user_mailer/user_recovery.text.erb", "app/views/user_mailer/user_recovery.text.erb"        
+        copy_file "views/user_mailer/user_forgot_password.text.erb", "app/views/user_mailer/user_forgot_password.text.erb"
       end
       
       def edit_application_controller
