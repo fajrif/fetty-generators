@@ -21,10 +21,10 @@ class SessionsController < ApplicationController
     flash.now[:alert] = e.message
     render :action => 'new'
   end
-
+  
   def destroy
     set_session_or_cookies(nil)
-    redirect_to root_url, :notice => "You have been logged out."
+    redirect_to root_url, :notice => "Successfully sign out."
   end
   
 end

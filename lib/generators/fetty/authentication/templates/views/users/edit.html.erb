@@ -1,6 +1,6 @@
 <% title "Edit Profile" %>
 
-<%= form_tag update_user_session_path do %>
+<%= form_tag user_path(@user), :method => :put do %>
   <p>
     <%= label_tag :username %><br />
     <%= text_field_tag :username, @user.username %>

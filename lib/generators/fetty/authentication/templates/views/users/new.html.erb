@@ -1,6 +1,6 @@
 <% title "Sign up" %>
 
-<%= form_tag create_user_registration_path do %>
+<%= form_tag users_path do %>
   <p>
     <%= label_tag :username %><br />
     <%= text_field_tag :username %>
@@ -20,4 +20,4 @@
   <p><%= submit_tag "Sign up" %></p>
 <% end %>
 
-<p>Already have an account? <%= link_to "Sign in", new_user_session_path %>.</p>
+<p>Already have an account? <%= link_to "Sign in", new_session_path %>.</p>

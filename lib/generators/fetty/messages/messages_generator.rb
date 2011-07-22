@@ -8,6 +8,10 @@ module Fetty
     class MessagesGenerator < Base
       include Rails::Generators::Migration
       
+      # have to inject this tag on application.html.erb layout
+      # <%= link_to "inbox(#{current_user.inbox(:opened => false).count})", messages_path(:inbox), :id => "inbox-link" %> |
+      
+      
       def generate_messages
         @model_path = "app/models/user.rb"
         if file_exists?(@model_path)

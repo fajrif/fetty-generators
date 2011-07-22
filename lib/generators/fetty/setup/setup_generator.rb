@@ -158,6 +158,7 @@ private
         `guard init cucumber`
         `guard init rspec`
         
+        print_notes("Please make sure you already install growl and growlnotify!!")
       rescue Exception => e
         raise e 
       end

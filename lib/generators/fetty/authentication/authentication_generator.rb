@@ -15,6 +15,7 @@ module Fetty
           add_gem("bcrypt-ruby", :require => "bcrypt")
           generate_users
           generate_sessions
+          generate_reset_passwords
           generate_mailers
           edit_application_controller
           must_load_lib_directory
@@ -26,7 +27,7 @@ module Fetty
       rescue Exception => e
           puts e.message
       end
-
+      
 private
       
       def generate_users
@@ -49,9 +50,16 @@ private
         copy_file "views/sessions/new.html.erb", "app/views/sessions/new.html.erb"
       end
       
+      def generate_reset_passwords
+        copy_file "controllers/reset_passwords_controller.rb", "app/controllers/reset_passwords_controller.rb"
+        copy_file "helpers/reset_passwords_helper.rb", "app/helpers/reset_passwords_helper.rb"
+        copy_file "views/reset_passwords/new.html.erb", "app/views/reset_passwords/new.html.erb"
+        copy_file "views/reset_passwords/edit.html.erb", "app/views/reset_passwords/edit.html.erb"
+      end
+      
       def generate_mailers
         copy_file "mailers/setup_mail.rb", "app/mailers/setup_mail.rb"
-        copy_file "mailers/user_mailer.rb", "app/mailers/user_mailer.rb"
+        copy_file "mailers/user_mailer.rb", "config/initializers/user_mailer.rb"
         copy_file "views/user_mailer/user_activation.text.erb", "app/views/user_mailer/user_activation.text.erb"
         copy_file "views/user_mailer/user_forgot_password.text.erb", "app/views/user_mailer/user_forgot_password.text.erb"
       end
@@ -64,19 +72,17 @@ private
       end
       
       def add_routes
-         route 'get "/sign_up" => "users#new", :as => "new_user_registration"'
-         route 'post "/users/create" => "users#create", :as => "create_user_registration"'
-         route 'get "/users/show" => "users#show", :as => "show_user_session"'
-         route 'get "/users/edit" => "users#edit", :as => "edit_user_session"'
-         route 'post "/users/update" => "users#update", :as => "update_user_session"'
-         route 'get "/users/activate/:id/:token" => "users#activate", :as => "update_user_activation"'
-         route 'get "/forgot_password" => "users#new_forgot_password", :as => "new_user_forgot_password"'
-         route 'post "/users/forgot_password" => "users#forgot_password", :as => "create_user_forgot_password"'
-         route 'get "/users/new_reset_password/:id/:token" => "users#new_reset_password", :as => "new_user_reset_password"'
-         route 'post "/users/reset_password" => "users#reset_password", :as => "create_user_reset_password"'
-         route 'get "/sign_in" => "sessions#new", :as => "new_user_session"'
-         route 'post "/sessions/create" => "sessions#create", :as => "create_user_session"'
-         route 'get "/sign_out" => "sessions#destroy", :as => "destroy_user_session"'
+         inject_into_file "config/routes.rb", :after => "Application.routes.draw do" do
+           "\n\t resources :users, :except => [:index] do" +
+           "\n\t   collection do" +
+           "\n\t     get 'activate/:id/:token' => 'users#activate', :as => 'activate'" +
+           "\n\t     resource :session, :only => [:new, :destroy, :create]" +
+           "\n\t     resource :reset_password, :only => [:new, :create, :update] do" +
+           "\n\t       get ':id/:token' => 'reset_passwords#edit', :on => :collection, :as => 'edit'" +
+           "\n\t     end" +
+           "\n\t   end" +
+           "\n\t end"
+         end
       end
       
       

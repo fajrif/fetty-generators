@@ -12,7 +12,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(:username => params[:username], :email => params[:email], :password => params[:password], :password_confirmation => params[:password_confirmation])
     if @user.save
-      redirect_to new_user_session_url, :notice => "Activation link has been sent to your email. Please activate first!"
+      redirect_to new_session_url, :notice => "Activation link has been sent to your email. Please activate first!"
     else
       raise "Unable to create user account."
     end
@@ -49,48 +49,7 @@ class UsersController < ApplicationController
     end
   rescue Exception => e
     set_session_or_cookies(nil)
-    redirect_to new_user_session_url, :alert => e.message
-  end
-  
-  def new_forgot_password
-  end
-
-  def forgot_password
-    if user = User.first(:conditions => { :username => params[:login] }) || User.first(:conditions => { :email => params[:login] })
-      if user.activated?
-        user.send_forgot_password_instructions!
-        flash.now[:notice] = "We've sent an email to #{user.email} containing instructions on how to reset your password."
-        render :action => 'new_forgot_password'
-      else
-        raise "Account has never been activated, please activate your account first before resetting your password."
-      end
-    else
-      raise "Could not find any account with that username / email address."
-    end
-  rescue Exception => e
-    flash.now[:alert] = e.message
-    render :action => 'new_forgot_password'
-  end
-
-  def new_reset_password
-    unless @user = User.first(:conditions => {:id => params[:id], :token => params[:token]})
-      redirect_to new_user_forgot_password_url, :alert => "Unable to find an account, Please follow the URL from your email / send the new reset instructions!"
-    end
-  end
-  
-  def reset_password
-    if @user = User.first(:conditions => {:id => params[:id], :token => params[:token]})
-      if @user.reset_password(params[:password],params[:password_confirmation]) == UsersAuthentication::Status::Valid
-        redirect_to new_user_session_url, :notice => "Your password was successfully updated, Please login using your new password!"
-      else
-        raise "Unable to reset your password!"
-      end
-    else
-      raise "Unable to find an account, Please follow the URL from your email / send the new reset instructions!"
-    end
-  rescue Exception => e
-    flash.now[:alert] = e.message
-    render :action => 'new_reset_password'
+    redirect_to new_session_url, :alert => e.message
   end
   
 end

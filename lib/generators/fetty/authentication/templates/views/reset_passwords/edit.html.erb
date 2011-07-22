@@ -1,6 +1,6 @@
 <% title "Reset your Password" %>
 
-<%= form_tag create_user_reset_password_path do %>
+<%= form_tag reset_password_path, :method => :put do %>
 	<%= hidden_field_tag :id, @user.id %>
 	<%= hidden_field_tag :token, @user.token %>
 	<p>
@@ -15,5 +15,5 @@
 <% end %>
 
 <p>
-	I already remember my password! <%= link_to "Sign in", new_user_session_path %>
+	I already remember my password! <%= link_to "Sign in", new_session_path %>
 </p>

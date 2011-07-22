@@ -14,7 +14,7 @@ module SessionsAuthentication
   
   def authenticate_user!
     unless user_signed_in?
-      redirect_to new_user_session_url, :alert => "You must sign in first before accessing this page."
+      redirect_to new_session_url, :alert => "You must sign in first before accessing this page."
     end
   end
   
@@ -43,7 +43,7 @@ module SessionsAuthentication
   end
   
   def redirect_to_target_or_default_url(default = root_url)
-    if request.env["HTTP_REFERER"].blank? || request.env["HTTP_REFERER"] == new_user_session_url
+    if request.env["HTTP_REFERER"].blank? || request.env["HTTP_REFERER"] == new_session_url
       default
     else 
       request.env["HTTP_REFERER"]
