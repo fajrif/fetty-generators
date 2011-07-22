@@ -19,26 +19,23 @@ module Fetty
 protected
       
       def add_gem(name, options = {})
-        gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
-        begin
+        unless gemfile_included? name 
+          gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
           gemfile_content = File.read(gemfile)
           File.open(gemfile, 'a') { |f| f.write("\n") } unless gemfile_content =~ /\n\Z/
-          gem name, options unless gemfile_content.include? name 
+          
+          gem name, options
           
           if bundle_need_refresh?
             install_gem(name,options)
           end
-        rescue Exception => e
-          raise e
-        end if File.exist?(gemfile)
+        end
+      rescue Exception => e
+        raise e
       end
       
       def gemfile_included?(name)
-        gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
-        if File.exist?(gemfile)
-          gemfile_content = File.read(gemfile)
-          gemfile_content.include?(name) ? true : false
-        end
+        file_contains?("Gemfile",name)
       rescue Exception => e
         raise e
       end
@@ -114,6 +111,29 @@ protected
       rescue Exception => e
         raise e
       end
+      
+      def file_contains?(filename,check_string)
+        file = File.expand_path(destination_path(filename), __FILE__)
+        if File.exist?(file)
+          file_content = File.read(app)
+          file_content.include?(check_string) ? true : false
+        else
+          false
+        end
+      rescue Exception => e
+        raise e 
+      end
+      
+      def must_load_lib_directory
+        unless file_contains?("config/application.rb",'config.autoload_paths += %W(#{config.root}/lib)')
+          inject_into_file "config/application.rb", :after => "Rails::Application" do
+            '\n\t config.autoload_paths += %W(#{config.root}/lib)'
+          end
+        end
+      rescue Exception => e
+        raise e 
+      end
+      
       
     end
   end

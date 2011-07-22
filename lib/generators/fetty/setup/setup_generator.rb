@@ -12,12 +12,11 @@ module Fetty
       class_option :kaminari, :desc => 'Install kaminari for pagination', :type => :boolean, :default => true 
       class_option :ckeditor, :desc => 'Install ckeditor for WYSIWYG editor', :type => :boolean, :default => true
       class_option :meta_search, :desc => 'Install meta_search for ActiveRecord searching', :type => :boolean, :default => true
-      class_option :faker, :desc => 'Install faker to help you populate data', :type => :boolean, :default => true
       
       # optional
       class_option :mongoid, :desc => 'Install mongoid for replacing your ORM', :type => :boolean, :default => false
       class_option :thinking_sphinx, :desc => 'Install thinking-sphinx for full text search', :type => :boolean, :default => false
-      
+      class_option :test, :desc => 'Setup all test framework rspec, cucumber, webrat, guard', :type => :boolean, :default => false
       class_option :only, :desc => 'Install gems only these mentioned.', :type => :array, :default => []
       
       def install_gems_dependencies
@@ -28,8 +27,6 @@ module Fetty
             send("setup_#{gems}")
           end
         end
-        install_fetty_authentication
-        install_fetty_messages
       rescue Exception => e
         puts e.message
         puts "Please run `bundle install`, then run again `rails g fetty:setup`"
@@ -108,12 +105,6 @@ private
         raise e
       end
       
-      def setup_faker
-        add_gem("faker")
-      rescue Exception => e
-        raise e
-      end
-      
       def setup_thinking_sphinx
         print_notes("thinking-sphinx only works with MySQL / Postgresql")
         add_gem("thinking-sphinx")
@@ -121,26 +112,55 @@ private
         raise e
       end
       
-      def install_fetty_authentication
-        opt = ask("=> Would you like install fetty:authentication ? [yes]")
-        if opt == "yes" || opt.blank?
-          print_notes("Installing fetty:authentication")
-          generate("fetty:authentication")
+      def setup_test
+        print_notes("Install test framework for TDD/BDD")
+        
+        # gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
+        # gemfile_content = File.read(gemfile)
+        # 
+        # group_gems << "\n group :development, :test do" +
+        # group_gems << "\n   gem 'rspec-rails'" +
+        # group_gems << "\n   gem 'cucumber-rails'" +
+        # group_gems << "\n   gem 'webrat'" +
+        # group_gems << "\n   gem 'faker'" +
+        # group_gems << "\n   gem 'guard-rspec'" +
+        # group_gems << "\n   gem 'guard-cucumber'" +
+        # group_gems << "\n   if RUBY_PLATFORM =~ /darwin/i" +
+        # group_gems << "\n       gem 'rb-fsevent', :require => false, :platform" +
+        # group_gems << "\n       gem 'growl'" +
+        # group_gems << "\n   end" +
+        # group_gems << "\n end"
+        # 
+        # File.open(gemfile, 'a') { |f| f.write(group_gems) } unless gemfile_content =~ /\n\Z/
+        
+        group [:development, :test] do
+          gem 'rspec-rails'
+          gem 'cucumber-rails'
+          gem 'webrat'
+          gem "faker"
+          gem 'guard-rspec'
+          gem 'guard-cucumber'
+          if RUBY_PLATFORM =~ /darwin/i
+              gem 'rb-fsevent', :require => false
+              gem 'growl'
+          end 
         end
-      rescue Exception => e
-        raise e
-      end
-      
-      def install_fetty_messages
-        opt = ask("=> Would you like install fetty:messages ? [yes]")
-        if opt == "yes" || opt.blank?
-          print_notes("Installing fetty:messages")
-          generate("fetty:messages")
+        
+        refresh_bundle
+        
+        generate("rspec:install")
+        if gemfile_included? "mongoid"
+          generate("cucumber:install", "--webrat", "--rspec", "--skip-database")
+        else
+          generate("cucumber:install", "--webrat", "--rspec")
         end
+        
+        `guard init cucumber`
+        `guard init rspec`
+        
       rescue Exception => e
-        raise e
+        raise e 
       end
-      
       
     end
   end

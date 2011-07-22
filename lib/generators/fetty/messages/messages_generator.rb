@@ -9,16 +9,15 @@ module Fetty
       include Rails::Generators::Migration
       
       def generate_messages
-        
         @model_path = "app/models/user.rb"
         if file_exists?(@model_path)
           @orm = gemfile_included?("mongoid") ? 'mongoid' : 'active_record'
           add_gem("ancestry")
-          copy_models
-          copy_migrations
+          copy_models_and_migrations
           copy_controller_and_helper
           copy_views
           copy_assets
+          must_load_lib_directory
           add_routes
         else
           puts "You don't have User model, please install some authentication first!"
@@ -35,6 +34,7 @@ private
         
         copy_file "models/#{@orm}/message.rb", "app/models/message.rb"
         migration_template "models/active_record/create_messages.rb", "db/migrate/create_messages.rb" if @orm == 'active_record'
+        copy_file "lib/users_messages.rb", "lib/users_messages.rb"
         inject_into_file @model_path, code, :after => text
       end
       

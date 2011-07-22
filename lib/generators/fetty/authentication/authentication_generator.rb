@@ -17,6 +17,7 @@ module Fetty
           generate_sessions
           generate_mailers
           edit_application_controller
+          must_load_lib_directory
           add_routes
         else
           puts "You already have User model, please remove first otherwise the authentication will not work!"
