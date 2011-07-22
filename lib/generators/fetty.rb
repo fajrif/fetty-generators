@@ -115,7 +115,7 @@ protected
       def file_contains?(filename,check_string)
         file = File.expand_path(destination_path(filename), __FILE__)
         if File.exist?(file)
-          file_content = File.read(app)
+          file_content = File.read(file)
           file_content.include?(check_string) ? true : false
         else
           false
@@ -127,7 +127,7 @@ protected
       def must_load_lib_directory
         unless file_contains?("config/application.rb",'config.autoload_paths += %W(#{config.root}/lib)')
           inject_into_file "config/application.rb", :after => "Rails::Application" do
-            '\n\t config.autoload_paths += %W(#{config.root}/lib)'
+            "\n\t\t" + 'config.autoload_paths += %W(#{config.root}/lib)'
           end
         end
       rescue Exception => e

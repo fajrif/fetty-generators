@@ -37,8 +37,6 @@ private
         migration_template "models/#{@orm}/create_users.rb", "db/migrate/create_users.rb" if @orm == 'active_record'
         copy_file "lib/users_authentication.rb", "lib/users_authentication.rb"
         copy_file "views/users/new.html.erb", "app/views/users/new.html.erb"
-        copy_file "views/users/new_forgot_password.html.erb", "app/views/users/new_forgot_password.html.erb"
-        copy_file "views/users/new_reset_password.html.erb", "app/views/users/new_reset_password.html.erb"
         copy_file "views/users/edit.html.erb", "app/views/users/edit.html.erb"
         copy_file "views/users/show.html.erb", "app/views/users/show.html.erb"
       end
@@ -58,8 +56,8 @@ private
       end
       
       def generate_mailers
-        copy_file "mailers/setup_mail.rb", "app/mailers/setup_mail.rb"
-        copy_file "mailers/user_mailer.rb", "config/initializers/user_mailer.rb"
+        copy_file "mailers/user_mailer.rb", "app/mailers/user_mailer.rb"
+        copy_file "mailers/setup_mail.rb", "config/initializers/setup_mail.rb"
         copy_file "views/user_mailer/user_activation.text.erb", "app/views/user_mailer/user_activation.text.erb"
         copy_file "views/user_mailer/user_forgot_password.text.erb", "app/views/user_mailer/user_forgot_password.text.erb"
       end
@@ -73,7 +71,7 @@ private
       
       def add_routes
          inject_into_file "config/routes.rb", :after => "Application.routes.draw do" do
-           "\n\t resources :users, :except => [:index] do" +
+           "\n\n\t resources :users, :except => [:index] do" +
            "\n\t   collection do" +
            "\n\t     get 'activate/:id/:token' => 'users#activate', :as => 'activate'" +
            "\n\t     resource :session, :only => [:new, :destroy, :create]" +
@@ -81,7 +79,7 @@ private
            "\n\t       get ':id/:token' => 'reset_passwords#edit', :on => :collection, :as => 'edit'" +
            "\n\t     end" +
            "\n\t   end" +
-           "\n\t end"
+           "\n\t end\n"
          end
       end
       

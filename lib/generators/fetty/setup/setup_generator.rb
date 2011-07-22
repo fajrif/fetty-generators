@@ -115,44 +115,36 @@ private
       def setup_test
         print_notes("Install test framework for TDD/BDD")
         
-        # gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
-        # gemfile_content = File.read(gemfile)
-        # 
-        # group_gems << "\n group :development, :test do" +
-        # group_gems << "\n   gem 'rspec-rails'" +
-        # group_gems << "\n   gem 'cucumber-rails'" +
-        # group_gems << "\n   gem 'webrat'" +
-        # group_gems << "\n   gem 'faker'" +
-        # group_gems << "\n   gem 'guard-rspec'" +
-        # group_gems << "\n   gem 'guard-cucumber'" +
-        # group_gems << "\n   if RUBY_PLATFORM =~ /darwin/i" +
-        # group_gems << "\n       gem 'rb-fsevent', :require => false, :platform" +
-        # group_gems << "\n       gem 'growl'" +
-        # group_gems << "\n   end" +
-        # group_gems << "\n end"
-        # 
-        # File.open(gemfile, 'a') { |f| f.write(group_gems) } unless gemfile_content =~ /\n\Z/
+        gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
         
-        group [:development, :test] do
-          gem 'rspec-rails'
-          gem 'cucumber-rails'
-          gem 'webrat'
-          gem "faker"
-          gem 'guard-rspec'
-          gem 'guard-cucumber'
-          if RUBY_PLATFORM =~ /darwin/i
-              gem 'rb-fsevent', :require => false
-              gem 'growl'
-          end 
-        end
+        group_gems =  "\n group :development, :test do"
+        group_gems << "\n   gem 'rspec-rails'"
+        group_gems << "\n   gem 'cucumber-rails'"
+        group_gems << "\n   gem 'capybara'"
+        group_gems << "\n   gem 'faker'"
+        group_gems << "\n   gem 'database_cleaner'"
+        group_gems << "\n   gem 'escape_utils'"
+        group_gems << "\n   gem 'guard-rspec'"
+        group_gems << "\n   gem 'guard-cucumber'"
+        group_gems << "\n   if RUBY_PLATFORM =~ /darwin/i"
+        group_gems << "\n       gem 'rb-fsevent', :require => false"
+        group_gems << "\n       gem 'growl'"
+        group_gems << "\n   end"
+        group_gems << "\n end\n"
+        
+        File.open(gemfile, 'a') { |f| f.write(group_gems) }
         
         refresh_bundle
         
+        copy_file 'escape_utils.rb', 'config/initializers/escape_utils.rb'
+        
         generate("rspec:install")
         if gemfile_included? "mongoid"
-          generate("cucumber:install", "--webrat", "--rspec", "--skip-database")
+          generate("cucumber:install", "--rspec", "--capybara", "--skip-database")
+          copy_file 'mongoid_cucumber_env.rb', 'features/support/env.rb'          
+          copy_file 'mongoid_spec_helper.rb', 'spec/spec_helper.rb'
         else
-          generate("cucumber:install", "--webrat", "--rspec")
+          generate("cucumber:install", "--rspec", "--capybara")
         end
         
         `guard init cucumber`
