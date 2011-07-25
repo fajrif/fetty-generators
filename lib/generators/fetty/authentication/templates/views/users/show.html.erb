@@ -14,5 +14,6 @@
 </p>
 
 <p>
-  <%= link_to "Edit", edit_user_path %> 
+  <%= link_to "Edit", edit_user_path(@user) %> |
+  <%= link_to 'Close Account', @user, :confirm => 'Are you sure want to close this account?', :method => :delete %>
 </p>

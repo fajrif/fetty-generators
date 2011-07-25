@@ -5,10 +5,10 @@ class ResetPasswordsController < ApplicationController
   end
   
   def create
-    if user = User.first(:conditions => { :username => params[:login] }) || User.first(:conditions => { :email => params[:login] })
-      if user.activated?
-        user.send_forgot_password_instructions!
-        flash.now[:notice] = "We've sent an email to #{user.email} containing instructions on how to reset your password."
+    if @user = User.first(:conditions => { :username => params[:login] }) || User.first(:conditions => { :email => params[:login] })
+      if @user.activated?
+        @user.send_forgot_password_instructions!
+        flash.now[:notice] = "We've sent an email to #{@user.email} containing instructions on how to reset your password."
         render :action => 'new'
       else
         raise "Account has never been activated, please activate your account first before resetting your password."

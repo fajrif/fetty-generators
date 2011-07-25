@@ -119,13 +119,11 @@ private
         
         group_gems =  "\n group :development, :test do"
         group_gems << "\n   gem 'rspec-rails'"
-        group_gems << "\n   gem 'cucumber-rails'"
         group_gems << "\n   gem 'capybara'"
         group_gems << "\n   gem 'faker'"
         group_gems << "\n   gem 'database_cleaner'"
         group_gems << "\n   gem 'escape_utils'"
         group_gems << "\n   gem 'guard-rspec'"
-        group_gems << "\n   gem 'guard-cucumber'"
         group_gems << "\n   if RUBY_PLATFORM =~ /darwin/i"
         group_gems << "\n       gem 'rb-fsevent', :require => false"
         group_gems << "\n       gem 'growl'"
@@ -133,24 +131,24 @@ private
         group_gems << "\n end\n"
         
         File.open(gemfile, 'a') { |f| f.write(group_gems) }
-        
         refresh_bundle
-        
         copy_file 'escape_utils.rb', 'config/initializers/escape_utils.rb'
         
         generate("rspec:install")
-        if gemfile_included? "mongoid"
-          generate("cucumber:install", "--rspec", "--capybara", "--skip-database")
-          copy_file 'mongoid_cucumber_env.rb', 'features/support/env.rb'          
-          copy_file 'mongoid_spec_helper.rb', 'spec/spec_helper.rb'
-        else
-          generate("cucumber:install", "--rspec", "--capybara")
-        end
-        
-        `guard init cucumber`
+        copy_file 'spec_helper.rb', 'spec/spec_helper.rb'
         `guard init rspec`
         
+        opt = ask("=> Would you like to install Cucumber? [yes]")
+        if opt == "yes" || opt.blank?
+          add_gem("cucumber-rails", group => [:development, :test])
+          add_gem("guard-cucumber", group => [:development, :test])
+          generate("cucumber:install", "--rspec", "--capybara")
+          `guard init cucumber`
+        end
+        
         print_notes("Please make sure you already install growl and growlnotify!!")
+        print_notes("Please edit spec_helper.rb / env.rb\nFor some databases (like MongoDB and CouchDB) you may need to use :truncation instead.")
+        
       rescue Exception => e
         raise e 
       end

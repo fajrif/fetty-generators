@@ -1,0 +1,24 @@
+<table class="pretty">
+  <tr>
+  	<th>Username</th>
+  	<th>Email</th>
+  	<th>Activated at</th>
+  	<th></th>
+	<th></th>
+  </tr>
+<% for user in @users %>
+	<tr>
+		<td><%= user.username %></td>
+		<td><%= user.email %></td>
+		<td><%= user.activated_at %></td>
+		<td>
+		<%= link_to 'Edit', edit_user_path(user) %>
+		</td>
+		<td>
+		<%= link_to 'Destroy', user_path(user), :confirm => 'Are you sure want to close this account?', :method => :delete %>
+		</td>
+	</tr>
+<% end %>
+</table>
+
+<p><%= paginate @users %></p>

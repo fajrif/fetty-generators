@@ -31,28 +31,48 @@ module Fetty
 private
       
       def generate_users
+        # controller & others
         copy_file "controllers/users_controller.rb", "app/controllers/users_controller.rb"
         copy_file "helpers/users_helper.rb", "app/helpers/users_helper.rb"
+        copy_file "lib/users_authentication.rb", "lib/users_authentication.rb"
+        # model
         copy_file "models/#{@orm}/user.rb", "app/models/user.rb"
         migration_template "models/#{@orm}/create_users.rb", "db/migrate/create_users.rb" if @orm == 'active_record'
-        copy_file "lib/users_authentication.rb", "lib/users_authentication.rb"
+        # views
+        copy_file "views/users/new.html.erb", "app/views/users/index.html.erb"
+        copy_file "views/users/new.html.erb", "app/views/users/index.js.erb"
+        copy_file "views/users/new.html.erb", "app/views/users/_table.html.erb"
         copy_file "views/users/new.html.erb", "app/views/users/new.html.erb"
         copy_file "views/users/edit.html.erb", "app/views/users/edit.html.erb"
         copy_file "views/users/show.html.erb", "app/views/users/show.html.erb"
+        # spec files
+        copy_file "spec/controllers/users_controller_spec.rb", "spec/controllers/users_controller_spec.rb"
+        copy_file "spec/models/user_spec.rb", "spec/models/user_spec.rb"
+        copy_file "spec/routing/users_routing_spec.rb", "spec/routing/users_routing_spec.rb"
       end
       
       def generate_sessions
+        #controller & others
         copy_file "controllers/sessions_controller.rb", "app/controllers/sessions_controller.rb"
         copy_file "helpers/sessions_helper.rb", "app/helpers/sessions_helper.rb"
         copy_file "lib/sessions_authentication.rb", "lib/sessions_authentication.rb"
+        # views
         copy_file "views/sessions/new.html.erb", "app/views/sessions/new.html.erb"
+        # spec files
+        copy_file "spec/controllers/sessions_controller_spec.rb", "spec/controllers/sessions_controller_spec.rb"
+        copy_file "spec/routing/sessions_routing_spec.rb", "spec/routing/sessions_routing_spec.rb"
       end
       
       def generate_reset_passwords
+        #controller & others
         copy_file "controllers/reset_passwords_controller.rb", "app/controllers/reset_passwords_controller.rb"
         copy_file "helpers/reset_passwords_helper.rb", "app/helpers/reset_passwords_helper.rb"
+        # views
         copy_file "views/reset_passwords/new.html.erb", "app/views/reset_passwords/new.html.erb"
         copy_file "views/reset_passwords/edit.html.erb", "app/views/reset_passwords/edit.html.erb"
+        # spec files
+        copy_file "spec/controllers/reset_passwords_controller_spec.rb", "spec/controllers/reset_passwords_controller_spec.rb"
+        copy_file "spec/routing/reset_passwords_routing_spec.rb", "spec/routing/reset_passwords_routing_spec.rb"
       end
       
       def generate_mailers
@@ -71,7 +91,7 @@ private
       
       def add_routes
          inject_into_file "config/routes.rb", :after => "Application.routes.draw do" do
-           "\n\n\t resources :users, :except => [:index] do" +
+           "\n\n\t resources :users do" +
            "\n\t   collection do" +
            "\n\t     get 'activate/:id/:token' => 'users#activate', :as => 'activate'" +
            "\n\t     resource :session, :only => [:new, :destroy, :create]" +

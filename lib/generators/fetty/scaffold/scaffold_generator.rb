@@ -26,15 +26,17 @@ module Fetty
           begin
             print_usage unless scaffold_name.underscore =~ /^[a-z][a-z0-9_\/]+$/ && !attributes.empty?
             print_usage unless attributes.drop_while { |arg| arg.include?(':') }.count == 0
-                  
+            
+            @orm = gemfile_included?("mongoid") ? 'mongoid' : 'active_record'
+            
             setting_model_attributes
             if options[:model]
                generate_model
-               if options.migration?
+               if options.migration? && @orm == 'active_record'
                   generate_migration
                 end
             end
-                
+            
             if options.controller?
                setting_controller_attributes
                generate_controller
@@ -42,20 +44,20 @@ module Fetty
                generate_views
                generate_routes
             end
-                
+            
             if options.test?
               generate_test
-            end                  
+            end 
           rescue Exception => e
            puts e.message
           end
       end
-
+      
 private 
-
+      
       def generate_model
         begin
-          template 'models/active_record/model.rb', model_name(:path)
+          template "models/#{@orm}/model.rb", model_name(:path)
         rescue Exception => e
           raise e
         end
@@ -63,7 +65,7 @@ private
       
       def generate_migration
         begin
-          migration_template 'models/active_record/migration.rb', migration_name(:path)
+          migration_template "models/#{@orm}/migration.rb", migration_name(:path)
         rescue Exception => e
           raise e
         end
