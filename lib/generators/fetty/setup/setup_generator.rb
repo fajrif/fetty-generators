@@ -3,7 +3,6 @@ require 'generators/fetty'
 module Fetty
   module Generators
     class SetupGenerator < Base #:nodoc: 
-      
       # required
       class_option :cancan, :desc => 'Install cancan for authorization', :type => :boolean, :default => true 
       class_option :jquery_rails, :desc => 'Install jquery-rails for javascript framework', :type => :boolean, :default => true
@@ -12,27 +11,32 @@ module Fetty
       class_option :kaminari, :desc => 'Install kaminari for pagination', :type => :boolean, :default => true 
       class_option :ckeditor, :desc => 'Install ckeditor for WYSIWYG editor', :type => :boolean, :default => true
       class_option :meta_search, :desc => 'Install meta_search for ActiveRecord searching', :type => :boolean, :default => true
+      class_option :test, :desc => 'Setup all test framework rspec / cucumber, capybara, guard, etc.', :type => :boolean, :default => true
       
       # optional
       class_option :mongoid, :desc => 'Install mongoid for replacing your ORM', :type => :boolean, :default => false
       class_option :thinking_sphinx, :desc => 'Install thinking-sphinx for full text search', :type => :boolean, :default => false
-      class_option :test, :desc => 'Setup all test framework rspec, cucumber, webrat, guard', :type => :boolean, :default => false
       class_option :only, :desc => 'Install gems only these mentioned.', :type => :array, :default => []
       
       def install_gems_dependencies
-        @selected_gems = options.only.empty? ? options.reject { |k,v| k == "only" || v == false }.keys : options.only
+        ask_user_to_setup_gem('mongoid') if options['mongoid']
+        @selected_gems = options.only.empty? ? options.reject { |k,v| k == "only" || k == "mongoid" || v == false }.keys : options.only
         @selected_gems.each do |gems|
-          opt = ask("=> Would you like setup #{gems} gem? [yes]")
-          if opt == "yes" || opt.blank?
-            send("setup_#{gems}")
-          end
+          ask_user_to_setup_gem(gems)
         end
       rescue Exception => e
         puts e.message
-        puts "Please run `bundle install`, then run again `rails g fetty:setup`"
+        puts "Please run `bundle install`, then re-run `rails g fetty:setup`"
       end
-
+      
 private
+      
+      def ask_user_to_setup_gem(name)
+        opt = ask("=> Would you like setup #{name} gem? [yes]")
+        if opt == "yes" || opt.blank?
+          send("setup_#{name}")
+        end
+      end
       
       def setup_mongoid
         add_gem("bson_ext")
@@ -82,7 +86,7 @@ private
       rescue Exception => e
         raise e
       end
-              
+      
       def setup_ckeditor
         # remove the existing install (if any)
         destroy("public/javascripts/ckeditor")
@@ -117,25 +121,27 @@ private
         
         gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
         
-        group_gems =  "\n group :development, :test do"
-        group_gems << "\n   gem 'rspec-rails'"
-        group_gems << "\n   gem 'capybara'"
-        group_gems << "\n   gem 'faker'"
-        group_gems << "\n   gem 'database_cleaner'"
-        group_gems << "\n   gem 'escape_utils'"
-        group_gems << "\n   gem 'guard-rspec'"
-        group_gems << "\n   if RUBY_PLATFORM =~ /darwin/i"
-        group_gems << "\n       gem 'rb-fsevent', :require => false"
-        group_gems << "\n       gem 'growl'"
-        group_gems << "\n   end"
-        group_gems << "\n end\n"
+        group_gems =  "\ngroup :development, :test do"
+        group_gems << "\n  gem 'rspec-rails'"
+        group_gems << "\n  gem 'capybara'"
+        group_gems << "\n  gem 'factory_girl_rails'"
+        group_gems << "\n  gem 'faker'"
+        group_gems << "\n  gem 'database_cleaner'"
+        group_gems << "\n  gem 'escape_utils'"
+        group_gems << "\n  gem 'guard-rspec'"
+        group_gems << "\n  if RUBY_PLATFORM =~ /darwin/i"
+        group_gems << "\n      gem 'rb-fsevent', :require => false"
+        group_gems << "\n      gem 'growl'"
+        group_gems << "\n  end"
+        group_gems << "\nend\n"
         
         File.open(gemfile, 'a') { |f| f.write(group_gems) }
         refresh_bundle
-        copy_file 'escape_utils.rb', 'config/initializers/escape_utils.rb'
         
+        copy_file 'escape_utils.rb', 'config/initializers/escape_utils.rb'
         generate("rspec:install")
-        copy_file 'spec_helper.rb', 'spec/spec_helper.rb'
+        remove_file 'spec/spec_helper.rb'
+        template 'spec_helper.rb', 'spec/spec_helper.rb'
         `guard init rspec`
         
         opt = ask("=> Would you like to install Cucumber? [yes]")
@@ -146,9 +152,7 @@ private
           `guard init cucumber`
         end
         
-        print_notes("Please make sure you already install growl and growlnotify!!")
-        print_notes("Please edit spec_helper.rb / env.rb\nFor some databases (like MongoDB and CouchDB) you may need to use :truncation instead.")
-        
+        readme "README"
       rescue Exception => e
         raise e 
       end

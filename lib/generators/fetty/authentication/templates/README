@@ -1,0 +1,15 @@
+
+*****************************************************************************************
+
+ SETUP ROUTES
+
+	Make sure you have defined root_url in your config/routes.rb.
+	example:
+			root :to => "welcome#index"
+
+ SETUP MAILERS
+
+	You also need to change or edit 'config/initializers/setup_mail.rb'
+	by default fetty:authentication are using 'smtp.gmail.com:587'
+
+*****************************************************************************************

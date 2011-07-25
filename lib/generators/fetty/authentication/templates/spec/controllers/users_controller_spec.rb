@@ -3,7 +3,7 @@ require 'spec_helper'
 describe UsersController do
   
   def test_assigns_user_object(action)
-    user = Factory.build(:user)
+    user = Factory(:user)
     User.stub(:find).with(user.id.to_s).and_return(user)
     get action, :id => user.id.to_s
     assigns(:user).should eql(user)
@@ -72,7 +72,7 @@ describe UsersController do
     
     before(:each) do
       stub_authenticate_user
-      @user = Factory.build(:user)
+      @user = Factory(:user)
       User.stub(:find).with(@user.id.to_s).and_return(@user)
     end
     
@@ -86,7 +86,7 @@ describe UsersController do
         response.should redirect_to(user_path(@user))
       end
     end
-
+  
     describe "with invalid params" do
       it "should not change user and re-render page" do
         User.any_instance.stub(:valid?).and_return(false)
@@ -101,7 +101,7 @@ describe UsersController do
   describe "DELETE destroy" do
     before(:each) do
       stub_authenticate_user
-      @user = Factory.build(:user)
+      @user = Factory(:user)
       User.stub(:find).with(@user.id.to_s).and_return(@user)
     end
     
@@ -122,7 +122,7 @@ describe UsersController do
   
   describe "GET activate" do
     before(:each) do
-      @user = Factory.build(:user, :token => "sometoken")
+      @user = Factory(:user, :token => "sometoken")
     end
     
     describe "with valid params" do

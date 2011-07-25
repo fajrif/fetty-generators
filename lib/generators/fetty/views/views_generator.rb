@@ -32,13 +32,13 @@ private
       end
       
       def erb_to_haml
-        print_notes("will convert your *.html.erb files in 'app/views' to *.html.haml")
+        print_notes("It will convert your *.html.erb files in 'app/views' to *.html.haml")
       rescue Exception => e
         raise e
       end
       
       def haml_to_erb
-        print_notes("will convert your *.html.haml files in 'app/views' to *.html.erb")
+        print_notes("It will convert your *.html.haml files in 'app/views' to *.html.erb")
       rescue Exception => e
         raise e        
       end

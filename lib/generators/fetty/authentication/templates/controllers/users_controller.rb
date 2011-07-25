@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   skip_before_filter :authenticate_user!, :except => [:index, :edit, :update, :destroy]
   
   def index
-    @users = User.all.page(params[:page]).per(5)
+    @users = User.all
     
     respond_to do |format|
       format.html # index.html.erb

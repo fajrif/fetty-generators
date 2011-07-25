@@ -1,14 +1,6 @@
 class User < ActiveRecord::Base
-  include UsersAuthentication
   
   attr_accessible :username, :email, :password, :password_confirmation, :activated_at, :token
-  
-  field :username, :type => String
-  field :email, :type => String
-  field :password_hash, :type => String
-  field :password_salt, :type => String
-  field :activated_at, :type => Time
-  field :token, :type => String
   
   validates_presence_of :username, :email
   validates_uniqueness_of :username, :email
@@ -17,5 +9,7 @@ class User < ActiveRecord::Base
   validates_presence_of :password, :on => :create
   validates_confirmation_of :password
   validates_length_of :password, :minimum => 6
+  
+  include UsersAuthentication
   
 end

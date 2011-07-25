@@ -5,14 +5,14 @@ describe ResetPasswordsController do
   describe "GET new" do
     it "should render the reset password page" do
       get :new
-      response.status.should eql(200)
+      response.should be_success
     end
   end
   
   describe "POST create" do
     describe "with valid login" do
       it "should send reset password instructions through mail" do
-        user = Factory.build(:user, :activated_at => Date.today)
+        user = Factory(:user, :activated_at => Date.today)
         User.stub(:first).with(:conditions => { :username => "some@email.com" }).and_return(user)
         post :create, :login => "some@email.com"
         assigns(:user).should be_a(User)
@@ -28,7 +28,7 @@ describe ResetPasswordsController do
       end
       
       it "should not send reset password instructions if user not activated" do
-        user = Factory.build(:user)
+        user = Factory(:user)
         User.stub(:first).with(:conditions => { :username => "some@email.com" }).and_return(user)
         post :create, :login => "some@email.com"
         assigns(:user).should be_a(User)
@@ -47,14 +47,14 @@ describe ResetPasswordsController do
   
   describe "GET edit" do
     before(:each) do
-      @user = Factory.build(:user, :token => "sometoken")
+      @user = Factory(:user, :token => "sometoken")
     end
     
     it "should assigns @user and render page if given parameters are valid" do
       User.stub(:first).with(:conditions => { :id => @user.id.to_s, :token => @user.token.to_s }).and_return(@user)
       get :edit, :id => @user.id.to_s, :token => @user.token.to_s
       assigns(:user).should eql(@user)
-      response.status.should eql(200)
+      response.should be_success
     end
     
     it "should not render page and redirect to reset password page" do
@@ -68,7 +68,7 @@ describe ResetPasswordsController do
   describe "PUT update" do
     describe "with valid params" do
       it "should reset password" do
-        user = Factory.build(:user, :token => "sometoken")
+        user = Factory(:user, :token => "sometoken")
         User.stub(:first).with(:conditions => { :id => user.id.to_s, :token => user.token.to_s }).and_return(user)
         User.any_instance.stub(:reset_password).with("secret","secret").and_return(UsersAuthentication::Status::Valid)
         put :update, :id => user.id.to_s, :token => user.token.to_s, :password => "secret", :password_confirmation => "secret"
@@ -80,7 +80,7 @@ describe ResetPasswordsController do
     
     describe "with invalid params" do
       it "should not send reset password instructions if user not found" do
-        user = Factory.build(:user, :token => "sometoken")
+        user = Factory(:user, :token => "sometoken")
         User.stub(:first).with(:conditions => { :id => user.id.to_s, :token => user.token.to_s }).and_return(nil)
         put :update, :id => user.id.to_s, :token => user.token.to_s
         assigns(:user).should be_nil

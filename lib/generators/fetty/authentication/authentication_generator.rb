@@ -9,7 +9,6 @@ module Fetty
       include Rails::Generators::Migration
       
       def generate_authentication
-        
         unless file_exists?("app/models/user.rb")
           @orm = gemfile_included?("mongoid") ? 'mongoid' : 'active_record'
           add_gem("bcrypt-ruby", :require => "bcrypt")
@@ -20,10 +19,12 @@ module Fetty
           edit_application_controller
           must_load_lib_directory
           add_routes
+          remove_file 'public/index.html'
+          generate_specs if gemfile_included? "rspec"
+          readme "README"
         else
           puts "You already have User model, please remove first otherwise the authentication will not work!"
         end
-        
       rescue Exception => e
           puts e.message
       end
@@ -39,16 +40,12 @@ private
         copy_file "models/#{@orm}/user.rb", "app/models/user.rb"
         migration_template "models/#{@orm}/create_users.rb", "db/migrate/create_users.rb" if @orm == 'active_record'
         # views
-        copy_file "views/users/new.html.erb", "app/views/users/index.html.erb"
-        copy_file "views/users/new.html.erb", "app/views/users/index.js.erb"
-        copy_file "views/users/new.html.erb", "app/views/users/_table.html.erb"
+        copy_file "views/users/index.html.erb", "app/views/users/index.html.erb"
+        copy_file "views/users/index.js.erb", "app/views/users/index.js.erb"
+        copy_file "views/users/_table.html.erb", "app/views/users/_table.html.erb"
         copy_file "views/users/new.html.erb", "app/views/users/new.html.erb"
         copy_file "views/users/edit.html.erb", "app/views/users/edit.html.erb"
         copy_file "views/users/show.html.erb", "app/views/users/show.html.erb"
-        # spec files
-        copy_file "spec/controllers/users_controller_spec.rb", "spec/controllers/users_controller_spec.rb"
-        copy_file "spec/models/user_spec.rb", "spec/models/user_spec.rb"
-        copy_file "spec/routing/users_routing_spec.rb", "spec/routing/users_routing_spec.rb"
       end
       
       def generate_sessions
@@ -58,9 +55,6 @@ private
         copy_file "lib/sessions_authentication.rb", "lib/sessions_authentication.rb"
         # views
         copy_file "views/sessions/new.html.erb", "app/views/sessions/new.html.erb"
-        # spec files
-        copy_file "spec/controllers/sessions_controller_spec.rb", "spec/controllers/sessions_controller_spec.rb"
-        copy_file "spec/routing/sessions_routing_spec.rb", "spec/routing/sessions_routing_spec.rb"
       end
       
       def generate_reset_passwords
@@ -70,9 +64,6 @@ private
         # views
         copy_file "views/reset_passwords/new.html.erb", "app/views/reset_passwords/new.html.erb"
         copy_file "views/reset_passwords/edit.html.erb", "app/views/reset_passwords/edit.html.erb"
-        # spec files
-        copy_file "spec/controllers/reset_passwords_controller_spec.rb", "spec/controllers/reset_passwords_controller_spec.rb"
-        copy_file "spec/routing/reset_passwords_routing_spec.rb", "spec/routing/reset_passwords_routing_spec.rb"
       end
       
       def generate_mailers
@@ -103,6 +94,19 @@ private
          end
       end
       
+      def generate_specs
+        copy_file "spec/controllers/users_controller_spec.rb", "spec/controllers/users_controller_spec.rb"
+        copy_file "spec/models/user_spec.rb", "spec/models/user_spec.rb"
+        copy_file "spec/routing/users_routing_spec.rb", "spec/routing/users_routing_spec.rb"
+        
+        copy_file "spec/support/user_factories.rb", "spec/support/user_factories.rb"
+        
+        copy_file "spec/controllers/sessions_controller_spec.rb", "spec/controllers/sessions_controller_spec.rb"
+        copy_file "spec/routing/sessions_routing_spec.rb", "spec/routing/sessions_routing_spec.rb"
+        
+        copy_file "spec/controllers/reset_passwords_controller_spec.rb", "spec/controllers/reset_passwords_controller_spec.rb"
+        copy_file "spec/routing/reset_passwords_routing_spec.rb", "spec/routing/reset_passwords_routing_spec.rb"
+      end
       
       # FIXME: Should be proxied to ActiveRecord::Generators::Base
       # Implement the required interface for Rails::Generators::Migration.
