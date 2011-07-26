@@ -9,48 +9,46 @@ module Fetty
     class ScaffoldGenerator < Base
       include Rails::Generators::Migration
       include Fetty::Generators::Scaffold
-            
+      
       argument :scaffold_name, :type => :string, :required => true, :banner => 'ModelName'
       argument :attributes, :type => :array, :default => [], :banner => 'attribute:type'
-                        
+      
       class_option :controller, :desc => 'Generate controller, helper, or views.', :type => :boolean, :default => true
       class_option :model, :desc => "Generate a model or migration file.", :type => :boolean, :default => true
       class_option :migration, :desc => "Generate migration file for model.", :type => :boolean, :default => true
       class_option :timestamps, :desc => "Add timestamps to migration file.", :type => :boolean, :default => true
       class_option :test, :desc => "Generate Test files, default is using test:unit", :type => :boolean, :default => true
-
+      
       class_option :except, :desc => 'Generate all controller actions except these mentioned.', :type => :array, :default => []
       
       def generate_scaffold
+        print_usage unless scaffold_name.underscore =~ /^[a-z][a-z0-9_\/]+$/ && !attributes.empty?
+        print_usage unless attributes.drop_while { |arg| arg.include?(':') }.count == 0
         
-          begin
-            print_usage unless scaffold_name.underscore =~ /^[a-z][a-z0-9_\/]+$/ && !attributes.empty?
-            print_usage unless attributes.drop_while { |arg| arg.include?(':') }.count == 0
-            
-            @orm = gemfile_included?("mongoid") ? 'mongoid' : 'active_record'
-            
-            setting_model_attributes
-            if options[:model]
-               generate_model
-               if options.migration? && @orm == 'active_record'
-                  generate_migration
-                end
+        @orm = gemfile_included?("mongoid") ? 'mongoid' : 'active_record'
+        
+        setting_model_attributes
+        if options[:model]
+           generate_model
+           if options.migration? && @orm == 'active_record'
+              generate_migration
             end
-            
-            if options.controller?
-               setting_controller_attributes
-               generate_controller
-               generate_helper
-               generate_views
-               generate_routes
-            end
-            
-            if options.test?
-              generate_test
-            end 
-          rescue Exception => e
-           puts e.message
-          end
+        end
+        
+        if options.controller?
+           setting_controller_attributes
+           generate_controller
+           generate_helper
+           generate_views
+           generate_routes
+        end
+        
+        if options.test?
+          generate_test
+        end
+        
+      rescue Exception => e
+         puts e.message
       end
       
 private 
@@ -73,12 +71,12 @@ private
       
       def generate_controller
         begin
-          template 'controllers/active_record/controller.rb', controller_name(:path)
+          template 'controllers/controller.rb', controller_name(:path)
         rescue Exception => e
           raise e
         end
       end
-                
+      
       def generate_helper
         begin
           template 'helpers/helper.rb', helper_name(:path)
@@ -86,7 +84,7 @@ private
           raise e
         end
       end
-                
+      
       def generate_views
         begin
           controller_actions.each do |action|
@@ -98,7 +96,7 @@ private
               end
             end
           end
-             
+          
           if actions? :new, :edit
             template "views/_form.html.erb", "app/views/#{plural_name}/_form.html.erb"
           end
@@ -106,7 +104,7 @@ private
           raise e
         end
       end
-          
+      
       def generate_test
         # begin
         #   if test_framework == :rspec
@@ -133,7 +131,7 @@ private
       # Implement the required interface for Rails::Generators::Migration.
       def self.next_migration_number(dirname) #:nodoc:
         ActiveRecord::Generators::Base.next_migration_number(dirname)
-      end      
+      end
     end
   end
 end

@@ -6,4 +6,11 @@ class <%= model_name %> < ActiveRecord::Base
   <%- if has_type? :file -%>
   mount_uploader <%= special_select(:file).map { |name| ":#{name}" }.join(", ") %>, FileUploader
   <%- end -%>
+  
+  # define_index do
+  #   indexes :title
+  #   indexes :content
+  # end
+  
+  
 end
