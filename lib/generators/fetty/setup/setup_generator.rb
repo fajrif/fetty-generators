@@ -108,28 +108,45 @@ private
           unless file_contains?("app/controllers/application_controller.rb","helper_method :sort_column, :sort_direction")
             print_notes("modify app/controllers/application_controller.rb")
             inject_into_file 'app/controllers/application_controller.rb', :after => 'protect_from_forgery' do
-                "\n\thelper_method :sort_column, :sort_direction" +
+                "\n\thelper_method :sort_column, :sort_direction\n" +
                 "\n\tdef sort_column " +
                 "\n\t\tparams[:sort].blank? ? 'created_at' : params[:sort]" +
-                "\n\tend" +
+                "\n\tend\n" +
                 "\n\tdef sort_direction " +
                 "\n\t\t%w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'" +
                 "\n\tend\n"
             end
           end
           
-          unless file_contains?("app/controllers/application_controller.rb","def sortable(column, title = nil)")
+          unless file_contains?("app/helpers/application_helper.rb","def sortable(column, title = nil)")
             print_notes("modify app/helpers/application_helper.rb")
-            inject_into_file 'app/helpers/application_helper.rb', :before => 'module ApplicationHelper' do
+            inject_into_file 'app/helpers/application_helper.rb', :after => 'module ApplicationHelper' do
               "\n\tdef sortable(column, title = nil)" +
               "\n\t\ttitle ||= column.titleize" +
               "\n\t\tdirection = column == sort_column && sort_direction == 'asc' ? 'desc' : 'asc'" +
               "\n\t\t" + 'css_class = column == sort_column ? "current #{sort_direction}" : nil' +
-              "\n\tlink_to title, params.merge(:sort => column, :direction => direction, :page => nil), { :class => css_class }" +
+              "\n\t\tlink_to title, params.merge(:sort => column, :direction => direction, :page => nil), { :class => css_class }" +
               "\n\tend\n"
             end
           end
-          readme "README_sphinx"
+          
+          puts "\n*****************************************************************************************"
+          puts "\n"
+          puts "\t  SETUP SPHINX"
+          puts "\n"
+          puts "\t  Please ensure that you already install sphinx for your platform properly!"
+          puts "\t  example to use Thinking Sphinx's command :"
+          puts "\n"
+          puts "\t\t  # To create index data for Sphinx using Thinking Sphinx's settings"
+          puts "\n"
+          puts "\t\t\t  rake thinking_sphinx:index "
+          puts "\n"
+          puts "\t\t  # To start a Sphinx searchd daemon using Thinking Sphinx's settings"
+          puts "\n"
+          puts "\t\t\t  rake thinking_sphinx:start "
+          puts "\n"
+          puts "*****************************************************************************************\n"
+          
         else
           print_notes("thinking-sphinx only works with MySQL / Postgresql")
         end
@@ -173,7 +190,14 @@ private
           `guard init cucumber`
         end
         
-        readme "README_growl"
+        puts "\n*****************************************************************************************"
+        puts "\n"
+        puts "\t SETUP GROWL"
+        puts "\n"
+        puts "\t\t   Please make sure you already install growl with growlnotify!!"
+        puts "\n"
+        puts "*****************************************************************************************\n"
+        
       rescue Exception => e
         raise e 
       end

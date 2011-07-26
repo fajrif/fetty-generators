@@ -18,14 +18,14 @@ module Fetty
       rescue Exception => e
         puts e.message
       end
-
+      
 private
-
+      
       def generate_layout
         copy_file 'application.html.erb', "app/views/layouts/application.html.erb"
         copy_file 'application.css', "public/stylesheets/application.css"
         copy_file 'down_arrow.gif', "public/images/down_arrow.gif"
-        copy_file 'down_up.gif', "public/images/down_up.gif"
+        copy_file 'up_arrow.gif', "public/images/down_up.gif"
         copy_file 'layout_helper.rb', 'app/helpers/layout_helper.rb'
         copy_file 'error_messages_helper.rb', 'app/helpers/error_messages_helper.rb'
         copy_file 'application.js', 'public/javascripts/application.js'
@@ -42,7 +42,7 @@ private
       def haml_to_erb
         print_notes("It will convert your *.html.haml files in 'app/views' to *.html.erb")
       rescue Exception => e
-        raise e        
+        raise e
       end
       
     end
