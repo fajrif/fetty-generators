@@ -52,6 +52,10 @@ protected
         File.exist? destination_path(path)
       end
       
+      def folder_exists?(path)
+        File.directory? path
+      end
+      
       def destroy(path)
         begin
           if file_exists?(path)

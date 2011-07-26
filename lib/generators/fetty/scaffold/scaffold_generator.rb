@@ -17,7 +17,7 @@ module Fetty
       class_option :model, :desc => "Generate a model or migration file.", :type => :boolean, :default => true
       class_option :migration, :desc => "Generate migration file for model.", :type => :boolean, :default => true
       class_option :timestamps, :desc => "Add timestamps to migration file.", :type => :boolean, :default => true
-      class_option :test, :desc => "Generate Test files, default is using test:unit", :type => :boolean, :default => true
+      class_option :test, :desc => "Generate Test files, either test/unit or rspec", :type => :boolean, :default => true
       
       class_option :except, :desc => 'Generate all controller actions except these mentioned.', :type => :array, :default => []
       
@@ -106,24 +106,23 @@ private
       end
       
       def generate_test
-        # begin
-        #   if test_framework == :rspec
-        #     template "tests/#{test_framework}/controller.rb", "spec/controllers/#{plural_name}_controller_spec.rb"
-        #   else
-        #     template "tests/#{test_framework}/controller.rb", "test/functional/#{plural_name}_controller_test.rb"
-        #   end
-        #   
-        #   if test_framework == :rspec
-        #     template "tests/rspec/model.rb", "spec/models/#{model_path}_spec.rb"
-        #     template 'fixtures.yml', "spec/fixtures/#{model_path.pluralize}.yml"
-        #   else
-        #     template "tests/#{test_framework}/model.rb", "test/unit/#{model_path}_test.rb"
-        #     template 'fixtures.yml', "test/fixtures/#{model_path.pluralize}.yml"
-        #   end
-        #   
-        # rescue Exception => e
-        #   raise e
-        # end
+        if folder_exists?("test")
+          template "test/test_unit/controller.rb", "test/functional/#{plural_name}_controller_test.rb"
+          template "test/test_unit/fixtures.yml", "test/fixtures/#{plural_name}.yml"
+          template "test/test_unit/model.rb", "test/unit/#{singular_name}_test.rb"
+          template "test/test_unit/helper.rb", "test/unit/helpers/#{plural_name}_helper_test.rb"
+        end
+        
+        if folder_exists?("spec")
+          template "test/spec/controller.rb", "spec/controllers/#{plural_name}_controller_spec.rb"
+          template "test/spec/model.rb", "spec/models/#{singular_name}_spec.rb"
+          template "test/spec/helper.rb", "spec/helpers/#{plural_name}_helper_test.rb"
+          template "test/spec/request.rb", "spec/requests/#{singular_name}_spec.rb.rb"
+          template "test/spec/routing.rb", "spec/routing/#{plural_name}_routing_spec.rb"
+          template "test/spec/factories.rb", "spec/support/#{singular_name}_factories.rb"
+        end
+      rescue Exception => e
+        raise e
       end
       
       
