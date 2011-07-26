@@ -2,8 +2,10 @@ class <%= controller_name %> < ApplicationController
   
 <%- if action? :index -%>
   def index
-	  @search = <%= class_name %>.search(params[:search])
-    <%= instances_name('@') %> = @search.page(params[:page]).per(10)
+    <%= instances_name('@') %> = <%= class_name %>.search(params[:search], 
+                        :star => true, 
+                        :order => sort_column, 
+                        :sort_mode => sort_direction.to_sym).page(params[:page]).per(5)
     
     respond_to do |format|
       format.html # index.html.erb

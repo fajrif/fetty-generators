@@ -10,12 +10,11 @@ module Fetty
       class_option :carrierwave, :desc => 'Install carrierwave for handling file attachment', :type => :boolean, :default => true
       class_option :kaminari, :desc => 'Install kaminari for pagination', :type => :boolean, :default => true 
       class_option :ckeditor, :desc => 'Install ckeditor for WYSIWYG editor', :type => :boolean, :default => true
-      class_option :meta_search, :desc => 'Install meta_search for ActiveRecord searching', :type => :boolean, :default => true
+      class_option :thinking_sphinx, :desc => 'Install thinking-sphinx for full text search', :type => :boolean, :default => true
       class_option :test, :desc => 'Setup all test framework rspec / cucumber, capybara, guard, etc.', :type => :boolean, :default => true
       
       # optional
       class_option :mongoid, :desc => 'Install mongoid for replacing your ORM', :type => :boolean, :default => false
-      class_option :thinking_sphinx, :desc => 'Install thinking-sphinx for full text search', :type => :boolean, :default => false
       class_option :only, :desc => 'Install gems only these mentioned.', :type => :array, :default => []
       
       def install_gems_dependencies
@@ -103,15 +102,37 @@ private
         raise e
       end
       
-      def setup_meta_search
-        add_gem("meta_search")
-      rescue Exception => e
-        raise e
-      end
-      
       def setup_thinking_sphinx
-        print_notes("thinking-sphinx only works with MySQL / Postgresql")
-        add_gem("thinking-sphinx")
+        unless options['mongoid']
+          add_gem('thinking-sphinx', '~> 2.0.3')
+          unless file_contains?("app/controllers/application_controller.rb","helper_method :sort_column, :sort_direction")
+            print_notes("modify app/controllers/application_controller.rb")
+            inject_into_file 'app/controllers/application_controller.rb', :after => 'protect_from_forgery' do
+                "\n\thelper_method :sort_column, :sort_direction" +
+                "\n\tdef sort_column " +
+                "\n\t\tparams[:sort].blank? ? 'created_at' : params[:sort]" +
+                "\n\tend" +
+                "\n\tdef sort_direction " +
+                "\n\t\t%w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'" +
+                "\n\tend\n"
+            end
+          end
+          
+          unless file_contains?("app/controllers/application_controller.rb","def sortable(column, title = nil)")
+            print_notes("modify app/helpers/application_helper.rb")
+            inject_into_file 'app/helpers/application_helper.rb', :before => 'module ApplicationHelper' do
+              "\n\tdef sortable(column, title = nil)" +
+              "\n\t\ttitle ||= column.titleize" +
+              "\n\t\tdirection = column == sort_column && sort_direction == 'asc' ? 'desc' : 'asc'" +
+              "\n\t\t" + 'css_class = column == sort_column ? "current #{sort_direction}" : nil' +
+              "\n\tlink_to title, params.merge(:sort => column, :direction => direction, :page => nil), { :class => css_class }" +
+              "\n\tend\n"
+            end
+          end
+          readme "README_sphinx"
+        else
+          print_notes("thinking-sphinx only works with MySQL / Postgresql")
+        end
       rescue Exception => e
         raise e
       end
@@ -152,7 +173,7 @@ private
           `guard init cucumber`
         end
         
-        readme "README"
+        readme "README_growl"
       rescue Exception => e
         raise e 
       end

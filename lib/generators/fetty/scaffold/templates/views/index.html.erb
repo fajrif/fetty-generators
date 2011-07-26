@@ -1,7 +1,9 @@
 <%% title "<%= plural_name.titleize %>" %>
 
-<%%= form_for @search, :url => <%= generate_route_link(:action => :index, :suffix => 'url') %>, :html => {:id => "index_search", :method => :get} do |f| %>
-	<%%= f.text_field :<%= model_attributes[0].name %>_contains, :title => "Search by <%= model_attributes[0].name %>" %>
+<%%= form_tag <%= generate_route_link(:action => :index, :suffix => 'url') %>, { :id => "index_search", :method => :get } do %>
+	<%%= text_field_tag :search, params[:search], { :title => "Search by <%= model_attributes[0].name %>" } %>
+	<%%= hidden_field_tag :sort, params[:sort] %>
+	<%%= hidden_field_tag :direction, params[:direction] %>
 <%% end %>
 
 <div id="index_table"><%%= render 'table' %></div>

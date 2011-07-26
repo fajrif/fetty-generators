@@ -23,7 +23,9 @@ private
 
       def generate_layout
         copy_file 'application.html.erb', "app/views/layouts/application.html.erb"
-        copy_file 'stylesheet.css', "public/stylesheets/application.css"
+        copy_file 'application.css', "public/stylesheets/application.css"
+        copy_file 'down_arrow.gif', "public/images/down_arrow.gif"
+        copy_file 'down_up.gif', "public/images/down_up.gif"
         copy_file 'layout_helper.rb', 'app/helpers/layout_helper.rb'
         copy_file 'error_messages_helper.rb', 'app/helpers/error_messages_helper.rb'
         copy_file 'application.js', 'public/javascripts/application.js'

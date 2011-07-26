@@ -1,7 +1,7 @@
 <table class="pretty">
   <tr>
   <%- for attribute in model_attributes -%>
-  	<th><%%= sort_link @search, :<%= attribute.name %> %></th>
+  	<th><%%= sortable "<%= attribute.name %>" %></th>
   <%- end -%>
   <%- if action? :show -%>
 	<th></th>

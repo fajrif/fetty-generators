@@ -7,10 +7,16 @@ class <%= model_name %> < ActiveRecord::Base
   mount_uploader <%= special_select(:file).map { |name| ":#{name}" }.join(", ") %>, FileUploader
   <%- end -%>
   
-  # define_index do
-  #   indexes :title
-  #   indexes :content
-  # end
-  
+  define_index do
+  <%- model_attributes.each do |a| -%>
+    <%- if a.type == :string || a.type == :text -%>
+    indexes :<%= a.name %>, :sortable => true
+    <%- end -%>
+  <%- end -%>
+    
+    has :created_at
+    set_property :enable_star => 1
+    set_property :min_prefix_len => 1
+  end
   
 end
