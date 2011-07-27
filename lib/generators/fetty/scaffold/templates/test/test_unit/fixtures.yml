@@ -1,6 +1,11 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
 one:
-<%- model_attributes.each do |a| -%>
-  <%= a.name %>: 
+<%- for attribute in model_attributes -%>
+  <%= attribute.name %>: <%= attribute.default %>
+<%- end -%>
+
+two:
+<%- for attribute in model_attributes -%>
+  <%= attribute.name %>: <%= attribute.default %>
 <%- end -%>
