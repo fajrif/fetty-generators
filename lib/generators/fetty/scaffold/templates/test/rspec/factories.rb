@@ -18,3 +18,9 @@
 #   f.admin      false
 #   f.email      { Factory.next(:email) }
 # end
+
+Factory.define <%= instance_name(':') %> do |f|
+<%- for attribute in model_attributes -%>
+  f.<%= attribute.name %> '<%= attribute.default %>'
+<%- end -%>
+end
