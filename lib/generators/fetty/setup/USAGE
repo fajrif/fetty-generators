@@ -1,5 +1,22 @@
 Description:
-  The fetty:setup generator will add / install the necessary gems 
-  to your Gemfile and automatically configure the gems.
-  
+  The fetty:setup generator creates a bunch of task to update your gemfile
+  with necessary gem need for you to build your rails app.
+  the basic installation required you to have :
+	- meta_search
+	- simple_form
+	- will_paginate
+	- jquery-rails
+  and the optional gems for Authentication & Autorization using :
+	- Devise
+	- CanCan
 
+Examples:
+    rails generate fetty:setup
+
+   this default command will add gems to your Gemfile and install
+   some necessary files. both required and optional gems.
+   if you like to install minimum for layout and scaffolding using
+   fetty-generators, or you already have diffrent gems for authentication
+   or authorization you could skip the optional setup :
+
+    rails generate fetty:setup --skip-optional

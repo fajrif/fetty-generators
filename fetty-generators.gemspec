@@ -1,17 +1,15 @@
-# -*- encoding: utf-8 -*-
-$:.push File.expand_path("../lib", __FILE__)
-
 Gem::Specification.new do |s|
   s.name        = "fetty-generators"
-  s.version     = "1.8.0"
-  s.authors     = ["Fajri Fachriansyah"]
-  s.email       = ["fajrif@hotmail.com"]
+  s.version     = "1.7.1"
+  s.author      = "Fajri Fachriansyah"
+  s.email       = "fajrif@hotmail.com"
   s.homepage    = "http://github.com/fajrif/fetty-generators"
-  s.summary     = %q{Simple generator to start your Rails project}
-  s.description = %q{Simple generator to start your Rails project}
-  s.rubyforge_project = s.name
-    
-  s.files        = Dir["{lib}/**/*", "[A-Z]*"]
+  s.summary     = "This is a scaffold generators for you who working regularly with Devise, CanCan, simple-form, meta_search and jQuery-rails in Rails 3"
+  s.description = "If you are the fan of Ryan bates screencasts show, use this scaffold generators for your rails application, this generators are inherited from nifty-generators, but change the form using simple-form and also create nice index page with feature like search, sort column and paginate."
 
-  s.require_paths = ["lib"]
+  s.files        = Dir["{lib}/**/*", "[A-Z]*"]
+  s.require_path = "lib"
+
+  s.rubyforge_project = s.name
+  # s.required_rubygems_version = ">= 1.3.4"
 end
