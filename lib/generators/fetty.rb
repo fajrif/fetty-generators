@@ -76,8 +76,10 @@ protected
         end
       end
       
-      def print_notes(notes)
-        puts "*** NOTES : #{notes} ***" 
+      def print_notes(message,notes = "notes",color = :yellow)
+        puts        '', '='*80
+        say_status  "#{notes}", "#{message}", color
+        puts        '='*80, ''; sleep 0.5
       end
       
       def print_usage
@@ -135,7 +137,31 @@ protected
           end
         end
       rescue Exception => e
-        raise e 
+        raise e
+      end
+      
+      def using_cancan?
+        gemfile_included?("cancan") && file_exists?("app/models/ability.rb")
+      rescue Exception => e
+        raise e
+      end
+      
+      def using_mongoid?
+        gemfile_included?("mongoid") && file_exists?("config/mongoid.yml")
+      rescue Exception => e
+        raise e
+      end
+      
+      def using_test_unit?
+        folder_exists?("tests")
+      rescue Exception => e
+        raise e
+      end
+      
+      def using_rspec?
+        gemfile_included?("rspec") && folder_exists?("spec")
+      rescue Exception => e
+        raise e
       end
       
       

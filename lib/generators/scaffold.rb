@@ -62,17 +62,19 @@ module Fetty
       
       def generate_action_links(action, authorize, object, link_text)
          out = ""
-         out << "\t<% if can? :#{authorize}, #{object} %>\n"
+         out << "\t<% if can? :#{authorize}, #{object} %>\n\t" if using_cancan?
          
          link_path = generate_route_link(:action => action, :object => object, :suffix => 'path')
          
          unless action == :destroy
-             out << "\t\t<%= link_to '#{link_text}', #{link_path} %>\n"
+             out << "\t<%= link_to '#{link_text}', #{link_path} %>\n"
          else
-             out << "\t\t<%= link_to '#{link_text}', #{link_path}, :confirm => 'Are you sure?', :method => :delete %>\n"
+             out << "\t<%= link_to '#{link_text}', #{link_path}, :confirm => 'Are you sure?', :method => :delete %>\n"
          end
-         out << "\t<% end %>"
+         out << "\t<% end %>" if using_cancan?
          out.html_safe
+      rescue Exception => e
+        raise e
       end
       
       def generate_route_link(options ={})
@@ -86,6 +88,8 @@ module Fetty
         else
           "#{resource_name}_#{options[:suffix]}(#{options[:object]})"
         end
+      rescue Exception => e
+        raise e
       end
       
       def record_or_name_or_array
@@ -95,6 +99,8 @@ module Fetty
           namespace = singular_name.split('/')[0..-2]
           "[:#{namespace.join(', :')}, #{instance_name('@')}]"
         end
+      rescue Exception => e
+        raise e
       end
       
 # public boolean function

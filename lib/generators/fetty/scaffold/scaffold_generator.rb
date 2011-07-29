@@ -25,12 +25,12 @@ module Fetty
         print_usage unless scaffold_name.underscore =~ /^[a-z][a-z0-9_\/]+$/ && !attributes.empty?
         print_usage unless attributes.drop_while { |arg| arg.include?(':') }.count == 0
         
-        @orm = gemfile_included?("mongoid") ? 'mongoid' : 'active_record'
+        @orm = using_mongoid? ? 'mongoid' : 'active_record'
         
         setting_model_attributes
         if options[:model]
            generate_model
-           if options.migration? && @orm == 'active_record'
+           if options.migration? && !using_mongoid?
               generate_migration
             end
         end
@@ -44,11 +44,12 @@ module Fetty
         end
         
         if options.test?
-          generate_test
+          generate_test_unit if using_test_unit?
+          generate_specs if using_rspec?
         end
         
       rescue Exception => e
-         puts e.message
+         print_notes(e.message,"error",:red)
       end
       
 private 
@@ -71,7 +72,7 @@ private
       
       def generate_controller
         begin
-          template 'controllers/controller.rb', controller_name(:path)
+          template "controllers/#{@orm}/controller.rb", controller_name(:path)
         rescue Exception => e
           raise e
         end
@@ -105,22 +106,22 @@ private
         end
       end
       
-      def generate_test
-        if folder_exists?("test")
-          template "test/test_unit/controller.rb", "test/functional/#{plural_name}_controller_test.rb"
-          template "test/test_unit/fixtures.yml", "test/fixtures/#{plural_name}.yml"
-          template "test/test_unit/model.rb", "test/unit/#{singular_name}_test.rb"
-          template "test/test_unit/helper.rb", "test/unit/helpers/#{plural_name}_helper_test.rb"
-        end
-        
-        if folder_exists?("spec")
-          template "test/rspec/controller.rb", "spec/controllers/#{plural_name}_controller_spec.rb"
-          template "test/rspec/model.rb", "spec/models/#{singular_name}_spec.rb"
-          template "test/rspec/helper.rb", "spec/helpers/#{plural_name}_helper_test.rb"
-          template "test/rspec/request.rb", "spec/requests/#{singular_name}_spec.rb.rb"
-          template "test/rspec/routing.rb", "spec/routing/#{plural_name}_routing_spec.rb"
-          template "test/rspec/factories.rb", "spec/support/#{singular_name}_factories.rb"
-        end
+      def generate_test_unit
+        template "test/test_unit/controller.rb", "test/functional/#{plural_name}_controller_test.rb"
+        template "test/test_unit/fixtures.yml", "test/fixtures/#{plural_name}.yml"
+        template "test/test_unit/model.rb", "test/unit/#{singular_name}_test.rb"
+        template "test/test_unit/helper.rb", "test/unit/helpers/#{plural_name}_helper_test.rb"
+      rescue Exception => e
+        raise e
+      end
+      
+      def generate_specs
+        template "test/rspec/controller.rb", "spec/controllers/#{plural_name}_controller_spec.rb"
+        template "test/rspec/model.rb", "spec/models/#{singular_name}_spec.rb"
+        template "test/rspec/helper.rb", "spec/helpers/#{plural_name}_helper_test.rb"
+        template "test/rspec/request.rb", "spec/requests/#{singular_name}_spec.rb.rb"
+        template "test/rspec/routing.rb", "spec/routing/#{plural_name}_routing_spec.rb"
+        template "test/rspec/factories.rb", "spec/support/#{singular_name}_factories.rb"
       rescue Exception => e
         raise e
       end

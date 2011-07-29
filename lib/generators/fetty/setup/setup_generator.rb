@@ -10,7 +10,6 @@ module Fetty
       class_option :carrierwave, :desc => 'Install carrierwave for handling file attachment', :type => :boolean, :default => true
       class_option :kaminari, :desc => 'Install kaminari for pagination', :type => :boolean, :default => true 
       class_option :ckeditor, :desc => 'Install ckeditor for WYSIWYG editor', :type => :boolean, :default => true
-      class_option :thinking_sphinx, :desc => 'Install thinking-sphinx for full text search', :type => :boolean, :default => true
       class_option :test, :desc => 'Setup all test framework rspec / cucumber, capybara, guard, etc.', :type => :boolean, :default => true
       
       # optional
@@ -23,9 +22,10 @@ module Fetty
         @selected_gems.each do |gems|
           ask_user_to_setup_gem(gems)
         end
+        remove_file 'public/index.html' if file_exists?('public/index.html')
+        remove_file 'public/images/rails.png' if file_exists?('public/images/rails.png')
       rescue Exception => e
-        puts e.message
-        puts "Please run `bundle install`, then re-run `rails g fetty:setup`"
+        print_notes(e.message,"error",:red)
       end
       
 private
@@ -48,7 +48,6 @@ private
       def setup_cancan
         add_gem("cancan")
         copy_file 'ability.rb', 'app/models/ability.rb'
-        print_notes("modify app/controllers/application_controller.rb")
         inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base" do
           "\n   rescue_from CanCan::AccessDenied do |exception| flash[:alert] = exception.message; redirect_to root_url end;"
         end
@@ -102,61 +101,7 @@ private
         raise e
       end
       
-      def setup_thinking_sphinx
-        unless options['mongoid']
-          add_gem('thinking-sphinx', '~> 2.0.3')
-          unless file_contains?("app/controllers/application_controller.rb","helper_method :sort_column, :sort_direction")
-            print_notes("modify app/controllers/application_controller.rb")
-            inject_into_file 'app/controllers/application_controller.rb', :after => 'protect_from_forgery' do
-                "\n\thelper_method :sort_column, :sort_direction\n" +
-                "\n\tdef sort_column " +
-                "\n\t\tparams[:sort].blank? ? 'created_at' : params[:sort]" +
-                "\n\tend\n" +
-                "\n\tdef sort_direction " +
-                "\n\t\t%w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'" +
-                "\n\tend\n"
-            end
-          end
-          
-          unless file_contains?("app/helpers/application_helper.rb","def sortable(column, title = nil)")
-            print_notes("modify app/helpers/application_helper.rb")
-            inject_into_file 'app/helpers/application_helper.rb', :after => 'module ApplicationHelper' do
-              "\n\tdef sortable(column, title = nil)" +
-              "\n\t\ttitle ||= column.titleize" +
-              "\n\t\tdirection = column == sort_column && sort_direction == 'asc' ? 'desc' : 'asc'" +
-              "\n\t\t" + 'css_class = column == sort_column ? "current #{sort_direction}" : nil' +
-              "\n\t\tlink_to title, params.merge(:sort => column, :direction => direction, :page => nil), { :class => css_class }" +
-              "\n\tend\n"
-            end
-          end
-          
-          puts "\n*****************************************************************************************"
-          puts "\n"
-          puts "\t  SETUP SPHINX"
-          puts "\n"
-          puts "\t  Please ensure that you already install sphinx for your platform properly!"
-          puts "\t  example to use Thinking Sphinx's command :"
-          puts "\n"
-          puts "\t\t  # To create index data for Sphinx using Thinking Sphinx's settings"
-          puts "\n"
-          puts "\t\t\t  rake thinking_sphinx:index "
-          puts "\n"
-          puts "\t\t  # To start a Sphinx searchd daemon using Thinking Sphinx's settings"
-          puts "\n"
-          puts "\t\t\t  rake thinking_sphinx:start "
-          puts "\n"
-          puts "*****************************************************************************************\n"
-          
-        else
-          print_notes("thinking-sphinx only works with MySQL / Postgresql")
-        end
-      rescue Exception => e
-        raise e
-      end
-      
       def setup_test
-        print_notes("Install test framework for TDD/BDD")
-        
         gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
         
         group_gems =  "\ngroup :development, :test do"
@@ -184,19 +129,13 @@ private
         
         opt = ask("=> Would you like to install Cucumber? [yes]")
         if opt == "yes" || opt.blank?
-          add_gem("cucumber-rails", group => [:development, :test])
-          add_gem("guard-cucumber", group => [:development, :test])
+          add_gem("cucumber-rails", :group => [:development, :test])
+          add_gem("guard-cucumber", :group => [:development, :test])
           generate("cucumber:install", "--rspec", "--capybara")
           `guard init cucumber`
         end
         
-        puts "\n*****************************************************************************************"
-        puts "\n"
-        puts "\t SETUP GROWL"
-        puts "\n"
-        puts "\t\t   Please make sure you already install growl with growlnotify!!"
-        puts "\n"
-        puts "*****************************************************************************************\n"
+        print_notes("Please make sure you already install growl with growlnotify!!")
         
       rescue Exception => e
         raise e 

@@ -15,7 +15,7 @@ module Fetty
       def generate_messages
         @model_path = "app/models/user.rb"
         if file_exists?(@model_path)
-          @orm = gemfile_included?("mongoid") ? 'mongoid' : 'active_record'
+          @orm = using_mongoid? ? 'mongoid' : 'active_record'
           add_gem("ancestry")
           copy_models_and_migrations
           copy_controller_and_helper
@@ -24,20 +24,20 @@ module Fetty
           must_load_lib_directory
           add_routes
         else
-          puts "You don't have User model, please install some authentication first!"
+          print_notes("You don't have User model, please install some authentication first!","Error",:red)
         end
       rescue Exception => e
-          puts e.message
+        print_notes(e.message,"error",:red)
       end
       
 private 
       
       def copy_models_and_migrations
         code = "\n\t has_many :messages" + "\n\t include UsersMessages"
-        text = (@orm == 'active_record') ? "ActiveRecord::Base" : "include Mongoid::Timestamps"
+        text = using_mongoid? ? "include Mongoid::Timestamps" : "ActiveRecord::Base"
         
         copy_file "models/#{@orm}/message.rb", "app/models/message.rb"
-        migration_template "models/active_record/create_messages.rb", "db/migrate/create_messages.rb" if @orm == 'active_record'
+        migration_template "models/active_record/create_messages.rb", "db/migrate/create_messages.rb" unless using_mongoid?
         copy_file "lib/users_messages.rb", "lib/users_messages.rb"
         inject_into_file @model_path, code, :after => text
       end
