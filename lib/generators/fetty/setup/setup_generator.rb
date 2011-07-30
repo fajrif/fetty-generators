@@ -17,10 +17,14 @@ module Fetty
       class_option :only, :desc => 'Install gems only these mentioned.', :type => :array, :default => []
       
       def install_gems_dependencies
-        ask_user_to_setup_gem('mongoid') if options['mongoid']
+        asking "Would you like to setup mongoid gem?" do
+          setup_mongoid
+        end while options['mongoid']
         @selected_gems = options.only.empty? ? options.reject { |k,v| k == "only" || k == "mongoid" || v == false }.keys : options.only
         @selected_gems.each do |gems|
-          ask_user_to_setup_gem(gems)
+          asking "Would you like to setup #{gems} gem?" do
+            send("setup_#{gems}")
+          end
         end
         remove_file 'public/index.html' if file_exists?('public/index.html')
         remove_file 'public/images/rails.png' if file_exists?('public/images/rails.png')
@@ -29,13 +33,6 @@ module Fetty
       end
       
 private
-      
-      def ask_user_to_setup_gem(name)
-        opt = ask("=> Would you like setup #{name} gem? [yes]")
-        if opt == "yes" || opt.blank?
-          send("setup_#{name}")
-        end
-      end
       
       def setup_mongoid
         add_gem("bson_ext")
@@ -48,8 +45,8 @@ private
       def setup_cancan
         add_gem("cancan")
         copy_file 'ability.rb', 'app/models/ability.rb'
-        inject_into_file 'app/controllers/application_controller.rb', :after => "class ApplicationController < ActionController::Base" do
-          "\n   rescue_from CanCan::AccessDenied do |exception| flash[:alert] = exception.message; redirect_to root_url end;"
+        inject_into_class 'app/controllers/application_controller.rb', ApplicationController do
+          "  rescue_from CanCan::AccessDenied do |exception| flash[:alert] = exception.message; redirect_to root_url end;\n"
         end
       rescue Exception => e
         raise e
@@ -70,11 +67,11 @@ private
       end
       
       def setup_carrierwave
-        print_notes("carrierwave will use mini_magick by default (you can cofigure later)")
         add_gem("mini_magick")
         add_gem("carrierwave")
         copy_file 'image_uploader.rb', 'app/uploaders/image_uploader.rb'
         copy_file 'file_uploader.rb', 'app/uploaders/file_uploader.rb'
+        print_notes("carrierwave will use mini_magick by default!")
       rescue Exception => e
         raise e
       end
@@ -127,8 +124,7 @@ private
         template 'spec_helper.rb', 'spec/spec_helper.rb'
         `guard init rspec`
         
-        opt = ask("=> Would you like to install Cucumber? [yes]")
-        if opt == "yes" || opt.blank?
+        asking "Would you like to install Cucumber?" do
           add_gem("cucumber-rails", :group => [:development, :test])
           add_gem("guard-cucumber", :group => [:development, :test])
           generate("cucumber:install", "--rspec", "--capybara")
@@ -136,7 +132,6 @@ private
         end
         
         print_notes("Please make sure you already install growl with growlnotify!!")
-        
       rescue Exception => e
         raise e 
       end

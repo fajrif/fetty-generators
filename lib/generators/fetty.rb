@@ -63,7 +63,7 @@ protected
             FileUtils.rm_r(destination_path(path), :force => true)
           end
         rescue Exception => e
-          puts e.message
+          raise e
         end
       end
       
@@ -72,8 +72,17 @@ protected
           print_notes("Extracting #{filepath}")
           system("tar -C '#{destination_path(destinationpath)}' -xzf '#{root_path(filepath)}' #{foldername}/")
         rescue Exception => e
-          puts e.message
+          raise e
         end
+      end
+      
+      def asking(messages,&block)
+        opt = ask("=> #{messages} [yes]")
+        if opt == "yes" || opt.blank?
+          yield
+        end
+      rescue Exception => e
+        raise e
       end
       
       def print_notes(message,notes = "notes",color = :yellow)
@@ -160,6 +169,15 @@ protected
       
       def using_rspec?
         gemfile_included?("rspec") && folder_exists?("spec")
+      rescue Exception => e
+        raise e
+      end
+      
+      def using_fetty_authentication?
+        file_exists?("app/controllers/users_controller.rb") &&
+        file_exists?("app/controllers/sessions_controller.rb") &&
+        file_exists?("app/controllers/reset_passwords_controller.rb") &&
+        file_exists?("lib/users_authentication.rb")
       rescue Exception => e
         raise e
       end

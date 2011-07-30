@@ -78,9 +78,9 @@ class MessagesController < ApplicationController
 
 	def token
     query = "%" + params[:q] + "%"
-    recipients = User.select("id,email").where("email like ?", query)
+    recipients = User.select("id,username").where("username like ?", query)
     respond_to do |format|
-      format.json { render :json => recipients.map { |u| { "id" => u.id, "name" => u.email} } }
+      format.json { render :json => recipients.map { |u| { "id" => u.id, "name" => u.username} } }
     end
 	end
 

@@ -21,9 +21,9 @@
 			flag = convTree.where(:copies => false).empty?
 			display_names = convTree.collect do |c|
 				unless flag
-					c.copies ? "me" : c.from.email
+					c.copies ? "me" : c.from.username
 				else
-					c.to.email
+					c.to.username
 				end
 			end.uniq.join(", ").concat( convTree.count > 1 ? " (#{convTree.count})" : "")
 			

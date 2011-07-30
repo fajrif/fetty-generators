@@ -93,7 +93,6 @@ module UsersAuthentication
     receiver.send :attr_accessor, :password, :password_confirmation
     receiver.send :before_save, :prepare_password
     receiver.send :before_create, :prepare_activation
-    receiver.send :after_create, :send_activation_mail
     
     receiver.extend ClassMethods
     receiver.send :include, InstanceMethods

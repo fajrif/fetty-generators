@@ -22,6 +22,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(:username => params[:username], :email => params[:email], :password => params[:password], :password_confirmation => params[:password_confirmation])
     if @user.save
+      @user.send_activation_mail
       redirect_to new_session_url, :notice => "Activation link has been sent to your email. Please activate first!"
     else
       raise "Unable to create user account."

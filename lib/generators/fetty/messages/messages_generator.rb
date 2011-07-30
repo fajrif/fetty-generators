@@ -8,23 +8,28 @@ module Fetty
     class MessagesGenerator < Base
       include Rails::Generators::Migration
       
+      class_option :destroy, :desc => 'Destroy fetty:messages', :type => :boolean, :default => false
+      
       # have to inject this tag on application.html.erb layout
       # <%= link_to "inbox(#{current_user.inbox(:opened => false).count})", messages_path(:inbox), :id => "inbox-link" %> |
       
-      
       def generate_messages
-        @model_path = "app/models/user.rb"
-        if file_exists?(@model_path)
-          @orm = using_mongoid? ? 'mongoid' : 'active_record'
-          add_gem("ancestry")
-          copy_models_and_migrations
-          copy_controller_and_helper
-          copy_views
-          copy_assets
-          must_load_lib_directory
-          add_routes
+        if options.destroy?
+          destroy_messages
         else
-          print_notes("You don't have User model, please install some authentication first!","Error",:red)
+          @model_path = "app/models/user.rb"
+          if file_exists?(@model_path)
+            @orm = using_mongoid? ? 'mongoid' : 'active_record'
+            using_mongoid? ? add_gem("mongoid-ancestry") : add_gem("ancestry")
+            copy_models_and_migrations
+            copy_controller_and_helper
+            copy_views
+            copy_assets
+            must_load_lib_directory
+            add_routes
+          else
+            raise "You don't have User model, please install some authentication first!"
+          end
         end
       rescue Exception => e
         print_notes(e.message,"error",:red)
@@ -33,13 +38,13 @@ module Fetty
 private 
       
       def copy_models_and_migrations
-        code = "\n\t has_many :messages" + "\n\t include UsersMessages"
-        text = using_mongoid? ? "include Mongoid::Timestamps" : "ActiveRecord::Base"
-        
         copy_file "models/#{@orm}/message.rb", "app/models/message.rb"
         migration_template "models/active_record/create_messages.rb", "db/migrate/create_messages.rb" unless using_mongoid?
         copy_file "lib/users_messages.rb", "lib/users_messages.rb"
-        inject_into_file @model_path, code, :after => text
+        inject_into_class @model_path, User do
+          "  include UsersMessages\n"
+          + "  has_many :messages\n" unless using_mongoid?
+        end
       end
       
       def copy_controller_and_helper
@@ -72,6 +77,23 @@ private
         route 'post "/messages/empty/:messagebox" => "messages#empty", :as => "empty_messages"'
         route 'get "/messages/new" => "messages#new", :as => "new_messages"'
         route 'get "/messages/token" => "messages#token", :as => "token_messages"'
+      end
+      
+      def destroy_messages
+        asking "Are you sure want to destroy fetty:messages?" do
+          remove_file "app/models/message.rb"
+          run('rm db/migrate/*_create_messages.rb') unless using_mongoid?
+          remove_file "lib/users_messages.rb"
+          gsub_file 'app/models/user.rb', /has_many :messages/, '' unless using_mongoid?
+          gsub_file 'app/models/user.rb', /include SessionsAuthentication/, ''
+          remove_file "app/controllers/messages_controller.rb"
+          remove_file "app/helpers/messages_helper.rb"
+          remove_dir "app/views/messages"
+          remove_file 'public/stylesheets/messages.css'
+          remove_file 'public/stylesheets/token-input-facebook.css'
+          remove_file 'public/javascripts/messages.js'
+          remove_file 'public/javascripts/jquery.tokeninput.js'
+        end
       end
       
       # FIXME: Should be proxied to ActiveRecord::Generators::Base
