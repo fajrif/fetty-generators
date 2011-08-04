@@ -19,7 +19,7 @@ module Fetty
       def install_gems_dependencies
         asking "Would you like to setup mongoid gem?" do
           setup_mongoid
-        end while options['mongoid']
+        end if options['mongoid']
         @selected_gems = options.only.empty? ? options.reject { |k,v| k == "only" || k == "mongoid" || v == false }.keys : options.only
         @selected_gems.each do |gems|
           asking "Would you like to setup #{gems} gem?" do

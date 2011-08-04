@@ -1,9 +1,25 @@
-class Message < ActiveRecord::Base  
-
+class Message
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  include Mongoid::Ancestry
+  
   has_ancestry
-
+  
   belongs_to :user
-
+  
+  field :user_id, :type => String
+  field :sender_id, :type => String
+  field :recipient_id, :type => String
+  field :subject_id, :type => String
+  field :subject, :type => String
+  field :content, :type => String
+  field :opened, :type => Boolean, :default => false
+  field :deleted, :type => Boolean, :default => false
+  field :copies, :type => Boolean, :default => false
+  field :ancestry, :type => String
+  
+  validates_presence_of :user_id, :sender_id, :recipient_id, :subject_id, :subject, :content
+  
   attr_accessible :user_id,
                   :sender_id,
                   :recipient_id,
@@ -14,9 +30,9 @@ class Message < ActiveRecord::Base
                   :deleted,
                   :copies,
                   :parent_id
-
+  
   def self.sequence_subject_id
-    id = self.maximum(:subject_id)
+    id = self.maximum(:subject_id).to_i
     id = 0 if id.nil?
     id += 1
     id

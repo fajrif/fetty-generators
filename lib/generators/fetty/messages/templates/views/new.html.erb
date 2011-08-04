@@ -5,7 +5,7 @@
 <div> 
 	<%= render :partial => "tabs_panel" %>
     <div id="tabs-messages" style="padding-top:50px;">
-		<%= form_tag create_messages_path, :method => :post do %>
+		<%= form_tag messages_path, :method => :post do %>
 			<p>
 			  	<%= label_tag :user_tokens, "User" %><br />
 			  	<%= text_field_tag :user_tokens %>

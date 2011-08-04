@@ -26,7 +26,7 @@ RSpec.configure do |config|
   # config.use_transactional_fixtures = true
   
   config.before(:suite) do
-    DatabaseCleaner.strategy = <%= options['mongoid'] ? ':truncation' : ':transaction' %>
+    DatabaseCleaner.strategy = <%= using_mongoid? ? ':truncation' : ':transaction' %>
   end
   
   config.before(:each) do

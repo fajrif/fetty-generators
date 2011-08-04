@@ -1,11 +1,11 @@
 <ul class="tabs">
     <li class=<%= "active" if @messagebox == "inbox" %>>	
-    	<%= link_to "Inbox", messages_path(:inbox) %>
+    	<%= link_to "Inbox", box_messages_path(:inbox) %>
     </li>
     <li class=<%= "active" if @messagebox == "outbox" %>>	
-    	<%= link_to "Outbox", messages_path(:outbox) %>
+    	<%= link_to "Outbox", box_messages_path(:outbox) %>
     </li>
     <li class=<%= "active" if @messagebox == "trash" %>>	
-    	<%= link_to "Trash", messages_path(:trash) %>
+    	<%= link_to "Trash", box_messages_path(:trash) %>
     </li>
 </ul>

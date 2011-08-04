@@ -19,14 +19,20 @@ module Fetty
         else
           @model_path = "app/models/user.rb"
           if file_exists?(@model_path)
-            @orm = using_mongoid? ? 'mongoid' : 'active_record'
-            using_mongoid? ? add_gem("mongoid-ancestry") : add_gem("ancestry")
-            copy_models_and_migrations
-            copy_controller_and_helper
-            copy_views
-            copy_assets
-            must_load_lib_directory
-            add_routes
+            unless using_mongoid?
+              @orm = using_mongoid? ? 'mongoid' : 'active_record'
+              using_mongoid? ? add_gem("mongoid-ancestry") : add_gem("ancestry")
+              copy_models_and_migrations
+              copy_controller_and_helper
+              copy_views
+              copy_assets
+              must_load_lib_directory
+              add_routes
+              generate_test_unit if using_test_unit?
+              generate_specs if using_rspec?
+            else
+              raise "Sorry, fetty:messages only works with ActiveRecord !!"
+            end
           else
             raise "You don't have User model, please install some authentication first!"
           end
@@ -41,9 +47,10 @@ private
         copy_file "models/#{@orm}/message.rb", "app/models/message.rb"
         migration_template "models/active_record/create_messages.rb", "db/migrate/create_messages.rb" unless using_mongoid?
         copy_file "lib/users_messages.rb", "lib/users_messages.rb"
+        
         inject_into_class @model_path, User do
-          "  include UsersMessages\n"
-          + "  has_many :messages\n" unless using_mongoid?
+          "\n  has_many :messages" +
+          "\n  include UsersMessages\n"
         end
       end
       
@@ -70,13 +77,28 @@ private
       end
       
       def add_routes
-        route 'get "/messages(/:messagebox)" => "messages#index", :as => "messages", :constraints => { :messagebox => /inbox|outbox|trash/ }'
-        route 'get "/messages/:messagebox/show/:id" => "messages#show", :as => "show_messages", :constraints => { :messagebox => /inbox|outbox|trash/ }'
-        route 'post "/messages/create" => "messages#create", :as => "create_messages"'
-        route 'post "/messages/update" => "messages#update", :as => "update_messages"'
-        route 'post "/messages/empty/:messagebox" => "messages#empty", :as => "empty_messages"'
-        route 'get "/messages/new" => "messages#new", :as => "new_messages"'
-        route 'get "/messages/token" => "messages#token", :as => "token_messages"'
+        inject_into_file "config/routes.rb", :after => "Application.routes.draw do" do
+          "\n\n\t resources :messages, :only => [:new, :create] do" +
+          "\n\t   collection do" +
+          "\n\t     get 'token' => 'messages#token', :as => 'token'" +
+          "\n\t     post 'empty/:messagebox' => 'messages#empty', :as => 'empty'" +
+          "\n\t     put 'update' => 'messages#update'" +
+          "\n\t     get ':messagebox/show/:id' => 'messages#show', :as => 'show', :constraints => { :messagebox => /inbox|outbox|trash/ }" +
+          "\n\t     get '(/:messagebox)' => 'messages#index', :as => 'box', :constraints => { :messagebox => /inbox|outbox|trash/ }" +
+          "\n\t   end" +
+          "\n\t end\n"
+        end
+      end
+      
+      def generate_test_unit
+        
+      end
+      
+      def generate_specs
+        copy_file "spec/controllers/messages_controller_spec.rb", "spec/controllers/messages_controller_spec.rb"
+        copy_file "spec/models/message_spec.rb", "spec/models/message_spec.rb"
+        copy_file "spec/routing/messages_routing_spec.rb", "spec/routing/messages_routing_spec.rb"
+        copy_file "spec/support/message_factories.rb", "spec/support/message_factories.rb"
       end
       
       def destroy_messages
@@ -84,8 +106,8 @@ private
           remove_file "app/models/message.rb"
           run('rm db/migrate/*_create_messages.rb') unless using_mongoid?
           remove_file "lib/users_messages.rb"
-          gsub_file 'app/models/user.rb', /has_many :messages/, '' unless using_mongoid?
-          gsub_file 'app/models/user.rb', /include SessionsAuthentication/, ''
+          gsub_file 'app/models/user.rb', /has_many :messages/, ''
+          gsub_file 'app/models/user.rb', /include UsersMessages/, ''
           remove_file "app/controllers/messages_controller.rb"
           remove_file "app/helpers/messages_helper.rb"
           remove_dir "app/views/messages"
@@ -93,6 +115,14 @@ private
           remove_file 'public/stylesheets/token-input-facebook.css'
           remove_file 'public/javascripts/messages.js'
           remove_file 'public/javascripts/jquery.tokeninput.js'
+          gsub_file 'config/routes.rb', /resources :messages.*:constraints => { :messagebox => \/inbox|outbox|trash\/ }(\s*end){2}/m, ''
+          
+          if using_rspec?
+            remove_file "spec/controllers/messages_controller_spec.rb"
+            remove_file "spec/models/message_spec.rb"
+            remove_file "spec/routing/messages_routing_spec.rb"
+            remove_file "spec/support/message_factories.rb"
+          end
         end
       end
       

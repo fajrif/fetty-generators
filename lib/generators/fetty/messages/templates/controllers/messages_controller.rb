@@ -3,7 +3,7 @@ class MessagesController < ApplicationController
   def index
     @messagebox = params[:messagebox].blank? ? "inbox" : params[:messagebox]
     @messages = current_user.send(@messagebox).group(:subject_id).page(params[:page]).per(10)
-
+    
     case @messagebox
     when "trash"
       @options = ["Read","Unread","Delete","Undelete"]
@@ -25,7 +25,7 @@ class MessagesController < ApplicationController
       else
         @user_tokens = @messages.last.sender_id
       end
-
+      
       read_unread_messages(true, *@messages)
     end
 	end
@@ -37,7 +37,7 @@ class MessagesController < ApplicationController
     unless params[:user_tokens].blank? or params[:subject].blank? or params[:content].blank?
       recipients = User.find(params[:user_tokens].split(",").collect { |id| id.to_i })
       if current_user.send_message?(:recipients => recipients, :subject_id => params[:subject_id], :subject => params[:subject], :content => params[:content], :parent_id => params[:parent_id])
-          redirect_to messages_url, :notice => 'Successfully send message.'
+          redirect_to box_messages_url(:inbox), :notice => 'Successfully send message.'
         else
           flash.now[:alert] = "Unable to send message."
           render "new"
@@ -51,12 +51,10 @@ class MessagesController < ApplicationController
 	def update
     unless params[:messages].nil?
       message = current_user.send(params[:messagebox]).find(params[:messages])
-
       message.each do |message|
         messages = message.root.subtree
-
         if params[:option].downcase == "read"
-          read_unread_messages(true,*messages)  
+          read_unread_messages(true,*messages)
         elsif params[:option].downcase == "unread"
           read_unread_messages(false,*messages)
         elsif params[:option].downcase == "delete"
@@ -66,13 +64,13 @@ class MessagesController < ApplicationController
         end
       end
     end
-    redirect_to messages_url(params[:messagebox]) 
+    redirect_to box_messages_url(params[:messagebox]) 
 	end
 
 	def empty
    unless params[:messagebox].nil?
       current_user.empty_messages(params[:messagebox].to_sym => true)
-      redirect_to messages_url(params[:messagebox]), :notice => "Successfully delete all messages."
+      redirect_to box_messages_url(params[:messagebox]), :notice => "Successfully delete all messages."
    end
 	end
 
@@ -99,11 +97,11 @@ private
   end
 
 	def delete_messages(isDelete, *messages)
-    messages.each do |msg|  
+    messages.each do |msg|
       if isDelete
-        msg.delete  
+        msg.delete
       else
-        msg.undelete  
+        msg.undelete
       end 
     end
 	end

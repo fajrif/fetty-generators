@@ -5,14 +5,14 @@
 <div>
 	<%= render :partial => "tabs_panel" %>
 	<div id="tabs-messages" style="padding-top:50px;">
-		<%= form_tag create_messages_path, :method => :post do %>
+		<%= form_tag messages_path, :method => :post do %>
 			<h3><%= @messages.last.subject %></h3>
 			
 			  <% for msg in @messages %>
 		    	<div class="message">
 				  <div class="created_at"><%= msg.created_at.strftime("%B %d, %Y") %></div>
 				  <div class="content">
-					<strong><%= msg.from.email %></strong><br />
+					<strong><%= msg.from.username %></strong><br />
 				    <%= msg.content %>
 				  </div>
 				</div>

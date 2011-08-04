@@ -38,12 +38,6 @@ describe User do
     @user.should have(1).error_on(:password)
   end
   
-  it "should have unique username / email in the database" do
-    user = Factory(:user)
-    @user.save
-    @user.should have(1).error_on(:username) && have(1).error_on(:email)
-  end
-  
 end
 
 describe User, "Authentication Methods" do

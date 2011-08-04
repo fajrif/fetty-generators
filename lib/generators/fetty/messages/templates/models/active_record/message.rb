@@ -14,9 +14,11 @@ class Message < ActiveRecord::Base
                   :deleted,
                   :copies,
                   :parent_id
-
+  
+  validates_presence_of :user_id, :sender_id, :recipient_id, :subject_id, :subject, :content
+  
   def self.sequence_subject_id
-    id = self.maximum(:subject_id)
+    id = self.maximum(:subject_id).to_i
     id = 0 if id.nil?
     id += 1
     id
