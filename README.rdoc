@@ -1,70 +1,75 @@
 = Fetty Generators
 
-If you are a fan of railscast.com by Ryan Bates, you could found so many useful plugins / gems that ryan covers to us how to use it, 
-and if you familiar with nifty_scaffold by ryanb, or always working with it alongside Devise + CanCan for authetication and authorization,
-you may try to use this generators to build your basic Rails application quickly up-and-running. 
-This generators are inherited from nifty-generators, but change a little-bit in the result of scaffolding.
+Gem dependencies :
+- CanCan
+- simple_form
+- ckeditor 3.5.4
+- kaminari
+- carrierwave
+- etc. (it will automatically setup the gems)
 
-fetty (as i choose the name as a brother of nifty) have a little extra features like :
-- using simple_form as a default generated form.
-- add some extra AJAX features to search and sorting using meta_search, and pagination in your index page.
-- using Devise(josevalim) for authentication and CanCan(ryanb) for authorizations [optional].
-- giving the default checking abilities like ( can? :read ) in your views for authorizations.
-- closable flash message.
-- alow you pass custom field:type such as paperclip / tinymce in scaffolding.
-
-it also provides for ERB and HAML template. Ups sorry this generators only works for Rails 3
+This generators only works with Rails 3
 
 == Setup
 
 === Rails 3
 
-require gems to be install first.
+Add the gem into your Gemfile.
 
-  gem install meta_where meta_search simple_form will_paginate jquery-rails devise cancan paperclip tinymce
+  gem 'fetty-generators', :group => :development
 
-And add the gem to your Gemfile.
+run the setup first!
 
-  gem "fetty-generators", :group => :development
+  rails g fetty:setup
 
-generate the setup first before you can generate layout / scaffolding
+or if you like to using with MongoDB, this generator will works with mongoid
 
-  rails generate fetty:setup
+  rails g fetty:setup --mongoid
 
-Then you can run layout generator to generate your application layout.
+Then generate the layout
 
-  rails generate fetty:layout
+  rails g fetty:views layout
 
-And then you just simply type the command "fetty:scaffold" for scaffolding
+And then you just simply type the command `fetty:scaffold` for scaffolding
 
-  rails g fetty:scaffold Post title:string content:text
+  rails g fetty:scaffold post title:string content:text published:boolean
 
-after that simply run the migration "rake db:migrate" and start your server "rails s"
+Don't forget to run `rake db:migrate` if you are using ActiveRecord
 
 == Additional field type
 
-You could also passing custom field type in your arguments, 'for example you want to use paperclip for handle your attachment 
-and you also want to use tinymce for editor in your textarea'
+This version using carrierwave for handling an attachment and ckeditor for WYSIWYG editor,
+by passing 'image', 'file' and 'editor' as an argument when generate a scaffolding.
 
-  rails g fetty:scaffold Post title:string content:tinymce photo:paperclip
+  rails g fetty:scaffold post title:string content:editor photo:image attachment:file
 
-this will generate the required column names for paperclip into your migration file and also configured the model, controller and views.
+== Fetty:Authentication
 
-== Included Generators
+This generator will generate simple authentication for your rails app.
 
-* fetty:layout: generates generic layout, stylesheet, and helper files.
-* fetty:scaffold: generates a controller and optional model/migration.
-* fetty:setup: configure your gems needed by fetty-generators.
+  rails g fetty:authentication
 
-To view the README for each generator, run it with the +help+ option.
+after generate the authentication you may need to change root_url on 'config/routes.rb'
+and setting your ActionMailer email address on 'config/initializers/setup_mail.rb'
 
-  rails g fetty:layout --help
+== Fetty:Messages
 
+This generator will generate simple messaging system for your rails app
+
+  rails g fetty:messages
+
+Required you to have user model, please generate `fetty:authentication` first
+at this moment `fetty:messages` only works with ActiveRecord.
+
+== Test Framework
+
+By default `fetty:setup` will asking you to setup Rspec / Cucumber,
+and it also setup "guard-rspec" and "guard-cucumber".
 
 == Found a bug?
 
-This is stil under development mode, if you are regularly work with ERB template, this generators will works fine,
-But if you are having some problem with Fetty Generators, please submit an issue here.
+This is stil under development mode, if you are having some problem with Fetty Generators, 
+please submit an issue here.
 
 http://github.com/fajrif/fetty-generators/issues
 
