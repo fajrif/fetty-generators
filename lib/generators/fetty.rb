@@ -27,7 +27,7 @@ protected
           gem name, options
           
           if bundle_need_refresh?
-            install_gem(name,options)
+            refresh_bundle(false)
           end
         end
       rescue Exception => e
@@ -96,21 +96,21 @@ protected
         exit
       end
       
-      def install_gem(name,options = {})
+      def install_gem(name,version = "")
         print_notes("Installing #{name}")
         ::Bundler.with_clean_env do
-          unless options.empty?
-            system("gem install #{name} -v=#{options}")
-          else
+          if version.blank?
             system("gem install #{name}")
+          else
+            system("gem install #{name} -v=#{version}")
           end
         end
       rescue Exception => e
         raise e
       end
       
-      def refresh_bundle
-        print_notes('Refresh bundle')
+      def refresh_bundle(verbose = true)
+        print_notes('Refresh bundle') if verbose
         ::Bundler.with_clean_env do
          `bundle install`
         end

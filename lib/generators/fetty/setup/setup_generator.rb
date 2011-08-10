@@ -38,6 +38,9 @@ private
         add_gem("bson_ext")
         add_gem("mongoid")
         generate("mongoid:config")
+        inject_into_file "config/application.rb", :after => "Rails::Application" do
+          "\n\t\tconfig.mongoid.preload_models = true"
+        end
       rescue Exception => e
         raise e
       end
@@ -119,15 +122,18 @@ private
         refresh_bundle
         
         copy_file 'escape_utils.rb', 'config/initializers/escape_utils.rb'
+        destroy("spec")
         generate("rspec:install")
         remove_file 'spec/spec_helper.rb'
-        template 'spec_helper.rb', 'spec/spec_helper.rb'
+        template 'spec_helper.rb', 'spec/spec_helper.rb', :force => true
         `guard init rspec`
         
         asking "Would you like to install Cucumber?" do
           add_gem("cucumber-rails", :group => [:development, :test])
           add_gem("guard-cucumber", :group => [:development, :test])
+          destroy("features")
           generate("cucumber:install", "--rspec", "--capybara")
+          template 'env.rb', 'features/support/env.rb', :force => true
           `guard init cucumber`
         end
         
