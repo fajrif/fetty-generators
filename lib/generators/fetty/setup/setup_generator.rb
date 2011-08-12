@@ -28,6 +28,8 @@ module Fetty
         end
         remove_file 'public/index.html' if file_exists?('public/index.html')
         remove_file 'public/images/rails.png' if file_exists?('public/images/rails.png')
+        print_notes("Refreshing Bundle")
+        refresh_bundle
       rescue Exception => e
         print_notes(e.message,"error",:red)
       end
@@ -35,18 +37,18 @@ module Fetty
 private
       
       def setup_mongoid
-        add_gem("bson_ext")
-        add_gem("mongoid")
-        generate("mongoid:config")
-        inject_into_file "config/application.rb", :after => "Rails::Application" do
-          "\n\t\tconfig.mongoid.preload_models = true"
+        add_gem do
+          gem "bson_ext"
+          gem "mongoid"
         end
+        generate("mongoid:config")
+        set_application_config { "  config.mongoid.preload_models = true\n" }
       rescue Exception => e
         raise e
       end
       
       def setup_cancan
-        add_gem("cancan")
+        add_gem { gem "cancan" }
         copy_file 'ability.rb', 'app/models/ability.rb'
         inject_into_class 'app/controllers/application_controller.rb', ApplicationController do
           "  rescue_from CanCan::AccessDenied do |exception| flash[:alert] = exception.message; redirect_to root_url end;\n"
@@ -54,24 +56,26 @@ private
       rescue Exception => e
         raise e
       end
-       
+      
       def setup_jquery_rails
-        add_gem("jquery-rails")
+        add_gem { gem "jquery-rails" }
         generate("jquery:install")
       rescue Exception => e
         raise e
       end
       
       def setup_simple_form
-        add_gem("simple_form")
+        add_gem { gem "simple_form" }
         generate("simple_form:install")
       rescue Exception => e
         raise e
       end
       
       def setup_carrierwave
-        add_gem("mini_magick")
-        add_gem("carrierwave")
+        add_gem do
+          gem "mini_magick"
+          gem "carrierwave"
+        end
         copy_file 'image_uploader.rb', 'app/uploaders/image_uploader.rb'
         copy_file 'file_uploader.rb', 'app/uploaders/file_uploader.rb'
         print_notes("carrierwave will use mini_magick by default!")
@@ -80,7 +84,7 @@ private
       end
       
       def setup_kaminari
-        add_gem("kaminari")
+        add_gem { gem "kaminari" }
       rescue Exception => e
         raise e
       end
@@ -90,11 +94,11 @@ private
         destroy("public/javascripts/ckeditor")
         ver = ask("==> What version of CKEditor javascript files do you need? [default 3.5.4]")
         if ver == "3.5.4" || ver.blank?
-          add_gem("ckeditor","3.5.4")
+          add_gem { gem "ckeditor", "3.5.4" }
           template "ckeditor.rb", "config/initializers/ckeditor.rb"
           extract("setup/templates/ckeditor.tar.gz","public/javascripts","ckeditor")
         else
-          add_gem("ckeditor",ver)
+          add_gem { gem "ckeditor", ver }
           generate("ckeditor:base --version=#{ver}")
         end
       rescue Exception => e
@@ -102,24 +106,22 @@ private
       end
       
       def setup_test
-        gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
+        # remove the existing install (if any)
+        destroy("Guardfile")
         
-        group_gems =  "\ngroup :development, :test do"
-        group_gems << "\n  gem 'rspec-rails'"
-        group_gems << "\n  gem 'capybara'"
-        group_gems << "\n  gem 'factory_girl_rails'"
-        group_gems << "\n  gem 'faker'"
-        group_gems << "\n  gem 'database_cleaner'"
-        group_gems << "\n  gem 'escape_utils'"
-        group_gems << "\n  gem 'guard-rspec'"
-        group_gems << "\n  if RUBY_PLATFORM =~ /darwin/i"
-        group_gems << "\n      gem 'rb-fsevent', :require => false"
-        group_gems << "\n      gem 'growl'"
-        group_gems << "\n  end"
-        group_gems << "\nend\n"
-        
-        File.open(gemfile, 'a') { |f| f.write(group_gems) }
-        refresh_bundle
+        add_gem do
+          gem 'rspec-rails', :group => [:development, :test]
+          gem 'capybara', :group => [:development, :test] 
+          gem 'factory_girl_rails', :group => [:development, :test] 
+          gem 'faker', :group => [:development, :test] 
+          gem 'database_cleaner', :group => [:development, :test]
+          gem 'escape_utils', :group => [:development, :test]
+          gem 'guard-rspec', :group => [:development, :test]
+          if RUBY_PLATFORM =~ /darwin/i
+              gem 'rb-fsevent', :group => [:development, :test], :require => false
+              gem 'growl', :group => [:development, :test]
+          end
+        end
         
         copy_file 'escape_utils.rb', 'config/initializers/escape_utils.rb'
         destroy("spec")
@@ -129,9 +131,11 @@ private
         `guard init rspec`
         
         asking "Would you like to install Cucumber?" do
-          add_gem("cucumber-rails", :group => [:development, :test])
-          add_gem("guard-cucumber", :group => [:development, :test])
           destroy("features")
+          add_gem do
+            gem "cucumber-rails", :group => [:development, :test]
+            gem "guard-cucumber", :group => [:development, :test] 
+          end
           generate("cucumber:install", "--rspec", "--capybara")
           template 'env.rb', 'features/support/env.rb', :force => true
           `guard init cucumber`

@@ -25,29 +25,32 @@ module Fetty
         print_usage unless scaffold_name.underscore =~ /^[a-z][a-z0-9_\/]+$/ && !attributes.empty?
         print_usage unless attributes.drop_while { |arg| arg.include?(':') }.count == 0
         
-        @orm = using_mongoid? ? 'mongoid' : 'active_record'
-        
-        setting_model_attributes
-        if options[:model]
-           generate_model
-           if options.migration? && !using_mongoid?
-              generate_migration
-            end
+        if fetty_scaffold_gem_installed?
+          @orm = using_mongoid? ? 'mongoid' : 'active_record'
+          
+          setting_model_attributes
+          if options[:model]
+             generate_model
+             if options.migration? && !using_mongoid?
+                generate_migration
+              end
+          end
+          
+          if options.controller?
+             setting_controller_attributes
+             generate_controller
+             generate_helper
+             generate_views
+             generate_routes
+          end
+          
+          if options.test?
+            generate_test_unit if using_test_unit?
+            generate_specs if using_rspec?
+          end
+        else
+          raise "Missing gems: jquery-rails, simple_form, kaminari, ckeditor, carrierwave"
         end
-        
-        if options.controller?
-           setting_controller_attributes
-           generate_controller
-           generate_helper
-           generate_views
-           generate_routes
-        end
-        
-        if options.test?
-          generate_test_unit if using_test_unit?
-          generate_specs if using_rspec?
-        end
-        
       rescue Exception => e
          print_notes(e.message,"error",:red)
       end

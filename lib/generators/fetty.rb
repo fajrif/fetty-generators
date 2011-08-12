@@ -1,8 +1,6 @@
-require 'rubygems'
-require 'rubygems/command.rb'
-require 'rubygems/dependency_installer.rb'
 require 'rails/generators/base'
 require 'bundler'
+require 'bundler/dsl'
 
 module Fetty
   module Generators
@@ -18,24 +16,9 @@ module Fetty
       
 protected
       
-      def add_gem(name, options = {})
-        unless gemfile_included? name 
-          gemfile = File.expand_path(destination_path("Gemfile"), __FILE__)
-          gemfile_content = File.read(gemfile)
-          File.open(gemfile, 'a') { |f| f.write("\n") } unless gemfile_content =~ /\n\Z/
-          
-          gem name, options
-          
-          if bundle_need_refresh?
-            refresh_bundle(false)
-          end
-        end
-      rescue Exception => e
-        raise e
-      end
-      
-      def gemfile_included?(name)
-        file_contains?("Gemfile",name)
+      def add_gem(&block)
+        yield
+        refresh_bundle
       rescue Exception => e
         raise e
       end
@@ -54,6 +37,13 @@ protected
       
       def folder_exists?(path)
         File.directory? path
+      end
+      
+      def class_exists?(class_name)
+        klass = Rails.application.class.parent_name.constantize.const_get(class_name)
+        return klass.is_a?(Class)
+      rescue NameError
+        return false
       end
       
       def destroy(path)
@@ -86,9 +76,13 @@ protected
       end
       
       def print_notes(message,notes = "notes",color = :yellow)
-        puts        '', '='*80
-        say_status  "#{notes}", "#{message}", color
-        puts        '='*80, ''; sleep 0.5
+        unless message.blank?
+          puts        '', '='*80
+          say_status  "#{notes}", "#{message}", color
+          puts        '='*80, ''; sleep 0.5
+        else
+          puts "\n"
+        end
       end
       
       def print_usage
@@ -96,61 +90,63 @@ protected
         exit
       end
       
-      def install_gem(name,version = "")
-        print_notes("Installing #{name}")
+      def install_gem(name,version = nil)
         ::Bundler.with_clean_env do
-          if version.blank?
-            system("gem install #{name}")
+          if version
+            `gem install #{name} -v=#{version}`
           else
-            system("gem install #{name} -v=#{version}")
+            `gem install #{name}`
           end
         end
       rescue Exception => e
         raise e
       end
       
-      def refresh_bundle(verbose = true)
-        print_notes('Refresh bundle') if verbose
+      def check_installed_gem(name,version = nil)
         ::Bundler.with_clean_env do
-         `bundle install`
+          if version
+            `gem list #{name} -i -v=#{version}`
+          else
+            `gem list #{name} -i`
+          end
         end
       rescue Exception => e
         raise e
       end
       
-      def bundle_need_refresh?
+      def refresh_bundle
         ::Bundler.with_clean_env do
-          `bundle check`
+          `bundle`
         end
-        $? == 0 ? false : true
       rescue Exception => e
         raise e
       end
       
-      def file_contains?(filename,check_string)
-        file = File.expand_path(destination_path(filename), __FILE__)
-        if File.exist?(file)
-          file_content = File.read(file)
-          file_content.include?(check_string) ? true : false
-        else
-          false
+      def set_application_config(&block)
+        inject_into_class "config/application.rb", "Application" do
+          yield
         end
       rescue Exception => e
-        raise e 
+        raise e
       end
       
       def must_load_lib_directory
-        unless file_contains?("config/application.rb",'config.autoload_paths += %W(#{config.root}/lib)')
-          inject_into_file "config/application.rb", :after => "Rails::Application" do
-            "\n\t\t" + 'config.autoload_paths += %W(#{config.root}/lib)'
-          end
+        set_application_config do
+          '  config.autoload_paths += %W(#{config.root}/lib)' + "\n"
         end
+      end
+      
+      def gemfile_included?(name)
+        ::Bundler.with_clean_env do
+          `bundle show #{name}`
+        end
+        $?.exitstatus == 0 ? true : false
       rescue Exception => e
         raise e
       end
       
       def using_cancan?
-        gemfile_included?("cancan") && file_exists?("app/models/ability.rb")
+        gemfile_included?("cancan") && class_exists?("Ability")
       rescue Exception => e
         raise e
       end
@@ -174,15 +170,25 @@ protected
       end
       
       def using_fetty_authentication?
-        file_exists?("app/controllers/users_controller.rb") &&
-        file_exists?("app/controllers/sessions_controller.rb") &&
-        file_exists?("app/controllers/reset_passwords_controller.rb") &&
-        file_exists?("lib/users_authentication.rb")
+        class_exists?("UsersController") &&
+        class_exists?("SessionsController") &&
+        class_exists?("ResetPasswordsController") &&
+        class_exists?("User")
       rescue Exception => e
         raise e
       end
       
+      def fetty_scaffold_gem_installed?
+        gemfile_included?("jquery-rails") &&
+        gemfile_included?("simple_form") &&
+        gemfile_included?("kaminari") &&
+        gemfile_included?("carrierwave") &&
+        gemfile_included?("ckeditor")
+      rescue Exception => e
+        raise e
+      end
       
     end
   end
 end
+

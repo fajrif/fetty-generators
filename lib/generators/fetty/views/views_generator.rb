@@ -13,7 +13,7 @@ module Fetty
         when "erb:to:haml"
           erb_to_haml
         when "haml:to:erb"
-          haml_to_erb 
+          haml_to_erb
         end
       rescue Exception => e
         print_notes(e.message,"error",:red)
@@ -35,13 +35,64 @@ private
       end
       
       def erb_to_haml
-        print_notes("It will convert your *.html.erb files in 'app/views' to *.html.haml")
+        asking "Are you sure want to convert all your views from ERB to HAML ? [yes]" do
+          
+          # Dir["app/views/**/*.erb"].each do |file_name|
+          #   puts "Convert ERB: #{file_name}"
+          #   haml_file_name = file_name.gsub(/erb$/, "haml")
+          #   unless file_exists? haml_file_name
+          #     erb_string = File.open(file_name).read
+          #     haml_string = Haml::HTML.new(erb_string, :erb => true).render
+          #     f = File.new(haml_file_name, "w")
+          #     f.write(haml_string)
+          #     File.delete(file_name)
+          #   end
+          # end
+          
+        end
       rescue Exception => e
         raise e
       end
       
       def haml_to_erb
-        print_notes("It will convert your *.html.haml files in 'app/views' to *.html.erb")
+        asking "Are you sure want to convert all your views from HAML to ERB ? [yes]" do
+          
+          # #Cycles through the views folder and searches for erb files
+          # Dir["app/views/**/*.erb"].each do |file_name|
+          #   puts "Hamlifying: #{file_name}"
+          #   #Creates a new file path for the haml to be exported to
+          #   haml_file_name = file_name.gsub(/erb$/, "haml")
+          #   #If haml is missing create it and get rid of the erb
+          #   if !File.exist?(haml_file_name)
+          #     #Reads erb from file
+          #     erb_string = File.open(file_name).read
+          #     #Converts erb to haml
+          #     haml_string = Haml::HTML.new(erb_string, :erb => true).render
+          #     #Writes the haml
+          #     f = File.new(haml_file_name, "w") 
+          #     f.write(haml_string)
+          #     #Gets rid of the erb
+          #     File.delete(file_name)
+          #   end
+          # end
+          
+        end
+      rescue Exception => e
+        raise e
+      end
+      
+      def convert_views(in_type,out_type)
+        # Dir["app/views/**/*.#{in_type}"].each do |file_name|
+        #   puts "Convert #{first_type.capitalize}: #{file_name}"
+        #   out_file_name = file_name.gsub(/#{first_type}$/, second_type)
+        #   unless file_exists? out_file_name
+        #     erb_string = File.open(file_name).read
+        #     haml_string = Haml::HTML.new(erb_string, :erb => true).render
+        #     f = File.new(haml_file_name, "w")
+        #     f.write(haml_string)
+        #     File.delete(file_name)
+        #   end
+        # end
       rescue Exception => e
         raise e
       end

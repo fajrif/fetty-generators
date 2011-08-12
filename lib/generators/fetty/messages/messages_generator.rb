@@ -21,7 +21,7 @@ module Fetty
           if file_exists?(@model_path)
             unless using_mongoid?
               @orm = using_mongoid? ? 'mongoid' : 'active_record'
-              using_mongoid? ? add_gem("mongoid-ancestry") : add_gem("ancestry")
+              add_gem { gem "ancestry" }
               copy_models_and_migrations
               copy_controller_and_helper
               copy_views
