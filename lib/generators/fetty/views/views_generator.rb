@@ -4,16 +4,14 @@ module Fetty
   module Generators
     class ViewsGenerator < Base
       
-      argument :arg, :type => :string, :required => true, :banner => 'layout | erb:to:haml | haml:to:erb'
+      argument :arg, :type => :string, :required => true, :banner => 'layout | erb_to_haml'
       
       def generate_views
         case arg
         when "layout"
-          generate_layout 
-        when "erb:to:haml"
+          generate_layout
+        when "erb_to_haml"
           erb_to_haml
-        when "haml:to:erb"
-          haml_to_erb
         end
       rescue Exception => e
         print_notes(e.message,"error",:red)
@@ -37,50 +35,32 @@ private
       def erb_to_haml
         asking "Are you sure want to convert all your views from ERB to HAML ?" do
           # => Cycles through the views folder and searches for erb files
-          # prepare_convert_gems
-          # Dir.glob("app/views/**/*.erb").each do |file|
-          #   puts "Convert ERB: #{file}"
-          #   unless file_exists? file.gsub(/erb$/, "haml")
-          #     `html2haml #{file} | cat > #{file.gsub(/erb$/, "haml")}`
-          #     File.delete(file)
-          #   end
-          # end
-        end
-      rescue Exception => e
-        raise e
-      end
-      
-      def haml_to_erb
-        asking "Are you sure want to convert all your views from HAML to ERB ? [yes]" do
-          # => Cycles through the views folder and searches for haml files
+          prepare_convert_gems
+          ::Bundler.with_clean_env do
+            Dir.glob("app/views/**/*.erb").each do |file|
+              out_file = file.gsub(/erb$/, "haml")
+              unless file_exists? out_file
+                puts "Convert ERB: #{file} => HAML: #{out_file}"
+                `html2haml #{file} | cat > #{out_file}`
+                File.delete(file) if $? == 0
+              else
+                puts "WARNING: '#{out_file}' already exists!"
+              end
+            end
+          end
         end
       rescue Exception => e
         raise e
       end
       
       def prepare_convert_gems
-        # install_gem "haml-rails" unless check_installed_gem? "haml-rails"
-        # install_gem "hpricot" unless check_installed_gem? "hpricot"
-        # install_gem "ruby_parser" unless check_installed_gem? "ruby_parser"
+        add_gem { gem "haml-rails" }
+        install_local_gem "hpricot" unless check_local_gem? "hpricot"
+        install_local_gem "ruby_parser" unless check_local_gem? "ruby_parser"
       rescue Exception => e
         raise e
       end
       
-      def convert_views(in_type,out_type)
-        # Dir["app/views/**/*.#{in_type}"].each do |file_name|
-        #   puts "Convert #{first_type.capitalize}: #{file_name}"
-        #   out_file_name = file_name.gsub(/#{first_type}$/, second_type)
-        #   unless file_exists? out_file_name
-        #     erb_string = File.open(file_name).read
-        #     haml_string = Haml::HTML.new(erb_string, :erb => true).render
-        #     f = File.new(haml_file_name, "w")
-        #     f.write(haml_string)
-        #     File.delete(file_name)
-        #   end
-        # end
-      rescue Exception => e
-        raise e
-      end
       
     end
   end
