@@ -90,7 +90,7 @@ protected
         exit
       end
       
-      def install_gem(name,version = nil)
+      def install_local_gem(name,version = nil)
         ::Bundler.with_clean_env do
           if version
             `gem install #{name} -v=#{version}`
@@ -98,11 +98,12 @@ protected
             `gem install #{name}`
           end
         end
+        $? == 0 ? true : false
       rescue Exception => e
         raise e
       end
       
-      def check_installed_gem?(name,version = nil)
+      def check_local_gem?(name,version = nil)
         ::Bundler.with_clean_env do
           if version
             `gem list #{name} -i -v=#{version}`
@@ -110,6 +111,7 @@ protected
             `gem list #{name} -i`
           end
         end
+        $? == 0 ? true : false
       rescue Exception => e
         raise e
       end
