@@ -9,7 +9,7 @@ module Fetty
       def generate_views
         case arg
         when "layout"
-          generate_layout
+          generate_layout 
         when "erb:to:haml"
           erb_to_haml
         when "haml:to:erb"
@@ -35,20 +35,16 @@ private
       end
       
       def erb_to_haml
-        asking "Are you sure want to convert all your views from ERB to HAML ? [yes]" do
-          
-          # Dir["app/views/**/*.erb"].each do |file_name|
-          #   puts "Convert ERB: #{file_name}"
-          #   haml_file_name = file_name.gsub(/erb$/, "haml")
-          #   unless file_exists? haml_file_name
-          #     erb_string = File.open(file_name).read
-          #     haml_string = Haml::HTML.new(erb_string, :erb => true).render
-          #     f = File.new(haml_file_name, "w")
-          #     f.write(haml_string)
-          #     File.delete(file_name)
+        asking "Are you sure want to convert all your views from ERB to HAML ?" do
+          # => Cycles through the views folder and searches for erb files
+          # prepare_convert_gems
+          # Dir.glob("app/views/**/*.erb").each do |file|
+          #   puts "Convert ERB: #{file}"
+          #   unless file_exists? file.gsub(/erb$/, "haml")
+          #     `html2haml #{file} | cat > #{file.gsub(/erb$/, "haml")}`
+          #     File.delete(file)
           #   end
           # end
-          
         end
       rescue Exception => e
         raise e
@@ -56,27 +52,16 @@ private
       
       def haml_to_erb
         asking "Are you sure want to convert all your views from HAML to ERB ? [yes]" do
-          
-          # #Cycles through the views folder and searches for erb files
-          # Dir["app/views/**/*.erb"].each do |file_name|
-          #   puts "Hamlifying: #{file_name}"
-          #   #Creates a new file path for the haml to be exported to
-          #   haml_file_name = file_name.gsub(/erb$/, "haml")
-          #   #If haml is missing create it and get rid of the erb
-          #   if !File.exist?(haml_file_name)
-          #     #Reads erb from file
-          #     erb_string = File.open(file_name).read
-          #     #Converts erb to haml
-          #     haml_string = Haml::HTML.new(erb_string, :erb => true).render
-          #     #Writes the haml
-          #     f = File.new(haml_file_name, "w") 
-          #     f.write(haml_string)
-          #     #Gets rid of the erb
-          #     File.delete(file_name)
-          #   end
-          # end
-          
+          # => Cycles through the views folder and searches for haml files
         end
+      rescue Exception => e
+        raise e
+      end
+      
+      def prepare_convert_gems
+        # install_gem "haml-rails" unless check_installed_gem? "haml-rails"
+        # install_gem "hpricot" unless check_installed_gem? "hpricot"
+        # install_gem "ruby_parser" unless check_installed_gem? "ruby_parser"
       rescue Exception => e
         raise e
       end

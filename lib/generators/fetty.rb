@@ -102,7 +102,7 @@ protected
         raise e
       end
       
-      def check_installed_gem(name,version = nil)
+      def check_installed_gem?(name,version = nil)
         ::Bundler.with_clean_env do
           if version
             `gem list #{name} -i -v=#{version}`
@@ -178,12 +178,11 @@ protected
         raise e
       end
       
-      def fetty_scaffold_gem_installed?
-        gemfile_included?("jquery-rails") &&
-        gemfile_included?("simple_form") &&
-        gemfile_included?("kaminari") &&
-        gemfile_included?("carrierwave") &&
-        gemfile_included?("ckeditor")
+      def check_required_gems?(*names)
+        names.each do |name|
+          return false unless gemfile_included? name
+        end
+        true
       rescue Exception => e
         raise e
       end

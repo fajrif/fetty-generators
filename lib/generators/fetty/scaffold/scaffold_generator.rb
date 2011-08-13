@@ -25,7 +25,7 @@ module Fetty
         print_usage unless scaffold_name.underscore =~ /^[a-z][a-z0-9_\/]+$/ && !attributes.empty?
         print_usage unless attributes.drop_while { |arg| arg.include?(':') }.count == 0
         
-        if fetty_scaffold_gem_installed?
+        if check_required_gems? "jquery-rails", "simple_form", "kaminari", "ckeditor", "carrierwave"
           @orm = using_mongoid? ? 'mongoid' : 'active_record'
           
           setting_model_attributes
