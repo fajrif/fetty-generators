@@ -37,10 +37,8 @@ module Fetty
 private
       
       def setup_mongoid
-        add_gem do
-          gem "bson_ext"
-          gem "mongoid"
-        end
+        gem "bson_ext"
+        gem "mongoid"
         generate("mongoid:config")
         set_application_config { "  config.mongoid.preload_models = true\n" }
       rescue Exception => e
@@ -48,7 +46,7 @@ private
       end
       
       def setup_cancan
-        add_gem { gem "cancan" }
+        gem "cancan"
         copy_file 'ability.rb', 'app/models/ability.rb'
         inject_into_class 'app/controllers/application_controller.rb', ApplicationController do
           "  rescue_from CanCan::AccessDenied do |exception| flash[:alert] = exception.message; redirect_to root_url end;\n"
@@ -58,24 +56,22 @@ private
       end
       
       def setup_jquery_rails
-        add_gem { gem "jquery-rails" }
+        gem "jquery-rails"
         generate("jquery:install")
       rescue Exception => e
         raise e
       end
       
       def setup_simple_form
-        add_gem { gem "simple_form" }
+        gem "simple_form"
         generate("simple_form:install")
       rescue Exception => e
         raise e
       end
       
       def setup_carrierwave
-        add_gem do
-          gem "mini_magick"
-          gem "carrierwave"
-        end
+        gem "mini_magick"
+        gem "carrierwave"
         copy_file 'image_uploader.rb', 'app/uploaders/image_uploader.rb'
         copy_file 'file_uploader.rb', 'app/uploaders/file_uploader.rb'
         print_notes("carrierwave will use mini_magick by default!")
@@ -84,7 +80,7 @@ private
       end
       
       def setup_kaminari
-        add_gem { gem "kaminari" }
+        gem "kaminari"
       rescue Exception => e
         raise e
       end
@@ -94,11 +90,11 @@ private
         destroy("public/javascripts/ckeditor")
         ver = ask("==> What version of CKEditor javascript files do you need? [default 3.5.4]")
         if ver == "3.5.4" || ver.blank?
-          add_gem { gem "ckeditor", "3.5.4" }
+          gem "ckeditor", "3.5.4"
           template "ckeditor.rb", "config/initializers/ckeditor.rb"
           extract("setup/templates/ckeditor.tar.gz","public/javascripts","ckeditor")
         else
-          add_gem { gem "ckeditor", ver }
+          gem "ckeditor", ver
           generate("ckeditor:base --version=#{ver}")
         end
       rescue Exception => e
@@ -109,18 +105,16 @@ private
         # remove the existing install (if any)
         destroy("Guardfile")
         
-        add_gem do
-          gem 'rspec-rails', :group => [:development, :test]
-          gem 'capybara', :group => [:development, :test] 
-          gem 'factory_girl_rails', :group => [:development, :test] 
-          gem 'faker', :group => [:development, :test] 
-          gem 'database_cleaner', :group => [:development, :test]
-          gem 'escape_utils', :group => [:development, :test]
-          gem 'guard-rspec', :group => [:development, :test]
-          if RUBY_PLATFORM =~ /darwin/i
-              gem 'rb-fsevent', :group => [:development, :test], :require => false
-              gem 'growl', :group => [:development, :test]
-          end
+        gem 'rspec-rails', :group => [:development, :test]
+        gem 'capybara', :group => [:development, :test] 
+        gem 'factory_girl_rails', :group => [:development, :test] 
+        gem 'faker', :group => [:development, :test] 
+        gem 'database_cleaner', :group => [:development, :test]
+        gem 'escape_utils', :group => [:development, :test]
+        gem 'guard-rspec', :group => [:development, :test]
+        if RUBY_PLATFORM =~ /darwin/i
+            gem 'rb-fsevent', :group => [:development, :test], :require => false
+            gem 'growl', :group => [:development, :test]
         end
         
         copy_file 'escape_utils.rb', 'config/initializers/escape_utils.rb'
@@ -132,10 +126,8 @@ private
         
         asking "Would you like to install Cucumber?" do
           destroy("features")
-          add_gem do
-            gem "cucumber-rails", :group => [:development, :test]
-            gem "guard-cucumber", :group => [:development, :test] 
-          end
+          gem "cucumber-rails", :group => [:development, :test]
+          gem "guard-cucumber", :group => [:development, :test] 
           generate("cucumber:install", "--rspec", "--capybara")
           template 'env.rb', 'features/support/env.rb', :force => true
           `guard init cucumber`

@@ -54,7 +54,7 @@ private
       end
       
       def prepare_convert_gems
-        add_gem { gem "haml-rails" }
+        gem "haml-rails"
         install_local_gem "hpricot" unless check_local_gem? "hpricot"
         install_local_gem "ruby_parser" unless check_local_gem? "ruby_parser"
       rescue Exception => e

@@ -16,7 +16,7 @@ module Fetty
         else
           unless using_fetty_authentication?
             @orm = using_mongoid? ? 'mongoid' : 'active_record'
-            add_gem { gem "bcrypt-ruby", :require => "bcrypt" }
+            gem "bcrypt-ruby", :require => "bcrypt"
             generate_users
             generate_sessions
             generate_reset_passwords

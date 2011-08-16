@@ -16,13 +16,6 @@ module Fetty
       
 protected
       
-      def add_gem(&block)
-        yield
-        refresh_bundle
-      rescue Exception => e
-        raise e
-      end
-      
       def root_path(path)
         File.expand_path(File.join(File.dirname(__FILE__), 'fetty', path))
       end
@@ -193,3 +186,7 @@ protected
   end
 end
 
+# => set callback on when calling +gem+
+set_trace_func proc { |event, file, line, id, binding, classname| 
+  ::Bundler.with_clean_env { `bundle` } if classname == Rails::Generators::Actions && id == :gem && event == 'return'
+}
