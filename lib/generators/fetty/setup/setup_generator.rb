@@ -23,13 +23,15 @@ module Fetty
         @selected_gems = options.only.empty? ? options.reject { |k,v| k == "only" || k == "mongoid" || v == false }.keys : options.only
         @selected_gems.each do |gems|
           asking "Would you like to setup #{gems} gem?" do
-            send("setup_#{gems}")
+            send("setup_#{gems.gsub('-','_')}")
           end
         end
-        remove_file 'public/index.html' if file_exists?('public/index.html')
-        remove_file 'public/images/rails.png' if file_exists?('public/images/rails.png')
-        print_notes("Refreshing Bundle")
-        refresh_bundle
+        if options.only.empty?
+          remove_file 'public/index.html' if file_exists?('public/index.html')
+          remove_file 'public/images/rails.png' if file_exists?('public/images/rails.png')
+          print_notes("Refreshing Bundle")
+          refresh_bundle
+        end
       rescue Exception => e
         print_notes(e.message,"error",:red)
       end

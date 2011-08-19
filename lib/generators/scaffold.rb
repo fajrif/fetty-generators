@@ -18,8 +18,10 @@ module Fetty
              if arg.include?(':file') || arg.include?(':image') || arg.include?(':editor')
                self.special_types[arg.split(':').first] = arg.split(':').last.to_sym
                if arg.include?(':editor')
+                 raise "Missing gems: ckeditor" unless check_required_gems? "ckeditor"
                  self.model_attributes << Rails::Generators::GeneratedAttribute.new(arg.split(':').first, "text")
                else
+                 raise "Missing gems: carrierwave" unless check_required_gems? "carrierwave"
                  self.model_attributes << Rails::Generators::GeneratedAttribute.new(arg.split(':').first, "string")
                end
              else
