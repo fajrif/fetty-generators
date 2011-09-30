@@ -1,6 +1,10 @@
 <%- if has_type? :editor -%>
 <%% content_for(:head) do %>
+<%- unless rails_3_1? -%>
 	<%%= javascript_include_tag :ckeditor %>
+<%- else -%>
+	<%%= javascript_include_tag "ckeditor/ckeditor.js" %>
+<%- end -%>
 <%% end %>
 <%- end -%>
 <%%= simple_form_for <%= record_or_name_or_array %><%= ", :html => { :multipart => true }" if has_type? :image -%> do |f| %>

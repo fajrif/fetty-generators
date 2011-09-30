@@ -28,6 +28,7 @@ module Fetty
               copy_assets
               must_load_lib_directory
               add_routes
+              insert_links_on_layout
               generate_test_unit if using_test_unit?
               generate_specs if using_rspec?
             else
@@ -42,6 +43,18 @@ module Fetty
       end
       
 private 
+      
+      def insert_links_on_layout
+        inject_into_file "app/views/layouts/application.html.erb", :before => "<%= content_tag :h1, yield(:title) if show_title? %>" do
+          "\n\t <div id='messagebox'>" +
+          "\n\t   <% if user_signed_in? %>" +
+          "\n\t     <%= link_to \"inbox(\#{current_user.inbox(:opened => false).count})\", messages_path(:inbox), :id => 'inbox-link' %>" +
+          "\n\t   <% end %>" +
+          "\n\t </div>\n"
+        end
+      rescue  Exception => e
+        raise e
+      end
       
       def copy_models_and_migrations
         copy_file "models/#{@orm}/message.rb", "app/models/message.rb"

@@ -24,7 +24,7 @@ module Fetty
             edit_application_controller
             must_load_lib_directory
             add_routes
-            copy_file "views/layouts/application.html.erb", "app/views/layouts/application.html.erb"
+            insert_links_on_layout
             generate_test_unit if using_test_unit?
             generate_specs if using_rspec?
             print_notes "Make sure you have defined root_url in your 'config/routes.rb.'"
@@ -37,6 +37,21 @@ module Fetty
       end
       
 private
+      
+      def insert_links_on_layout
+        inject_into_file "app/views/layouts/application.html.erb", :before => "<%= content_tag :h1, yield(:title) if show_title? %>" do
+          "\n\t <div id='loginbox'>" +
+          "\n\t   <% if user_signed_in? %>" +
+          "\n\t     Signed in as <%= link_to current_user.username, user_path(current_user) %> Not You?" +
+          "\n\t     <%= link_to 'Sign out', session_path, :method => :delete %>" +
+          "\n\t   <% else %>" +
+          "\n\t     <%= link_to 'Sign up', new_user_path %> or <%= link_to 'Sign in', new_session_path %>" +
+          "\n\t   <% end %>" +
+          "\n\t </div>\n"
+        end
+      rescue  Exception => e
+        raise e
+      end
       
       def generate_users
         copy_file "controllers/users_controller.rb", "app/controllers/users_controller.rb"

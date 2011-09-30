@@ -182,6 +182,30 @@ protected
         raise e
       end
       
+      def rails_3_1?
+        Rails::VERSION::MAJOR == 3 && Rails::VERSION::MINOR >= 1
+      end
+
+      # overrides Thor::Actions.copy_file
+      def copy_file(source, *args, &block)
+        if rails_3_1? 
+          if args.first =~ /^public/
+            args.first.gsub!(/^public/,"app/assets")
+          end
+          if args.first.include?("javascripts/application.js") or args.first.include?("stylesheets/application.css")
+            last_line = IO.readlines(args.first).last
+            content = IO.read(File.expand_path(find_in_source_paths(source.to_s)))
+            content.gsub!(/images/,"assets")
+            inject_into_file args.first, :after => last_line do
+              content
+            end
+            return
+          end
+        end
+        super
+      end
+      
+      
     end
   end
 end

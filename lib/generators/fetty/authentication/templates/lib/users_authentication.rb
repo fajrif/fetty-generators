@@ -69,7 +69,7 @@ module UsersAuthentication
     private
     
     def generate_token
-      ActiveSupport::SecureRandom.urlsafe_base64
+      SecureRandom.urlsafe_base64
     end
     
     def encrypt_password(pass)

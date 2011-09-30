@@ -27,8 +27,9 @@ module Fetty
           end
         end
         if options.only.empty?
-          remove_file 'public/index.html' if file_exists?('public/index.html')
-          remove_file 'public/images/rails.png' if file_exists?('public/images/rails.png')
+          remove_file 'public/index.html' unless rails_3_1?
+          remove_file 'public/images/rails.png' unless rails_3_1?
+          remove_file 'app/assets/images/rails.png' if rails_3_1?
           print_notes("Refreshing Bundle")
           refresh_bundle
         end
@@ -59,7 +60,7 @@ private
       
       def setup_jquery_rails
         gem "jquery-rails"
-        generate("jquery:install")
+        generate("jquery:install") unless rails_3_1?
       rescue Exception => e
         raise e
       end
@@ -88,13 +89,19 @@ private
       end
       
       def setup_ckeditor
-        # remove the existing install (if any)
-        destroy("public/javascripts/ckeditor")
         ver = ask("==> What version of CKEditor javascript files do you need? [default 3.5.4]")
         if ver == "3.5.4" || ver.blank?
           gem "ckeditor", "3.5.4"
           template "ckeditor.rb", "config/initializers/ckeditor.rb"
-          extract("setup/templates/ckeditor.tar.gz","public/javascripts","ckeditor")
+          unless rails_3_1?
+            # remove the existing install (if any)
+            destroy("public/javascripts/ckeditor")
+            extract("setup/templates/ckeditor.tar.gz","public/javascripts","ckeditor")
+          else
+            destroy("vendor/assets/javascripts/ckeditor")
+            `mkdir vendor/assets/javascripts` unless Dir.exists? "vendor/assets/javascripts"
+            extract("setup/templates/ckeditor.tar.gz","vendor/assets/javascripts","ckeditor")
+          end
         else
           gem "ckeditor", ver
           generate("ckeditor:base --version=#{ver}")

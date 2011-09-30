@@ -1,3 +1,4 @@
+
 body {
   background-color: #D0D0D0;
   font-family: Verdana, Helvetica, Arial;
@@ -33,6 +34,10 @@ input.hint {
 }
 
 #loginbox {
+	float: right;
+}
+
+#messagebox {
 	float: right;
 }
 
