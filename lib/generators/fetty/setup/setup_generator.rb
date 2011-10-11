@@ -121,11 +121,14 @@ private
         gem 'database_cleaner', :group => [:development, :test]
         gem 'escape_utils', :group => [:development, :test]
         gem 'guard-rspec', :group => [:development, :test]
+        gem "spork", "> 0.9.0.rc", :group => [:development, :test]
+        gem "guard-spork", :group => [:development, :test]
         if RUBY_PLATFORM =~ /darwin/i
             gem 'rb-fsevent', :group => [:development, :test], :require => false
             gem 'growl', :group => [:development, :test]
         end
         
+        `guard init spork`
         copy_file 'escape_utils.rb', 'config/initializers/escape_utils.rb'
         destroy("spec")
         generate("rspec:install")
@@ -140,6 +143,11 @@ private
           generate("cucumber:install", "--rspec", "--capybara")
           template 'env.rb', 'features/support/env.rb', :force => true
           `guard init cucumber`
+        end
+        
+        # custom modify cli
+        inject_into_file "Guardfile", :after => /guard 'rspec', :version => 2/ do
+          " , :cli => '--drb'"
         end
         
         print_notes("Please make sure you already install growl with growlnotify!!")
