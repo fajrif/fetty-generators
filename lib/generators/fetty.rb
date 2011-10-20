@@ -39,17 +39,6 @@ protected
         return false
       end
       
-      def destroy(path)
-        begin
-          if file_exists?(path)
-            print_notes("Destroying #{path}")
-            FileUtils.rm_r(destination_path(path), :force => true)
-          end
-        rescue Exception => e
-          raise e
-        end
-      end
-      
       def extract(filepath,destinationpath,foldername)
         begin
           print_notes("Extracting #{filepath}")
@@ -186,9 +175,8 @@ protected
         Rails::VERSION::MAJOR == 3 && Rails::VERSION::MINOR >= 1
       end
 
-      # overrides Thor::Actions.copy_file
-      def copy_file(source, *args, &block)
-        if rails_3_1? 
+      def copy_asset(source, *args, &block)
+        if rails_3_1?
           if args.first =~ /^public/
             args.first.gsub!(/^public/,"app/assets")
           end
@@ -202,9 +190,27 @@ protected
             return
           end
         end
-        super
+        copy_file(source, *args, &block)
       end
       
+      def remove_asset(path, config={})
+        if rails_3_1?
+          if path =~ /^public/
+            path.gsub!(/^public/,"app/assets")
+          end
+        end
+        remove_asset(path, config)
+      end
+      
+      def gem_group(*names, &block)
+        name = names.map(&:inspect).join(", ")
+        log :gemfile, "group #{name}"
+        
+        append_file "Gemfile", "\n## MARK THIS IS GROUP ##\n", :force => true, :verbose => false
+        yield
+        gsub_file 'Gemfile', /## MARK THIS IS GROUP ##/m, "group #{name} do", :verbose => false
+        append_file "Gemfile", "end\n", :force => true, :verbose => false
+      end
       
     end
   end

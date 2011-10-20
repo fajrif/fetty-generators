@@ -83,10 +83,10 @@ private
       end
       
       def copy_assets
-        copy_file 'assets/stylesheets/messages.css', 'public/stylesheets/messages.css'
-        copy_file 'assets/stylesheets/token-input-facebook.css', 'public/stylesheets/token-input-facebook.css'
-        copy_file 'assets/javascripts/messages.js', 'public/javascripts/messages.js'
-        copy_file 'assets/javascripts/jquery.tokeninput.js', 'public/javascripts/jquery.tokeninput.js'
+        copy_asset 'assets/stylesheets/messages.css', 'public/stylesheets/messages.css'
+        copy_asset 'assets/stylesheets/token-input-facebook.css', 'public/stylesheets/token-input-facebook.css'
+        copy_asset 'assets/javascripts/messages.js', 'public/javascripts/messages.js'
+        copy_asset 'assets/javascripts/jquery.tokeninput.js', 'public/javascripts/jquery.tokeninput.js'
       end
       
       def add_routes
@@ -124,10 +124,10 @@ private
           remove_file "app/controllers/messages_controller.rb"
           remove_file "app/helpers/messages_helper.rb"
           remove_dir "app/views/messages"
-          remove_file 'public/stylesheets/messages.css'
-          remove_file 'public/stylesheets/token-input-facebook.css'
-          remove_file 'public/javascripts/messages.js'
-          remove_file 'public/javascripts/jquery.tokeninput.js'
+          remove_asset 'public/stylesheets/messages.css'
+          remove_asset 'public/stylesheets/token-input-facebook.css'
+          remove_asset 'public/javascripts/messages.js'
+          remove_asset 'public/javascripts/jquery.tokeninput.js'
           gsub_file 'config/routes.rb', /resources :messages.*:constraints => { :messagebox => \/inbox|outbox|trash\/ }(\s*end){2}/m, ''
           
           if using_rspec?

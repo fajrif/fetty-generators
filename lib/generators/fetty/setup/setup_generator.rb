@@ -2,7 +2,8 @@ require 'generators/fetty'
 
 module Fetty
   module Generators
-    class SetupGenerator < Base #:nodoc: 
+    class SetupGenerator < Base #:nodoc:
+      
       # required
       class_option :cancan, :desc => 'Install cancan for authorization', :type => :boolean, :default => true 
       class_option :jquery_rails, :desc => 'Install jquery-rails for javascript framework', :type => :boolean, :default => true
@@ -95,10 +96,10 @@ private
           template "ckeditor.rb", "config/initializers/ckeditor.rb"
           unless rails_3_1?
             # remove the existing install (if any)
-            destroy("public/javascripts/ckeditor")
+            remove_file("public/javascripts/ckeditor")
             extract("setup/templates/ckeditor.tar.gz","public/javascripts","ckeditor")
           else
-            destroy("vendor/assets/javascripts/ckeditor")
+            remove_file("vendor/assets/javascripts/ckeditor")
             `mkdir vendor/assets/javascripts` unless Dir.exists? "vendor/assets/javascripts"
             extract("setup/templates/ckeditor.tar.gz","vendor/assets/javascripts","ckeditor")
           end
@@ -111,35 +112,38 @@ private
       end
       
       def setup_test
-        # remove the existing install (if any)
-        destroy("Guardfile")
-        
-        gem 'rspec-rails', :group => [:development, :test]
-        gem 'capybara', :group => [:development, :test] 
-        gem 'factory_girl_rails', :group => [:development, :test] 
-        gem 'faker', :group => [:development, :test] 
-        gem 'database_cleaner', :group => [:development, :test]
-        gem 'escape_utils', :group => [:development, :test]
-        gem 'guard-rspec', :group => [:development, :test]
-        gem "spork", "> 0.9.0.rc", :group => [:development, :test]
-        gem "guard-spork", :group => [:development, :test]
-        if RUBY_PLATFORM =~ /darwin/i
-            gem 'rb-fsevent', :group => [:development, :test], :require => false
-            gem 'growl', :group => [:development, :test]
+        gem_group :development, :test do
+          gem "spork", "> 0.9.0.rc"
+          gem "guard-spork"
+          gem 'rspec-rails'
+          gem 'guard-rspec'
+          gem 'capybara'
+          gem 'factory_girl_rails'
+          gem 'faker'
+          gem 'database_cleaner'
+          gem 'escape_utils'
+          if RUBY_PLATFORM =~ /darwin/i
+            gem 'rb-fsevent', :require => false
+            gem 'growl'
+          end
         end
         
+        # remove the existing Guardfile (if any)
+        remove_file("Guardfile")
+        
+        `guard init`
         `guard init spork`
         copy_file 'escape_utils.rb', 'config/initializers/escape_utils.rb'
-        destroy("spec")
+        remove_file("spec")
         generate("rspec:install")
         remove_file 'spec/spec_helper.rb'
         template 'spec_helper.rb', 'spec/spec_helper.rb', :force => true
         `guard init rspec`
         
         asking "Would you like to install Cucumber?" do
-          destroy("features")
+          remove_file("features")
           gem "cucumber-rails", :group => [:development, :test]
-          gem "guard-cucumber", :group => [:development, :test] 
+          gem "guard-cucumber", :group => [:development, :test]
           generate("cucumber:install", "--rspec", "--capybara")
           template 'env.rb', 'features/support/env.rb', :force => true
           `guard init cucumber`
@@ -148,7 +152,7 @@ private
         # custom modify cli
         inject_into_file "Guardfile", :after => /guard 'rspec', :version => 2/ do
           " , :cli => '--drb'"
-        end
+        end if file_exists? "Guardfile"
         
         print_notes("Please make sure you already install growl with growlnotify!!")
       rescue Exception => e

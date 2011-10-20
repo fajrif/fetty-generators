@@ -24,10 +24,10 @@ private
         copy_file 'application_helper.rb', 'app/helpers/application_helper.rb'
         copy_file 'layout_helper.rb', 'app/helpers/layout_helper.rb'
         copy_file 'error_messages_helper.rb', 'app/helpers/error_messages_helper.rb'
-        copy_file 'application.css', "public/stylesheets/application.css"
-        copy_file 'application.js', 'public/javascripts/application.js'
-        copy_file 'down_arrow.gif', 'public/images/down_arrow.gif'
-        copy_file 'up_arrow.gif', 'public/images/up_arrow.gif'
+        copy_asset 'application.css', 'public/stylesheets/application.css'
+        copy_asset 'application.js', 'public/javascripts/application.js'
+        copy_asset 'down_arrow.gif', 'public/images/down_arrow.gif'
+        copy_asset 'up_arrow.gif', 'public/images/up_arrow.gif'
       rescue Exception => e
         raise e
       end
