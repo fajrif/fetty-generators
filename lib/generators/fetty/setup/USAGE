@@ -1,5 +1,16 @@
 Description:
   The fetty:setup generator will add / install the necessary gems 
   to your Gemfile and automatically configure the gems.
-  
+
+Example:
+
+	rails g fetty:setup
+
+  or to use with mongoid:
+
+	rails g fetty:setup --mongoid
+
+  or to install only test gems:
+
+	rails g fetty:setup --only test
 

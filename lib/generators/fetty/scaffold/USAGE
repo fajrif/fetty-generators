@@ -1,3 +1,16 @@
 Description:
 	The fetty:scaffold generator creates a basic scaffolding
 	using many useful gems.
+
+Additional field type:
+	- editor
+	- image
+	- file
+
+Example:
+
+	rails g fetty:scaffold post title:string content:text published:boolean
+
+  or with additional field type:
+
+	rails g fetty:scaffold post title:string content:editor photo:image attachment:file

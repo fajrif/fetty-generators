@@ -2,3 +2,8 @@ Description:
 	The fetty:messages generator creates a basic messaging system
 	between user in your app.
 
+To Install:
+	rails g fetty:messages
+
+To Remove:
+	rails g fetty:messages --destroy

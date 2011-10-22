@@ -3,3 +3,13 @@ Description:
 	helper which will give some structure to starting your Rails app.
 	
 	Also able to convert your template views from ERB to HAML.
+
+Example:
+
+  to generate default layout:
+
+	rails g fetty:views layout
+
+  to convert all your views from erb to haml:
+
+	rails g fetty:views erb_to_haml

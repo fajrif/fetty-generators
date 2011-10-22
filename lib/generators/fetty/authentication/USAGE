@@ -1,4 +1,9 @@
 Description:
-	The fetty:authentication generator creates a basic messaging system
+	The fetty:authentication generator creates a basic authentication system
 	between user in your app.
 
+To Install:
+	rails g fetty:authentication
+
+To Remove:
+	rails g fetty:authentication --destroy

@@ -74,11 +74,6 @@ Spork.prefork do
     end
   end
 
-<%- if using_fetty_authentication? -%>
-def stub_authenticate_user
-  controller.stub(:authenticate_user!).and_return(true)
-end
-<%- end -%>
 end
 
 Spork.each_run do

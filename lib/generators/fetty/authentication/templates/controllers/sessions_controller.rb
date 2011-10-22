@@ -2,6 +2,9 @@ class SessionsController < ApplicationController
   skip_before_filter :authenticate_user!, :except => [:destroy]
   
   def new
+    if user_signed_in?
+      redirect_to redirect_to_target_or_default_url, :alert => "You already sign-in!"
+    end
   end
   
   def create

@@ -16,7 +16,11 @@ class UsersController < ApplicationController
   end
   
   def new
-    @user = User.new
+    unless user_signed_in?
+      @user = User.new
+    else
+      redirect_to redirect_to_target_or_default_url, :alert => "You already sign-up! Please log-out first."
+    end
   end
   
   def create

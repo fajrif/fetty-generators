@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe UsersController do
   
+  def stub_authenticate_user
+    controller.stub(:authenticate_user!).and_return(true)
+  end
+  
   def test_assigns_user_object(action)
     user = Factory(:user)
     User.stub(:find).with(user.id.to_s).and_return(user)
@@ -26,9 +30,16 @@ describe UsersController do
   end
   
   describe "GET new" do
-    it "assigns a new user as @user" do
+    it "should render sign-up page and assigns a new user as @user" do
       get :new
       assigns(:user).should be_a_new(User)
+      response.should be_success
+    end
+    
+    it "should not render sign-up page if user already sign-in" do
+      controller.stub(:user_signed_in?).and_return(true)
+      get :new
+      flash[:alert].should_not be_nil
     end
   end
   
@@ -126,7 +137,7 @@ describe UsersController do
     end
     
     describe "with valid params" do
-      it "should activate user with given id and token" do
+      it "should activate user with given id and token and redirect to root_path" do
         User.stub(:activate!).with(@user.id.to_s, @user.token).and_return(@user)
         get :activate, :id => @user.id.to_s, :token => @user.token
         assigns(:user).should be_a(User)

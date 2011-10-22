@@ -1,7 +1,7 @@
 Factory.define :message do |f|
-  f.association :user, :factory => :user
-  f.association :sender_id, :factory => :user
-  f.association :recipient_id, :factory => :user
+  f.user_id 1
+  f.sender_id 1
+  f.recipient_id 2
   f.subject_id 1
   f.subject "testing"
   f.content "This is only test !!"

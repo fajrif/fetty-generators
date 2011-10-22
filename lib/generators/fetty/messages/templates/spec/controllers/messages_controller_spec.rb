@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe MessagesController do
+  
+  def stub_authenticate_user
+    controller.stub(:authenticate_user!).and_return(true)
+  end
+  
   before(:each) do
     stub_authenticate_user
     @user = Factory(:user)

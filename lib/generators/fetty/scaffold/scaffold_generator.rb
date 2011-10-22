@@ -109,12 +109,12 @@ private
       end
       
       def generate_specs
-        template "test/spec/controller.rb", "spec/controllers/#{plural_name}_controller_spec.rb"
-        template "test/spec/model.rb", "spec/models/#{singular_name}_spec.rb"
-        template "test/spec/helper.rb", "spec/helpers/#{plural_name}_helper_test.rb"
-        template "test/spec/request.rb", "spec/requests/#{singular_name}_spec.rb.rb"
-        template "test/spec/routing.rb", "spec/routing/#{plural_name}_routing_spec.rb"
-        template "test/spec/factories.rb", "spec/support/#{singular_name}_factories.rb"
+        template "spec/controller.rb", "spec/controllers/#{plural_name}_controller_spec.rb"
+        template "spec/model.rb", "spec/models/#{singular_name}_spec.rb"
+        template "spec/helper.rb", "spec/helpers/#{plural_name}_helper_test.rb"
+        template "spec/request.rb", "spec/requests/#{singular_name}_spec.rb.rb"
+        template "spec/routing.rb", "spec/routing/#{plural_name}_routing_spec.rb"
+        template "spec/factories.rb", "spec/support/#{singular_name}_factories.rb"
       rescue Exception => e
         raise e
       end
