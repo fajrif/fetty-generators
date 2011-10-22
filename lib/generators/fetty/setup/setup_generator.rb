@@ -28,9 +28,6 @@ module Fetty
           end
         end
         if options.only.empty?
-          remove_file 'public/index.html' unless rails_3_1?
-          remove_file 'public/images/rails.png' unless rails_3_1?
-          remove_file 'app/assets/images/rails.png' if rails_3_1?
           print_notes("Refreshing Bundle")
           refresh_bundle
         end
