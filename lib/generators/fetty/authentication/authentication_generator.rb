@@ -25,7 +25,6 @@ module Fetty
             must_load_lib_directory
             add_routes
             insert_links_on_layout
-            generate_test_unit if using_test_unit?
             generate_specs if using_rspec?
             print_notes "Make sure you have defined root_url in your 'config/routes.rb.'"
           else
@@ -120,10 +119,6 @@ private
          end
       end
       
-      def generate_test_unit
-        
-      end
-      
       def generate_specs
         copy_file "spec/controllers/users_controller_spec.rb", "spec/controllers/users_controller_spec.rb"
         copy_file "spec/models/user_spec.rb", "spec/models/user_spec.rb"
@@ -158,10 +153,6 @@ private
           
           gsub_file 'app/controllers/application_controller.rb', /include SessionsAuthentication.*:authenticate_user!/m, ''
           gsub_file 'config/routes.rb', /resources :users.*(\s*end){3}/m, ''
-          
-          if using_test_unit?
-            
-          end
           
           if using_rspec?
             remove_file 'spec/controllers/users_controller_spec.rb'

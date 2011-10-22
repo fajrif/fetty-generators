@@ -29,7 +29,6 @@ module Fetty
               must_load_lib_directory
               add_routes
               insert_links_on_layout
-              generate_test_unit if using_test_unit?
               generate_specs if using_rspec?
             else
               raise "Sorry, fetty:messages only works with ActiveRecord !!"
@@ -101,10 +100,6 @@ private
           "\n\t   end" +
           "\n\t end\n"
         end
-      end
-      
-      def generate_test_unit
-        
       end
       
       def generate_specs

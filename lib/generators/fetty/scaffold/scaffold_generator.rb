@@ -45,7 +45,6 @@ module Fetty
           end
           
           if options.test?
-            generate_test_unit if using_test_unit?
             generate_specs if using_rspec?
           end
         else
@@ -109,22 +108,13 @@ private
         end
       end
       
-      def generate_test_unit
-        template "test/test_unit/controller.rb", "test/functional/#{plural_name}_controller_test.rb"
-        template "test/test_unit/fixtures.yml", "test/fixtures/#{plural_name}.yml"
-        template "test/test_unit/model.rb", "test/unit/#{singular_name}_test.rb"
-        template "test/test_unit/helper.rb", "test/unit/helpers/#{plural_name}_helper_test.rb"
-      rescue Exception => e
-        raise e
-      end
-      
       def generate_specs
-        template "test/rspec/controller.rb", "spec/controllers/#{plural_name}_controller_spec.rb"
-        template "test/rspec/model.rb", "spec/models/#{singular_name}_spec.rb"
-        template "test/rspec/helper.rb", "spec/helpers/#{plural_name}_helper_test.rb"
-        template "test/rspec/request.rb", "spec/requests/#{singular_name}_spec.rb.rb"
-        template "test/rspec/routing.rb", "spec/routing/#{plural_name}_routing_spec.rb"
-        template "test/rspec/factories.rb", "spec/support/#{singular_name}_factories.rb"
+        template "test/spec/controller.rb", "spec/controllers/#{plural_name}_controller_spec.rb"
+        template "test/spec/model.rb", "spec/models/#{singular_name}_spec.rb"
+        template "test/spec/helper.rb", "spec/helpers/#{plural_name}_helper_test.rb"
+        template "test/spec/request.rb", "spec/requests/#{singular_name}_spec.rb.rb"
+        template "test/spec/routing.rb", "spec/routing/#{plural_name}_routing_spec.rb"
+        template "test/spec/factories.rb", "spec/support/#{singular_name}_factories.rb"
       rescue Exception => e
         raise e
       end

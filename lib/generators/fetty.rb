@@ -141,12 +141,6 @@ protected
         raise e
       end
       
-      def using_test_unit?
-        folder_exists?("tests")
-      rescue Exception => e
-        raise e
-      end
-      
       def using_rspec?
         gemfile_included?("rspec") && folder_exists?("spec")
       rescue Exception => e
@@ -205,7 +199,6 @@ protected
       def gem_group(*names, &block)
         name = names.map(&:inspect).join(", ")
         log :gemfile, "group #{name}"
-        
         append_file "Gemfile", "\n## MARK THIS IS GROUP ##\n", :force => true, :verbose => false
         yield
         gsub_file 'Gemfile', /## MARK THIS IS GROUP ##/m, "group #{name} do", :verbose => false

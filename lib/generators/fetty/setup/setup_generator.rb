@@ -11,7 +11,7 @@ module Fetty
       class_option :carrierwave, :desc => 'Install carrierwave for handling file attachment', :type => :boolean, :default => true
       class_option :kaminari, :desc => 'Install kaminari for pagination', :type => :boolean, :default => true 
       class_option :ckeditor, :desc => 'Install ckeditor for WYSIWYG editor', :type => :boolean, :default => true
-      class_option :test, :desc => 'Setup all test framework rspec / cucumber, capybara, guard, etc.', :type => :boolean, :default => true
+      class_option :test, :desc => 'Setup all test framework Rspec / Cucumber, spork, capybara, guard, etc.', :type => :boolean, :default => true
       
       # optional
       class_option :mongoid, :desc => 'Install mongoid for replacing your ORM', :type => :boolean, :default => false
@@ -109,49 +109,50 @@ private
       end
       
       def setup_test
-        gem_group :development, :test do
-          gem "spork", "> 0.9.0.rc"
-          gem "guard-spork"
-          gem 'rspec-rails'
-          gem 'guard-rspec'
-          gem 'capybara'
-          gem 'factory_girl_rails'
-          gem 'faker'
-          gem 'database_cleaner'
-          gem 'escape_utils'
-          if RUBY_PLATFORM =~ /darwin/i
-            gem 'rb-fsevent', :require => false
-            gem 'growl'
+        print_notes("This generator will destroy Test::Unit folder if exist and install RSpec / Cucumber")
+        asking "Do you wish to proceed?" do
+          # remove the existing Guardfile (if any)
+          remove_file("test")
+          gem_group :development, :test do
+            gem "spork", "> 0.9.0.rc"
+            gem "guard-spork"
+            gem 'capybara'
+            gem 'factory_girl_rails'
+            gem 'faker'
+            gem 'database_cleaner'
+            gem 'escape_utils'
+            asking "Would you like to install RSpec?" do
+              gem 'rspec-rails'
+              gem 'guard-rspec'
+              @use_guard_rspec = true
+              copy_file 'escape_utils.rb', 'config/initializers/escape_utils.rb'
+              remove_file("spec", :verbose => false)
+              generate("rspec:install")
+              template 'spec_helper.rb', 'spec/spec_helper.rb', :force => true, :verbose => false
+            end
+            asking "Would you like to install Cucumber?" do
+              gem "cucumber-rails"
+              gem "guard-cucumber"
+              @use_guard_cucumber = true
+              remove_file("features", :verbose => false)
+              if folder_exists? "spec"
+                generate("cucumber:install", "--rspec", "--capybara")
+              else
+                generate("cucumber:install", "--capybara")
+              end
+              template 'env.rb', 'features/support/env.rb', :force => true, :verbose => false
+            end
+            if RUBY_PLATFORM =~ /darwin/i
+              gem 'rb-fsevent', :require => false
+              gem 'growl'
+              print_notes("Please make sure you already install growl with growlnotify!!")
+            end
           end
+          
+          # remove the existing Guardfile (if any)
+          remove_file("Guardfile", :verbose => false)
+          template "Guardfile", "Guardfile", :force => true
         end
-        
-        # remove the existing Guardfile (if any)
-        remove_file("Guardfile")
-        
-        `guard init`
-        `guard init spork`
-        copy_file 'escape_utils.rb', 'config/initializers/escape_utils.rb'
-        remove_file("spec")
-        generate("rspec:install")
-        remove_file 'spec/spec_helper.rb'
-        template 'spec_helper.rb', 'spec/spec_helper.rb', :force => true
-        `guard init rspec`
-        
-        asking "Would you like to install Cucumber?" do
-          remove_file("features")
-          gem "cucumber-rails", :group => [:development, :test]
-          gem "guard-cucumber", :group => [:development, :test]
-          generate("cucumber:install", "--rspec", "--capybara")
-          template 'env.rb', 'features/support/env.rb', :force => true
-          `guard init cucumber`
-        end
-        
-        # custom modify cli
-        inject_into_file "Guardfile", :after => /guard 'rspec', :version => 2/ do
-          " , :cli => '--drb'"
-        end if file_exists? "Guardfile"
-        
-        print_notes("Please make sure you already install growl with growlnotify!!")
       rescue Exception => e
         raise e 
       end
